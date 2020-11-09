@@ -33,9 +33,9 @@ spring:
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/qqbot?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=GMT%2B8
-    username: qqbot
-    password: qqbot#Xxx001
+    url: jdbc:mysql://localhost:3306/mqr?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=GMT%2B8
+    username: mqr
+    password: mqr#Xxx001
 
 # 持久层配置
 mybatis-plus:
