@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "robot.qq",
+      "type": "java.lang.Long",
+      "sourceType": "com.molicloud.mqr.framework.properties.RobotProperties",
+      "description": "机器人QQ号码"
+    },
+    {
+      "name": "robot.password",
+      "type": "java.lang.String",
+      "sourceType": "com.molicloud.mqr.framework.properties.RobotProperties",
+      "description": "机器人QQ密码"
+    }
+  ]
+}
