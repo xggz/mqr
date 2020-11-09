@@ -45,7 +45,7 @@ public class LoginVerifyHandler extends LoginSolver {
     @Nullable
     @Override
     public Object onSolveSliderCaptcha(@NotNull Bot bot, @NotNull String url, @NotNull Continuation<? super String> continuation) {
-        log.info("请在任意浏览器中打开以下链接并完成验证码");
+        log.info("请在浏览器中打开以下链接并完成验证码");
         log.info(url);
         log.info("完成后请输入任意字符");
         return new Scanner(System.in).nextLine();
@@ -56,7 +56,7 @@ public class LoginVerifyHandler extends LoginSolver {
     public Object onSolveUnsafeDeviceLoginVerify(@NotNull Bot bot, @NotNull String url, @NotNull Continuation<? super String> continuation) {
         log.info("需要进行账户安全认证");
         log.info("该账户有[设备锁]/[不常用登录地点]/[不常用设备登录]的问题");
-        log.info("请将该链接在QQ浏览器中打开并完成认证, 成功后输入任意字符");
+        log.info("请将该链接在浏览器中打开并完成认证, 成功后输入任意字符");
         log.info(url);
         return new Scanner(System.in).nextLine();
     }
