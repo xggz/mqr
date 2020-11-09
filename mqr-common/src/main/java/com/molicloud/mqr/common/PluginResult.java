@@ -20,7 +20,12 @@ public class PluginResult<T> implements Serializable {
     /**
      * 是否已处理
      */
-    private Boolean processed;
+    private Boolean processed = Boolean.FALSE;
+
+    /**
+     * 是否持有插件
+     */
+    private Boolean hold = Boolean.FALSE;
 
     /**
      * 处理结果

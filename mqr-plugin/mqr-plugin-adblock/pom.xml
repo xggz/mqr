@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mqr-plugin-aireply</artifactId>
+    <artifactId>mqr-plugin-adblock</artifactId>
     <packaging>jar</packaging>
 
-    <description>智能回复插件</description>
+    <description>广告/违法信息检测插件</description>
 
     <dependencies>
         <dependency>

@@ -83,7 +83,8 @@ public class EventListeningHandler extends SimpleListenerHost {
      * @return
      */
     private PluginResult executePlugin(PluginParam pluginParam) {
-        List<PluginHook> pluginHookList = PluginRegistrar.getPluginHookList();
+        // 获取所有的插件钩子，按照优先级执行
+        List<PluginHook> pluginHookList = PluginRegistrar.getAllPluginHookList();
         for (PluginHook pluginHook : pluginHookList) {
             if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
                 try {
