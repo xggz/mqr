@@ -10,9 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2020/11/4 4:01 下午
  */
 @SpringBootApplication
-public class QQBotApplication {
+public class RobotApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(QQBotApplication.class, args);
+        SpringApplication.run(RobotApplication.class, args);
     }
 }

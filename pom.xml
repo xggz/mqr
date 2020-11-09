@@ -7,15 +7,16 @@
     <groupId>com.molicloud</groupId>
     <artifactId>mqr</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <description>茉莉QQ机器人（MQR）</description>
+
     <modules>
         <module>mqr-common</module>
         <module>mqr-framework</module>
         <module>mqr-plugin</module>
         <module>mqr-rest</module>
     </modules>
-    <packaging>pom</packaging>
-
-    <description>茉莉QQ机器人（MQR）</description>
 
     <properties>
         <java.version>1.8</java.version>
