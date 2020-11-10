@@ -6,6 +6,10 @@ robot:
   qq:
   password:
 
+web:
+  #排除拦截的路由
+  exclude-path-patterns: /favicon.ico, /swagger-resources/**, /swagger-ui/**, /webjars/**, /v3/**, /doc.html, /sys-user/login
+
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -33,7 +37,7 @@ spring:
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mqr?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/mqr?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     username: mqr
     password: mqr#Xxx001
 

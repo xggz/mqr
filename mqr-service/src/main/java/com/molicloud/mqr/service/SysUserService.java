@@ -1,6 +1,7 @@
 package com.molicloud.mqr.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.molicloud.mqr.dto.LoginDto;
 import com.molicloud.mqr.entity.SysUser;
 
 /**
@@ -13,4 +14,11 @@ import com.molicloud.mqr.entity.SysUser;
  */
 public interface SysUserService extends IService<SysUser> {
 
+    /**
+     * 用户登录
+     *
+     * @param dto
+     * @return
+     */
+    String login(LoginDto dto);
 }
