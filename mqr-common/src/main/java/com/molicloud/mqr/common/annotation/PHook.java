@@ -20,6 +20,13 @@ import java.lang.annotation.Target;
 public @interface PHook {
 
     /**
+     * 钩子名
+     *
+     * @return
+     */
+    String name();
+
+    /**
      * 是否监听所有消息，监听所有消息的插件不需要匹配关键字即可触发
      *
      * @return

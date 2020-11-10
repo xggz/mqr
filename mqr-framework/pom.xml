@@ -35,6 +35,12 @@
             <artifactId>mqr-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!-- service -->
+        <dependency>
+            <groupId>com.molicloud.mqr</groupId>
+            <artifactId>mqr-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

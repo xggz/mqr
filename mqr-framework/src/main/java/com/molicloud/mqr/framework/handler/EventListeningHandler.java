@@ -83,6 +83,7 @@ public class EventListeningHandler extends SimpleListenerHost {
      * @return
      */
     private PluginResult executePlugin(PluginParam pluginParam) {
+        // todo 机器人好友或群成员可以主动持有插件钩子
         // 获取所有的插件钩子，按照优先级执行
         List<PluginHook> pluginHookList = PluginRegistrar.getAllPluginHookList();
         for (PluginHook pluginHook : pluginHookList) {

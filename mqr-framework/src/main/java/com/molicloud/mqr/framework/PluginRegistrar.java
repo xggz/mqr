@@ -64,6 +64,13 @@ public class PluginRegistrar implements ApplicationContextAware, SmartInitializi
 
     @Override
     public void afterSingletonsInstantiated() {
+        loadAllPluginHook();
+    }
+
+    /**
+     * 加载插件钩子
+     */
+    private void loadAllPluginHook() {
         String[] beanDefinitionNames = applicationContext.getBeanNamesForType(PluginExecutor.class, false, true);
         for (String beanDefinitionName : beanDefinitionNames) {
             Object bean = applicationContext.getBean(beanDefinitionName);
@@ -91,6 +98,7 @@ public class PluginRegistrar implements ApplicationContextAware, SmartInitializi
                 log.debug("Plugin PHook Method：{}", method.getName());
 
                 PluginHook pluginHook = new PluginHook();
+                pluginHook.setName(pHook.name());
                 pluginHook.setListeningAllMessage(pHook.listeningAllMessage());
                 pluginHook.setRobotEvents(new HashSet<>(Arrays.asList(pHook.robotEvents())));
                 pluginHook.setKeywords(new HashSet<>(Arrays.asList(pHook.keywords())));

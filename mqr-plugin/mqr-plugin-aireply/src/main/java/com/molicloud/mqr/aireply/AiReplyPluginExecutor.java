@@ -27,7 +27,8 @@ public class AiReplyPluginExecutor implements PluginExecutor {
     private static final String apiKey = "2efdd0243d746921c565225ca4fdf07b";
     private static final String apiSecret = "itpk123456";
 
-    @PHook(robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
+    @PHook(name = "AiReply",
+            robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
         String reply = aiReply(String.valueOf(pluginParam.getData()));
         PluginResult pluginResult = new PluginResult();

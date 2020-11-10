@@ -26,7 +26,8 @@ public class AdblockPluginExecutor implements PluginExecutor {
             "日赚", "月赚", "招收", "招商"
     };
 
-    @PHook(listeningAllMessage = true,
+    @PHook(name = "Adblock",
+            listeningAllMessage = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
         PluginResult pluginResult = new PluginResult();

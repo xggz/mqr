@@ -17,6 +17,11 @@ import java.util.Set;
 public class PluginHook {
 
     /**
+     * 钩子名
+     */
+    private String name;
+
+    /**
      * 是否监听所有消息
      */
     private Boolean listeningAllMessage;
