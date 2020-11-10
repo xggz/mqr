@@ -23,21 +23,16 @@ public class AiReplyPluginExecutor implements PluginExecutor {
     @Autowired
     private RestTemplate restTemplate;
 
-    // 茉莉机器人API，获取地址 http://www.itpk.cn
+    // 茉莉机器人API，以下api仅供测试，如需自定义词库和机器人名字等，请前往官网获取，获取地址 http://www.itpk.cn
     private static final String apiKey = "2efdd0243d746921c565225ca4fdf07b";
     private static final String apiSecret = "itpk123456";
 
     @PHook(robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
-        log.debug("========>>" + pluginParam.toString());
+        String reply = aiReply(String.valueOf(pluginParam.getData()));
         PluginResult pluginResult = new PluginResult();
-        if (RobotEventEnum.FRIEND_MSG.equals(pluginParam.getRobotEventEnum())
-                || (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum()) && pluginParam.getTo().equals("273970059"))) {
-            pluginResult.setProcessed(true);
-            pluginResult.setData(aiReply(String.valueOf(pluginParam.getData())));
-        } else {
-            pluginResult.setProcessed(false);
-        }
+        pluginResult.setProcessed(true);
+        pluginResult.setData(reply);
         return pluginResult;
     }
 
