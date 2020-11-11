@@ -31,8 +31,8 @@ public class RobotFriend implements Serializable {
     @ApiModelProperty(value = "好友ID")
     private String fid;
 
-    @ApiModelProperty(value = "持有的插件")
-    private String holdPlugin;
+    @ApiModelProperty(value = "持有的插件钩子")
+    private String holdPluginHook;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;

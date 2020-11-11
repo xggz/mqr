@@ -38,8 +38,8 @@ public class RobotGroupMember implements Serializable {
     @ApiModelProperty(value = "金币")
     private BigDecimal gold;
 
-    @ApiModelProperty(value = "持有的插件")
-    private String holdPlugin;
+    @ApiModelProperty(value = "持有的插件钩子")
+    private String holdPluginHook;
 
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
