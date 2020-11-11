@@ -27,7 +27,9 @@ public @interface PHook {
     String name();
 
     /**
-     * 是否监听所有消息，监听所有消息的插件不需要匹配关键字即可触发
+     * 是否监听所有消息<br/>
+     *
+     * 监听所有消息的插件不需要匹配关键字即可优先触发
      *
      * @return
      */
@@ -48,9 +50,20 @@ public @interface PHook {
     RobotEventEnum[] robotEvents();
 
     /**
-     * 执行优先级，值越小优先级越高
+     * 执行优先级<br/>
+     *
+     * 值越小优先级越高
      *
      * @return
      */
     int order() default 0;
+
+    /**
+     * 是否为默认的插件<br/>
+     *
+     * 默认的插件在最后阶段总是会被执行
+     *
+     * @return
+     */
+    boolean defaulted() default false;
 }
