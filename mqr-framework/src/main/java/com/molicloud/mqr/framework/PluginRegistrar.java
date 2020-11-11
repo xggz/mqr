@@ -3,6 +3,7 @@ package com.molicloud.mqr.framework;
 import cn.hutool.core.collection.CollUtil;
 import com.molicloud.mqr.common.PluginExecutor;
 import com.molicloud.mqr.common.annotation.PHook;
+import com.molicloud.mqr.common.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.common.PHookMethod;
 import com.molicloud.mqr.framework.common.PluginHook;
 import lombok.extern.slf4j.Slf4j;
@@ -62,28 +63,37 @@ public class PluginRegistrar implements ApplicationContextAware, SmartInitializi
     /**
      * 获取监听所有消息的插件钩子列表
      *
+     * @param robotEventEnum
      * @return
      */
-    public static List<PluginHook> getListeningAllMessagePluginHookList() {
-        return listeningAllMessagePluginHookList;
+    public static List<PluginHook> getListeningAllMessagePluginHookList(RobotEventEnum robotEventEnum) {
+        return listeningAllMessagePluginHookList.stream()
+                .filter(pluginHook -> pluginHook.getRobotEvents().contains(robotEventEnum))
+                .collect(Collectors.toList());
     }
 
     /**
      * 获取常规的插件钩子列表
      *
+     * @param robotEventEnum
      * @return
      */
-    public static List<PluginHook> getNormalPluginHookList() {
-        return normalPluginHookList;
+    public static List<PluginHook> getNormalPluginHookList(RobotEventEnum robotEventEnum) {
+        return normalPluginHookList.stream()
+                .filter(pluginHook -> pluginHook.getRobotEvents().contains(robotEventEnum))
+                .collect(Collectors.toList());
     }
 
     /**
      * 获取默认的插件钩子列表
      *
+     * @param robotEventEnum
      * @return
      */
-    public static List<PluginHook> getDefaultPluginHookList() {
-        return defaultPluginHookList;
+    public static List<PluginHook> getDefaultPluginHookList(RobotEventEnum robotEventEnum) {
+        return defaultPluginHookList.stream()
+                .filter(pluginHook -> pluginHook.getRobotEvents().contains(robotEventEnum))
+                .collect(Collectors.toList());
     }
 
     /**

@@ -20,6 +20,7 @@ import net.mamoe.mirai.message.GroupMessageEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 事件监听处理器
@@ -98,7 +99,7 @@ public class EventListeningHandler extends SimpleListenerHost {
         }
 
         // 处理监听所有消息的插件钩子
-        List<PluginHook> listeningAllMessagePluginHookList = PluginRegistrar.getListeningAllMessagePluginHookList();
+        List<PluginHook> listeningAllMessagePluginHookList = PluginRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(listeningAllMessagePluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.LISTENING_ALL_MESSAGE);
             pluginResult = executeAllPluginHook(listeningAllMessagePluginHookList, pluginParam);
@@ -107,18 +108,26 @@ public class EventListeningHandler extends SimpleListenerHost {
             }
         }
 
-        // 处理常规的插件钩子
-        List<PluginHook> normalPluginHookList = PluginRegistrar.getNormalPluginHookList();
-        if (CollUtil.isNotEmpty(normalPluginHookList)) {
-            pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
-            pluginResult = executeAllPluginHook(normalPluginHookList, pluginParam);
-            if (pluginResult != null && pluginResult.getProcessed()) {
-                return pluginResult;
+        // 如果消息为字符串，则处理常规的插件钩子
+        if (pluginParam.getData() instanceof String) {
+            List<PluginHook> normalPluginHookList = PluginRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
+            if (CollUtil.isNotEmpty(normalPluginHookList)) {
+                // 过滤关键字
+                List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
+                        .filter(pluginHook -> pluginHook.getKeywords().contains(String.valueOf(pluginParam.getData())))
+                        .collect(Collectors.toList());
+                if (CollUtil.isNotEmpty(keywordPluginHookList)) {
+                    pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
+                    pluginResult = executeAllPluginHook(keywordPluginHookList, pluginParam);
+                    if (pluginResult != null && pluginResult.getProcessed()) {
+                        return pluginResult;
+                    }
+                }
             }
         }
 
         // 处理默认的插件钩子
-        List<PluginHook> defaultPluginHookList = PluginRegistrar.getDefaultPluginHookList();
+        List<PluginHook> defaultPluginHookList = PluginRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(defaultPluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULTED);
             pluginResult = executeAllPluginHook(defaultPluginHookList, pluginParam);
