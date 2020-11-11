@@ -32,7 +32,7 @@ public class PluginUtil {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        if (pluginResult.getProcessed()) {
+        if (pluginResult != null && pluginResult.getProcessed()) {
             if (pluginResult.getHold()) {
                 if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
                     PluginHookUtil.holdGroupMemberPluginHook(pluginParam.getTo(), pluginParam.getFrom(), pluginHook.getName());

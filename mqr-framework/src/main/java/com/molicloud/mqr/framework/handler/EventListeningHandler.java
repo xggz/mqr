@@ -175,7 +175,7 @@ public class EventListeningHandler extends SimpleListenerHost {
         for (PluginHook pluginHook : pluginHookList) {
             if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
                 PluginResult pluginResult = PluginUtil.execute(pluginHook, pluginParam);
-                if (pluginResult.getProcessed()) {
+                if (pluginResult != null && pluginResult.getProcessed()) {
                     return pluginResult;
                 }
             }
