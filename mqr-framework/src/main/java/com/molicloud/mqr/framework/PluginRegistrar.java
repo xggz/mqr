@@ -47,19 +47,53 @@ public class PluginRegistrar implements ApplicationContextAware, SmartInitializi
     // 监听所有消息的插件钩子列表
     private static List<PluginHook> listeningAllMessagePluginHookList = new ArrayList<>();
 
-    // 根据执行优先级，组合成的一个插件钩子列表
+    // 插件钩子列表（插件钩子不重复）
     private static List<PluginHook> allPluginHookList = new LinkedList<>();
 
     /**
-     * 根据执行优先级排序的所有插件钩子
+     * 获取所有的插件钩子（插件钩子不重复）
      *
      * @return
      */
     public static List<PluginHook> getAllPluginHookList() {
-        allPluginHookList.addAll(listeningAllMessagePluginHookList);
-        allPluginHookList.addAll(normalPluginHookList);
-        allPluginHookList.addAll(defaultPluginHookList);
         return allPluginHookList;
+    }
+
+    /**
+     * 获取监听所有消息的插件钩子列表
+     *
+     * @return
+     */
+    public static List<PluginHook> getListeningAllMessagePluginHookList() {
+        return listeningAllMessagePluginHookList;
+    }
+
+    /**
+     * 获取常规的插件钩子列表
+     *
+     * @return
+     */
+    public static List<PluginHook> getNormalPluginHookList() {
+        return normalPluginHookList;
+    }
+
+    /**
+     * 获取默认的插件钩子列表
+     *
+     * @return
+     */
+    public static List<PluginHook> getDefaultPluginHookList() {
+        return defaultPluginHookList;
+    }
+
+    /**
+     * 根据插件的钩子名获取插件钩子
+     *
+     * @param name
+     * @return
+     */
+    public static PluginHook getPluginHookByName(String name) {
+        return allPluginHookList.stream().filter(pluginHook -> pluginHook.getName().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
     @Override
@@ -104,14 +138,20 @@ public class PluginRegistrar implements ApplicationContextAware, SmartInitializi
                 pluginHook.setKeywords(new HashSet<>(Arrays.asList(pHook.keywords())));
                 pluginHook.setOrder(pHook.order());
                 pluginHook.setPHookMethod(new PHookMethod(bean, method));
-                // 判断是否监听所有消息
+                // 判断是否监听所有消息钩子
                 if (pHook.listeningAllMessage()) {
                     listeningAllMessagePluginHookList.add(pluginHook);
-                } else if (pHook.keywords() != null && pHook.keywords().length > 0) {
-                    normalPluginHookList.add(pluginHook);
-                } else {
+                }
+                // 判断是否为默认插件钩子
+                if (pHook.defaulted()) {
                     defaultPluginHookList.add(pluginHook);
                 }
+                // 如果关键字列表不为空，则列入常规的插件钩子
+                if (pHook.keywords() != null && pHook.keywords().length > 0) {
+                    normalPluginHookList.add(pluginHook);
+                }
+                // 把所有插件钩子存入一个列表（不重复）
+                allPluginHookList.add(pluginHook);
             }
         }
 

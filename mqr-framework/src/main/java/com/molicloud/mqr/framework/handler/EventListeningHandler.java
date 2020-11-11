@@ -1,11 +1,15 @@
 package com.molicloud.mqr.framework.handler;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.common.PluginParam;
 import com.molicloud.mqr.common.PluginResult;
 import com.molicloud.mqr.common.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
+import com.molicloud.mqr.framework.util.PluginHookUtil;
+import com.molicloud.mqr.framework.util.PluginUtil;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.EventHandler;
@@ -39,11 +43,13 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setFrom(String.valueOf(event.getSender().getId()));
         pluginParam.setTo(String.valueOf(event.getGroup().getId()));
         pluginParam.setData(event.getMessage().contentToString());
-        pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULT);
         pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
         PluginResult pluginResult = executePlugin(pluginParam);
         if (pluginResult != null && pluginResult.getProcessed()) {
-            event.getGroup().sendMessage(String.valueOf(pluginResult.getData()));
+            Object reply = pluginResult.getData();
+            if (reply instanceof String) {
+                event.getGroup().sendMessage(String.valueOf(pluginResult.getData()));
+            }
         }
         // 保持监听
         return ListeningStatus.LISTENING;
@@ -61,11 +67,13 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setFrom(String.valueOf(event.getFriend().getId()));
         pluginParam.setTo(String.valueOf(event.getBot().getId()));
         pluginParam.setData(event.getMessage().contentToString());
-        pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULT);
         pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
         PluginResult pluginResult = executePlugin(pluginParam);
         if (pluginResult != null && pluginResult.getProcessed()) {
-            event.getFriend().sendMessage(String.valueOf(pluginResult.getData()));
+            Object reply = pluginResult.getData();
+            if (reply instanceof String) {
+                event.getFriend().sendMessage(String.valueOf(pluginResult.getData()));
+            }
         }
         // 保持监听
         return ListeningStatus.LISTENING;
@@ -83,22 +91,86 @@ public class EventListeningHandler extends SimpleListenerHost {
      * @return
      */
     private PluginResult executePlugin(PluginParam pluginParam) {
-        // todo 机器人好友或群成员可以主动持有插件钩子
-        // 获取所有的插件钩子，按照优先级执行
-        List<PluginHook> pluginHookList = PluginRegistrar.getAllPluginHookList();
-        for (PluginHook pluginHook : pluginHookList) {
-            if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
-                try {
-                    PluginResult pluginResult = pluginHook.getPHookMethod().execute(pluginParam);
-                    if (pluginResult.getProcessed()) {
-                        return pluginResult;
-                    }
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
+        // 处理持有的插件钩子
+        PluginResult pluginResult = executeHoldPluginHook(pluginParam);
+        if (pluginResult != null && pluginResult.getProcessed()) {
+            return pluginResult;
+        }
+
+        // 处理监听所有消息的插件钩子
+        List<PluginHook> listeningAllMessagePluginHookList = PluginRegistrar.getListeningAllMessagePluginHookList();
+        if (CollUtil.isNotEmpty(listeningAllMessagePluginHookList)) {
+            pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.LISTENING_ALL_MESSAGE);
+            pluginResult = executeAllPluginHook(listeningAllMessagePluginHookList, pluginParam);
+            if (pluginResult != null && pluginResult.getProcessed()) {
+                return pluginResult;
             }
         }
 
+        // 处理常规的插件钩子
+        List<PluginHook> normalPluginHookList = PluginRegistrar.getNormalPluginHookList();
+        if (CollUtil.isNotEmpty(normalPluginHookList)) {
+            pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
+            pluginResult = executeAllPluginHook(normalPluginHookList, pluginParam);
+            if (pluginResult != null && pluginResult.getProcessed()) {
+                return pluginResult;
+            }
+        }
+
+        // 处理默认的插件钩子
+        List<PluginHook> defaultPluginHookList = PluginRegistrar.getDefaultPluginHookList();
+        if (CollUtil.isNotEmpty(defaultPluginHookList)) {
+            pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULTED);
+            pluginResult = executeAllPluginHook(defaultPluginHookList, pluginParam);
+            if (pluginResult != null && pluginResult.getProcessed()) {
+                return pluginResult;
+            }
+        }
+
+        return pluginResult;
+    }
+
+    /**
+     * 执行持有的插件钩子（如果有的话）
+     *
+     * @param pluginParam
+     * @return
+     */
+    private PluginResult executeHoldPluginHook(PluginParam pluginParam) {
+        // 插件钩子名
+        String name = null;
+        // 判断群消息和好友消息的人是否持有对应的插件钩子
+        if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
+                && PluginHookUtil.groupMemberHasPluginHook(pluginParam.getTo(), pluginParam.getFrom())) {
+            name = PluginHookUtil.getGroupMemberHoldPluginHookName(pluginParam.getTo(), pluginParam.getFrom());
+        } else if (RobotEventEnum.FRIEND_MSG.equals(pluginParam.getRobotEventEnum())
+                && PluginHookUtil.friendHasPluginHook(pluginParam.getFrom())) {
+            name = PluginHookUtil.getFriendHoldPluginHookName(pluginParam.getFrom());
+        }
+
+        if (StrUtil.isNotBlank(name)) {
+            // 通过持有的插件钩子来执行
+            pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.HOLD);
+            return PluginUtil.execute(name, pluginParam);
+        }
+        return null;
+    }
+
+    /**
+     * 按照优先级执行所有插件
+     *
+     * @param pluginParam
+     * @return
+     */
+    private PluginResult executeAllPluginHook(List<PluginHook> pluginHookList, PluginParam pluginParam) {
+        for (PluginHook pluginHook : pluginHookList) {
+            if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
+                PluginResult pluginResult = PluginUtil.execute(pluginHook, pluginParam);
+                if (pluginResult.getProcessed()) {
+                    return pluginResult;
+                }
+            }
+        }
         return null;
     }
 }

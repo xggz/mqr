@@ -21,7 +21,7 @@ public enum ExecuteTriggerEnum {
     /**
      * 默认的
      */
-    DEFAULT,
+    DEFAULTED,
 
     /**
      * 监听所有消息

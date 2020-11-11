@@ -3,6 +3,7 @@ package com.molicloud.mqr.framework;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class RobotServerRunner implements CommandLineRunner {
+public class RobotServerRunner implements CommandLineRunner, Ordered {
 
     @Autowired
     private RobotServerStarter robotServerStarter;
@@ -27,5 +28,10 @@ public class RobotServerRunner implements CommandLineRunner {
         qqRunThread.setDaemon(true);
         qqRunThread.setName("QQ机器人服务运行线程");
         qqRunThread.start();
+    }
+
+    @Override
+    public int getOrder() {
+        return 100;
     }
 }
