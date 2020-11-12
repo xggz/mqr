@@ -1,5 +1,7 @@
 package com.molicloud.mqr.common.enums;
 
+import java.util.Arrays;
+
 /**
  * 机器人事件枚举
  *
@@ -17,4 +19,20 @@ public enum RobotEventEnum {
      * 群消息
      */
     GROUP_MSG;
+
+    /**
+     * 机器人消息类型的事件枚举
+     */
+    public static final RobotEventEnum[] robotMessageEventEnums = new RobotEventEnum[]{
+            FRIEND_MSG, GROUP_MSG
+    };
+
+    /**
+     * 判断枚举是否为消息类型的事件
+     *
+     * @return
+     */
+    public boolean isMessageEvent() {
+        return Arrays.stream(robotMessageEventEnums).anyMatch(robotEventEnum -> robotEventEnum.equals(this));
+    }
 }
