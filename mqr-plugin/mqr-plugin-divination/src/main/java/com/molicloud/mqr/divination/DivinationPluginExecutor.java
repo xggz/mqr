@@ -69,7 +69,7 @@ public class DivinationPluginExecutor implements PluginExecutor {
                 reply = String.format(
                         "第%s签\r\n签语：%s\r\n注释：%s\r\n解签：%s\r\n解说：%s\r\n结果：%s\r\n婚姻：%s\r\n" +
                                 "事业：%s\r\n功名：%s\r\n失物：%s\r\n出外移居：%s\r\n六甲：%s\r\n求财：%s\r\n交易：%s\r\n" +
-                                "疾病：%s\r\n诉讼：%s\r\n运途：%s\r\n某事：%s\r\n合伙做生意：%s\r\n",
+                                "疾病：%s\r\n诉讼：%s\r\n运途：%s\r\n某事：%s\r\n合伙做生意：%s",
                         jsonObject.getStr("number1"),
                         jsonObject.getStr("qianyu"),
                         jsonObject.getStr("zhushi"),
