@@ -1,4 +1,6 @@
 */target/
+target
+.gradle
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -8,3 +10,5 @@
 *.iws
 *.iml
 *.ipr
+deviceInfo-*.json
+*.png
