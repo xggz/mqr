@@ -5,6 +5,7 @@ import com.molicloud.mqr.common.PluginParam;
 import com.molicloud.mqr.common.PluginResult;
 import com.molicloud.mqr.common.annotation.PHook;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.message.Ats;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,8 @@ public class AdblockPluginExecutor implements PluginExecutor {
             "日赚", "月赚", "招收", "招商"
     };
 
+    private static final String warnContent = "请勿发送广告或违法信息";
+
     @PHook(name = "Adblock",
             listeningAllMessage = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
@@ -35,7 +38,14 @@ public class AdblockPluginExecutor implements PluginExecutor {
         if (message instanceof String) {
             if (Arrays.stream(adKeywords).anyMatch(keyword -> String.valueOf(message).equalsIgnoreCase(keyword))) {
                 pluginResult.setProcessed(true);
-                pluginResult.setData("请勿发送广告或违法信息");
+                if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
+                    Ats ats = new Ats();
+                    ats.setMids(Arrays.asList(pluginParam.getFrom()));
+                    ats.setContent(warnContent);
+                    pluginResult.setData(ats);
+                } else {
+                    pluginResult.setData(warnContent);
+                }
             }
         }
 
