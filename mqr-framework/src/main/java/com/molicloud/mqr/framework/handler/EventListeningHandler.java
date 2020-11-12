@@ -6,7 +6,7 @@ import com.molicloud.mqr.common.PluginParam;
 import com.molicloud.mqr.common.PluginResult;
 import com.molicloud.mqr.common.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.PluginRegistrar;
+import com.molicloud.mqr.framework.PluginHookRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
 import com.molicloud.mqr.framework.util.PluginHookUtil;
 import com.molicloud.mqr.framework.util.PluginUtil;
@@ -99,7 +99,7 @@ public class EventListeningHandler extends SimpleListenerHost {
         }
 
         // 处理监听所有消息的插件钩子
-        List<PluginHook> listeningAllMessagePluginHookList = PluginRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
+        List<PluginHook> listeningAllMessagePluginHookList = PluginHookRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(listeningAllMessagePluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.LISTENING_ALL_MESSAGE);
             pluginResult = executeAllPluginHook(listeningAllMessagePluginHookList, pluginParam);
@@ -110,7 +110,7 @@ public class EventListeningHandler extends SimpleListenerHost {
 
         // 如果消息为字符串，则处理常规的插件钩子
         if (pluginParam.getData() instanceof String) {
-            List<PluginHook> normalPluginHookList = PluginRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
+            List<PluginHook> normalPluginHookList = PluginHookRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
             if (CollUtil.isNotEmpty(normalPluginHookList)) {
                 // 过滤关键字
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
@@ -127,7 +127,7 @@ public class EventListeningHandler extends SimpleListenerHost {
         }
 
         // 处理默认的插件钩子
-        List<PluginHook> defaultPluginHookList = PluginRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
+        List<PluginHook> defaultPluginHookList = PluginHookRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(defaultPluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULTED);
             pluginResult = executeAllPluginHook(defaultPluginHookList, pluginParam);

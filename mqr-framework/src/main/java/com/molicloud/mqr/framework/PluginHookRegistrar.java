@@ -27,14 +27,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 插件注册，通过查找所有的插件钩子来实现
+ * 插件钩子注册，通过查找所有的插件钩子注解来实现
  *
  * @author feitao yyimba@qq.com
  * @since 2020/11/4 6:43 下午
  */
 @Slf4j
 @Component
-public class PluginRegistrar implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
+public class PluginHookRegistrar implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
 
     /**
      * ApplicationContext

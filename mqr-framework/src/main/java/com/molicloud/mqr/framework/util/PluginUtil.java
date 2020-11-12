@@ -3,7 +3,7 @@ package com.molicloud.mqr.framework.util;
 import com.molicloud.mqr.common.PluginParam;
 import com.molicloud.mqr.common.PluginResult;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.PluginRegistrar;
+import com.molicloud.mqr.framework.PluginHookRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +52,7 @@ public class PluginUtil {
      * @return
      */
     public PluginResult execute(String pluginHookName, PluginParam pluginParam) {
-        PluginHook pluginHook = PluginRegistrar.getPluginHookByName(pluginHookName);
+        PluginHook pluginHook = PluginHookRegistrar.getPluginHookByName(pluginHookName);
         if (pluginHook == null) {
             return null;
         }

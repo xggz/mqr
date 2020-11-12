@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class HoldPluginInitialize implements CommandLineRunner, Ordered {
+public class PluginHookHoldInitialize implements CommandLineRunner, Ordered {
 
     @Autowired
     private RobotFriendService robotFriendService;
