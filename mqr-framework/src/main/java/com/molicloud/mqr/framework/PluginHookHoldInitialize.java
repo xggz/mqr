@@ -38,7 +38,7 @@ public class PluginHookHoldInitialize implements CommandLineRunner, Ordered {
                 .isNull(RobotFriend::getHoldPluginHook)
                 .or().eq(RobotFriend::getHoldPluginHook, ""));
         if (CollUtil.isNotEmpty(robotFriendList)) {
-            robotFriendList.stream().forEach(robotFriend -> PluginHookUtil.holdFriendPluginHook(robotFriend.getFid(), robotFriend.getHoldPluginHook()));
+            robotFriendList.stream().forEach(robotFriend -> PluginHookUtil.actionFriendPluginHook(robotFriend.getFid(), robotFriend.getHoldPluginHook(), true));
         }
 
         // 获取所有群成员持有的插件钩子
@@ -46,7 +46,7 @@ public class PluginHookHoldInitialize implements CommandLineRunner, Ordered {
                 .isNull(RobotGroupMember::getHoldPluginHook)
                 .or().eq(RobotGroupMember::getHoldPluginHook, ""));
         if (CollUtil.isNotEmpty(robotGroupMemberList)) {
-            robotGroupMemberList.stream().forEach(robotGroupMember -> PluginHookUtil.holdGroupMemberPluginHook(robotGroupMember.getGid(), robotGroupMember.getMid(), robotGroupMember.getHoldPluginHook()));
+            robotGroupMemberList.stream().forEach(robotGroupMember -> PluginHookUtil.actionGroupMemberPluginHook(robotGroupMember.getGid(), robotGroupMember.getMid(), robotGroupMember.getHoldPluginHook(), true));
         }
     }
 

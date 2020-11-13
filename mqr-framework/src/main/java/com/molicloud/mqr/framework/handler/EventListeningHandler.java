@@ -1,7 +1,6 @@
 package com.molicloud.mqr.framework.handler;
 
 import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.event.PluginResultEvent;
 import com.molicloud.mqr.framework.util.PluginUtil;
@@ -37,15 +36,14 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onGroupMessage(GroupMessageEvent event) {
+        // 实例化插件入参对象
         PluginParam pluginParam = new PluginParam();
         pluginParam.setFrom(String.valueOf(event.getSender().getId()));
         pluginParam.setTo(String.valueOf(event.getGroup().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
-        PluginResult pluginResult = PluginUtil.executePlugin(pluginParam);
-        if (pluginResult != null && pluginResult.getProcessed()) {
-            eventPublisher.publishEvent(new PluginResultEvent(String.valueOf(event.getGroup().getId()), RobotEventEnum.GROUP_MSG, pluginResult));
-        }
+        // 处理消息事件
+        handlerMessageEvent(pluginParam);
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -58,15 +56,14 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onFriendsMessage(FriendMessageEvent event) {
+        // 实例化插件入参对象
         PluginParam pluginParam = new PluginParam();
         pluginParam.setFrom(String.valueOf(event.getFriend().getId()));
         pluginParam.setTo(String.valueOf(event.getBot().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
-        PluginResult pluginResult = PluginUtil.executePlugin(pluginParam);
-        if (pluginResult != null && pluginResult.getProcessed()) {
-            eventPublisher.publishEvent(new PluginResultEvent(String.valueOf(event.getFriend().getId()), RobotEventEnum.FRIEND_MSG, pluginResult));
-        }
+        // 处理消息事件
+        handlerMessageEvent(pluginParam);
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -74,5 +71,20 @@ public class EventListeningHandler extends SimpleListenerHost {
     @Override
     public void handleException(CoroutineContext context, Throwable exception) {
         throw new RuntimeException("在事件处理中发生异常", exception);
+    }
+
+    /**
+     * 处理消息事件
+     *
+     * @param pluginParam
+     */
+    private void handlerMessageEvent(PluginParam pluginParam) {
+        // 封装插件结果处理事件
+        PluginResultEvent pluginResultEvent = new PluginResultEvent();
+        pluginResultEvent.setPluginParam(pluginParam);
+        // 执行插件，执行成功则推送异步处理的事件
+        if (PluginUtil.executePlugin(pluginResultEvent)) {
+            eventPublisher.publishEvent(pluginResultEvent);
+        }
     }
 }

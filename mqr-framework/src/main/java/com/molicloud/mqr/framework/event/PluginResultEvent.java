@@ -1,7 +1,7 @@
 package com.molicloud.mqr.framework.event;
 
+import com.molicloud.mqr.common.PluginParam;
 import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,29 +16,17 @@ import lombok.EqualsAndHashCode;
 public class PluginResultEvent {
 
     /**
-     * 事件触发者的ID
+     * 插件钩子名
      */
-    private String ownerId;
+    private String pluginHookName;
 
     /**
-     * 机器人事件枚举
+     * 插件通用入参
      */
-    private RobotEventEnum robotEventEnum;
+    private PluginParam pluginParam;
 
     /**
      * 插件处理结果
      */
     private PluginResult pluginResult;
-
-    /**
-     * 构造函数
-     *
-     * @param robotEventEnum
-     * @param pluginResult
-     */
-    public PluginResultEvent(String ownerId, RobotEventEnum robotEventEnum, PluginResult pluginResult) {
-        this.ownerId = ownerId;
-        this.robotEventEnum = robotEventEnum;
-        this.pluginResult = pluginResult;
-    }
 }

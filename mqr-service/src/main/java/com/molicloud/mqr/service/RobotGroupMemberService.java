@@ -13,4 +13,14 @@ import com.molicloud.mqr.entity.RobotGroupMember;
  */
 public interface RobotGroupMemberService extends IService<RobotGroupMember> {
 
+    /**
+     * 持久化插件钩子的持有动作
+     *
+     * @param gid
+     * @param mid
+     * @param action
+     * @param pluginHookName
+     */
+    void handlerHoldAction(String gid, String mid, boolean action, String pluginHookName);
+
 }

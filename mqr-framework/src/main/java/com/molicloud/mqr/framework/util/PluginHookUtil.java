@@ -33,15 +33,6 @@ public class PluginHookUtil {
     }
 
     /**
-     * 获取所有群成员持有的插件钩子
-     *
-     * @return
-     */
-    public static ConcurrentHashMap<String, String> getAllGroupMemberHoldPluginHook() {
-        return groupMemberHoldPluginHook;
-    }
-
-    /**
      * 根据好友ID获取插件钩子名
      *
      * @return
@@ -51,52 +42,16 @@ public class PluginHookUtil {
     }
 
     /**
-     * 根据群成员ID获取插件钩子名
+     * 机器人好友持有/释放插件钩子
      *
+     * @param fid
+     * @param name
+     * @param action
      * @return
      */
-    public static String getGroupMemberHoldPluginHookName(String gid, String mid) {
-        return groupMemberHoldPluginHook.get(makeGroupMemberKey(gid, mid));
-    }
-
-    /**
-     * 机器人好友释放插件钩子
-     *
-     * @param fid
-     */
-    public void releaseFriendPluginHook(String fid) {
-        friendHoldPluginHook.remove(fid);
-    }
-
-    /**
-     * 群成员释放插件钩子
-     *
-     * @param gid
-     * @param mid
-     */
-    public void releaseGroupMemberPluginHook(String gid, String mid) {
-        groupMemberHoldPluginHook.remove(makeGroupMemberKey(gid, mid));
-    }
-
-    /**
-     * 机器人好友持有插件钩子
-     *
-     * @param fid
-     * @param name
-     */
-    public void holdFriendPluginHook(String fid, String name) {
-        friendHoldPluginHook.put(fid, name);
-    }
-
-    /**
-     * 群成员持有插件钩子
-     *
-     * @param gid
-     * @param mid
-     * @param name
-     */
-    public void holdGroupMemberPluginHook(String gid, String mid, String name) {
-        groupMemberHoldPluginHook.put(makeGroupMemberKey(gid, mid), name);
+    public boolean actionFriendPluginHook(String fid, String name, boolean action) {
+        boolean hasKey = friendHoldPluginHook.containsKey(fid);
+        return handlerAction(friendHoldPluginHook, name, fid, hasKey, action);
     }
 
     /**
@@ -110,6 +65,39 @@ public class PluginHookUtil {
     }
 
     /**
+     * 获取所有群成员持有的插件钩子
+     *
+     * @return
+     */
+    public static ConcurrentHashMap<String, String> getAllGroupMemberHoldPluginHook() {
+        return groupMemberHoldPluginHook;
+    }
+
+    /**
+     * 根据群成员ID获取插件钩子名
+     *
+     * @return
+     */
+    public static String getGroupMemberHoldPluginHookName(String gid, String mid) {
+        return groupMemberHoldPluginHook.get(makeGroupMemberKey(gid, mid));
+    }
+
+    /**
+     * 群成员持有/释放插件钩子
+     *
+     * @param gid
+     * @param mid
+     * @param name
+     * @param action
+     * @return
+     */
+    public boolean actionGroupMemberPluginHook(String gid, String mid, String name, boolean action) {
+        String key = makeGroupMemberKey(gid, mid);
+        boolean hasKey = groupMemberHoldPluginHook.containsKey(key);
+        return handlerAction(groupMemberHoldPluginHook, name, key, hasKey, action);
+    }
+
+    /**
      * 群成员是否持有插件钩子
      *
      * @param gid
@@ -118,6 +106,27 @@ public class PluginHookUtil {
      */
     public boolean groupMemberHasPluginHook(String gid, String mid) {
         return groupMemberHoldPluginHook.containsKey(makeGroupMemberKey(gid, mid));
+    }
+
+    /**
+     * 处理插件钩子的持有动作
+     *
+     * @param pluginHookMap
+     * @param name
+     * @param key
+     * @param hasKey
+     * @param action
+     * @return
+     */
+    private boolean handlerAction(ConcurrentHashMap<String, String> pluginHookMap, String name, String key, boolean hasKey, boolean action) {
+        if (action && (!hasKey || (hasKey && !name.equalsIgnoreCase(pluginHookMap.get(key))))) {
+            pluginHookMap.put(key, name);
+            return true;
+        } else if (!action && hasKey) {
+            pluginHookMap.remove(key);
+            return true;
+        }
+        return false;
     }
 
     /**

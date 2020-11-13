@@ -8,6 +8,7 @@ import com.molicloud.mqr.common.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.common.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginHookRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
+import com.molicloud.mqr.framework.event.PluginResultEvent;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,25 +26,26 @@ import java.util.stream.Collectors;
 public class PluginUtil {
 
     /**
-     * 执行插件并返回结果
+     * 执行插件，如果执行成功，则把结果set到事件中
      *
-     * @param pluginParam
+     * @param pluginResultEvent
      * @return
      */
-    public PluginResult executePlugin(PluginParam pluginParam) {
+    public boolean executePlugin(PluginResultEvent pluginResultEvent) {
         // 处理持有的插件钩子
-        PluginResult pluginResult = executeHoldPluginHook(pluginParam);
-        if (pluginResult != null && pluginResult.getProcessed()) {
-            return pluginResult;
+        if (executeHoldPluginHook(pluginResultEvent)) {
+            return true;
         }
+
+        // 插件入参
+        PluginParam pluginParam = pluginResultEvent.getPluginParam();
 
         // 处理监听所有消息的插件钩子
         List<PluginHook> listeningAllMessagePluginHookList = PluginHookRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(listeningAllMessagePluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.LISTENING_ALL_MESSAGE);
-            pluginResult = executeAllPluginHook(listeningAllMessagePluginHookList, pluginParam);
-            if (pluginResult != null && pluginResult.getProcessed()) {
-                return pluginResult;
+            if (executeAllPluginHook(listeningAllMessagePluginHookList, pluginResultEvent)) {
+                return true;
             }
         }
 
@@ -57,9 +59,8 @@ public class PluginUtil {
                         .collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(keywordPluginHookList)) {
                     pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
-                    pluginResult = executeAllPluginHook(keywordPluginHookList, pluginParam);
-                    if (pluginResult != null && pluginResult.getProcessed()) {
-                        return pluginResult;
+                    if (executeAllPluginHook(keywordPluginHookList, pluginResultEvent)) {
+                        return true;
                     }
                 }
             }
@@ -69,24 +70,25 @@ public class PluginUtil {
         List<PluginHook> defaultPluginHookList = PluginHookRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(defaultPluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULTED);
-            pluginResult = executeAllPluginHook(defaultPluginHookList, pluginParam);
-            if (pluginResult != null && pluginResult.getProcessed()) {
-                return pluginResult;
+            if (executeAllPluginHook(defaultPluginHookList, pluginResultEvent)) {
+                return true;
             }
         }
 
-        return pluginResult;
+        return false;
     }
 
     /**
      * 执行持有的插件钩子（如果有的话）
      *
-     * @param pluginParam
+     * @param pluginResultEvent
      * @return
      */
-    private PluginResult executeHoldPluginHook(PluginParam pluginParam) {
+    private boolean executeHoldPluginHook(PluginResultEvent pluginResultEvent) {
         // 插件钩子名
         String name = null;
+        // 插件入参
+        PluginParam pluginParam = pluginResultEvent.getPluginParam();
         // 判断群消息和好友消息的人是否持有对应的插件钩子
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
                 && PluginHookUtil.groupMemberHasPluginHook(pluginParam.getTo(), pluginParam.getFrom())) {
@@ -99,27 +101,36 @@ public class PluginUtil {
         if (StrUtil.isNotBlank(name)) {
             // 通过持有的插件钩子来执行
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.HOLD);
-            return executePluginHook(name, pluginParam);
+            PluginResult pluginResult = executePluginHook(name, pluginParam);
+            if (pluginResult != null && pluginResult.getProcessed()) {
+                pluginResultEvent.setPluginHookName(name);
+                pluginResultEvent.setPluginResult(pluginResult);
+                return true;
+            }
         }
-        return null;
+        return false;
     }
 
     /**
      * 按照优先级执行所有插件
      *
-     * @param pluginParam
+     * @param pluginResultEvent
      * @return
      */
-    private PluginResult executeAllPluginHook(List<PluginHook> pluginHookList, PluginParam pluginParam) {
+    private boolean executeAllPluginHook(List<PluginHook> pluginHookList, PluginResultEvent pluginResultEvent) {
+        // 插件入参
+        PluginParam pluginParam = pluginResultEvent.getPluginParam();
         for (PluginHook pluginHook : pluginHookList) {
             if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
                 PluginResult pluginResult = executePluginHook(pluginHook, pluginParam);
                 if (pluginResult != null && pluginResult.getProcessed()) {
-                    return pluginResult;
+                    pluginResultEvent.setPluginHookName(pluginHook.getName());
+                    pluginResultEvent.setPluginResult(pluginResult);
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
     /**
@@ -135,15 +146,6 @@ public class PluginUtil {
             pluginResult = pluginHook.getPHookMethod().execute(pluginParam);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-        }
-        if (pluginResult != null && pluginResult.getProcessed()) {
-            if (pluginResult.getHold()) {
-                if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
-                    PluginHookUtil.holdGroupMemberPluginHook(pluginParam.getTo(), pluginParam.getFrom(), pluginHook.getName());
-                } else if (RobotEventEnum.FRIEND_MSG.equals(pluginParam.getRobotEventEnum())) {
-                    PluginHookUtil.holdFriendPluginHook(pluginParam.getFrom(), pluginHook.getName());
-                }
-            }
         }
         return pluginResult;
     }

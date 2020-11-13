@@ -13,4 +13,13 @@ import com.molicloud.mqr.entity.RobotFriend;
  */
 public interface RobotFriendService extends IService<RobotFriend> {
 
+    /**
+     * 持久化插件钩子的持有动作
+     *
+     * @param fid
+     * @param action
+     * @param pluginHookName
+     */
+    void handlerHoldAction(String fid, boolean action, String pluginHookName);
+
 }
