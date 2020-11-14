@@ -1,11 +1,11 @@
-package com.molicloud.mqr.adblock;
+package com.molicloud.mqr.plugin.adblock;
 
-import com.molicloud.mqr.common.PluginExecutor;
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.annotation.PHook;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
-import com.molicloud.mqr.common.message.Ats;
+import com.molicloud.mqr.common.plugin.PluginExecutor;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.annotation.PHook;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.message.Ats;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

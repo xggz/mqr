@@ -1,4 +1,4 @@
-package com.molicloud.mqr.common;
+package com.molicloud.mqr.common.plugin;
 
 /**
  * 插件执行器接口

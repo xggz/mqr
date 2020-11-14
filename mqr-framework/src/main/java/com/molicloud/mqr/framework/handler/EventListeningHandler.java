@@ -1,7 +1,7 @@
 package com.molicloud.mqr.framework.handler;
 
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.event.PluginResultEvent;
 import com.molicloud.mqr.framework.util.PluginUtil;
 import kotlin.coroutines.CoroutineContext;

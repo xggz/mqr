@@ -1,4 +1,4 @@
-package com.molicloud.mqr.common.enums;
+package com.molicloud.mqr.common.plugin.enums;
 
 import java.util.Arrays;
 

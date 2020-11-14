@@ -2,9 +2,9 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.message.Ats;
-import com.molicloud.mqr.common.message.Share;
+import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.message.Ats;
+import com.molicloud.mqr.common.plugin.message.Share;
 import lombok.experimental.UtilityClass;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Friend;

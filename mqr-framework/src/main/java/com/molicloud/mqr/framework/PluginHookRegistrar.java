@@ -1,9 +1,9 @@
 package com.molicloud.mqr.framework;
 
 import cn.hutool.core.collection.CollUtil;
-import com.molicloud.mqr.common.PluginExecutor;
-import com.molicloud.mqr.common.annotation.PHook;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.PluginExecutor;
+import com.molicloud.mqr.common.plugin.annotation.PHook;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.common.PHookMethod;
 import com.molicloud.mqr.framework.common.PluginHook;
 import lombok.extern.slf4j.Slf4j;

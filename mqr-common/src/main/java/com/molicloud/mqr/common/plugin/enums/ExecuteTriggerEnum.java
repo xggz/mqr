@@ -1,4 +1,4 @@
-package com.molicloud.mqr.common.enums;
+package com.molicloud.mqr.common.plugin.enums;
 
 /**
  * 插件执行的触发类型枚举

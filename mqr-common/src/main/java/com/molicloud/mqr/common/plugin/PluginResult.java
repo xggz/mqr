@@ -1,4 +1,4 @@
-package com.molicloud.mqr.common;
+package com.molicloud.mqr.common.plugin;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

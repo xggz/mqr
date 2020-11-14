@@ -1,8 +1,8 @@
 package com.molicloud.mqr.framework.event;
 
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.properties.RobotProperties;
 import com.molicloud.mqr.framework.util.MessageUtil;
 import com.molicloud.mqr.framework.util.PluginHookUtil;

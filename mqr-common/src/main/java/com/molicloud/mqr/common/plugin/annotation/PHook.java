@@ -1,6 +1,6 @@
-package com.molicloud.mqr.common.annotation;
+package com.molicloud.mqr.common.plugin.annotation;
 
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

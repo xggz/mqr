@@ -1,10 +1,10 @@
-package com.molicloud.mqr.aireply;
+package com.molicloud.mqr.plugin.aireply;
 
-import com.molicloud.mqr.common.PluginExecutor;
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.annotation.PHook;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.PluginExecutor;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.annotation.PHook;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

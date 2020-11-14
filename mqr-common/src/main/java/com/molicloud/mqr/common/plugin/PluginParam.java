@@ -1,7 +1,7 @@
-package com.molicloud.mqr.common;
+package com.molicloud.mqr.common.plugin;
 
-import com.molicloud.mqr.common.enums.ExecuteTriggerEnum;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.enums.ExecuteTriggerEnum;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

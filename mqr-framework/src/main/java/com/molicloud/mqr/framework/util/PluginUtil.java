@@ -2,10 +2,10 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
-import com.molicloud.mqr.common.enums.ExecuteTriggerEnum;
-import com.molicloud.mqr.common.enums.RobotEventEnum;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.enums.ExecuteTriggerEnum;
+import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginHookRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
 import com.molicloud.mqr.framework.event.PluginResultEvent;

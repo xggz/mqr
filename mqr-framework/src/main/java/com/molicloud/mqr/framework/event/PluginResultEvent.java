@@ -1,7 +1,7 @@
 package com.molicloud.mqr.framework.event;
 
-import com.molicloud.mqr.common.PluginParam;
-import com.molicloud.mqr.common.PluginResult;
+import com.molicloud.mqr.common.plugin.PluginParam;
+import com.molicloud.mqr.common.plugin.PluginResult;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
