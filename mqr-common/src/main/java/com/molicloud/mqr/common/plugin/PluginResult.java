@@ -1,5 +1,6 @@
 package com.molicloud.mqr.common.plugin;
 
+import com.molicloud.mqr.common.plugin.action.Action;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,6 +27,11 @@ public class PluginResult<T> implements Serializable {
      * 是否持有插件
      */
     private Boolean hold = Boolean.FALSE;
+
+    /**
+     * 插件动作（禁言/解除禁言/踢人等等）
+     */
+    private Action action;
 
     /**
      * 处理结果

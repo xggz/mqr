@@ -2,8 +2,10 @@ package com.molicloud.mqr.framework.event;
 
 import com.molicloud.mqr.common.plugin.PluginParam;
 import com.molicloud.mqr.common.plugin.PluginResult;
+import com.molicloud.mqr.common.plugin.action.Action;
 import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.properties.RobotProperties;
+import com.molicloud.mqr.framework.util.ActionUtil;
 import com.molicloud.mqr.framework.util.MessageUtil;
 import com.molicloud.mqr.framework.util.PluginHookUtil;
 import com.molicloud.mqr.service.RobotFriendService;
@@ -46,16 +48,24 @@ public class PluginResultListener {
         RobotEventEnum robotEventEnum = pluginParam.getRobotEventEnum();
         // 插件返回的结果
         PluginResult pluginResult = pluginResultEvent.getPluginResult();
+        // 回复的消息
         Object pluginResultData = pluginResult.getData();
+        // 执行的动作
+        Action action = pluginResult.getAction();
 
         // 判断是否为消息类型的事件
         if (robotEventEnum.isMessageEvent()) {
             switch (robotEventEnum) {
                 case GROUP_MSG:
                     Group group = bot.getGroup(Long.parseLong(pluginParam.getTo()));
-                    Message groupMessage = MessageUtil.convertGroupMessage(pluginResultData, group);
-                    if (groupMessage != null) {
-                        group.sendMessage(groupMessage);
+                    if (pluginResultData != null) {
+                        Message groupMessage = MessageUtil.convertGroupMessage(pluginResultData, group);
+                        if (groupMessage != null) {
+                            group.sendMessage(groupMessage);
+                        }
+                    }
+                    if (action != null) {
+                        ActionUtil.handlerGroupAction(group, action);
                     }
                     // 持有/释放插件钩子
                     if (PluginHookUtil.actionGroupMemberPluginHook(pluginParam.getTo(), pluginParam.getFrom(), pluginResultEvent.getPluginHookName(), pluginResult.getHold())) {
@@ -64,9 +74,14 @@ public class PluginResultListener {
                     break;
                 case FRIEND_MSG:
                     Friend friend = bot.getFriend(Long.parseLong(pluginParam.getFrom()));
-                    Message friendMessage = MessageUtil.convertFriendMessage(pluginResultData, friend);
-                    if (friendMessage != null) {
-                        friend.sendMessage(friendMessage);
+                    if (pluginResultData != null) {
+                        Message friendMessage = MessageUtil.convertFriendMessage(pluginResultData, friend);
+                        if (friendMessage != null) {
+                            friend.sendMessage(friendMessage);
+                        }
+                    }
+                    if (action != null) {
+                        ActionUtil.handlerFriendAction(friend, action);
                     }
                     // 持有/释放插件钩子
                     if (PluginHookUtil.actionFriendPluginHook(pluginParam.getFrom(), pluginResultEvent.getPluginHookName(), pluginResult.getHold())) {
