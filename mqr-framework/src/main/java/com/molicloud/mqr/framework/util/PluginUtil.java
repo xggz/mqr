@@ -32,11 +32,6 @@ public class PluginUtil {
      * @return
      */
     public boolean executePlugin(PluginResultEvent pluginResultEvent) {
-        // 处理持有的插件钩子
-        if (executeHoldPluginHook(pluginResultEvent)) {
-            return true;
-        }
-
         // 插件入参
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
 
@@ -49,7 +44,12 @@ public class PluginUtil {
             }
         }
 
-        // 如果消息为字符串，则处理常规的插件钩子
+        // 处理消息发送者持有的插件钩子
+        if (executeHoldPluginHook(pluginResultEvent)) {
+            return true;
+        }
+
+        // 如果消息为字符串，则处理常规的插件钩子，通过关键字触发
         if (pluginParam.getData() instanceof String) {
             List<PluginHook> normalPluginHookList = PluginHookRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
             if (CollUtil.isNotEmpty(normalPluginHookList)) {
