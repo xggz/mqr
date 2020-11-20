@@ -86,7 +86,7 @@ public class MessageUtil {
         Message message = convertMessage(pluginResultData);
         if (message == null) {
             if (pluginResultData instanceof Ats) {
-                buildGroupAtMessage(group, (Ats) pluginResultData);
+                return buildGroupAtMessage(group, (Ats) pluginResultData);
             } else if (pluginResultData instanceof Img) {
                 return buildImageMessage(group, ((Img) pluginResultData).getFileResource());
             }
