@@ -13,4 +13,14 @@ import com.molicloud.mqr.entity.SysSetting;
  */
 public interface SysSettingService extends IService<SysSetting> {
 
+    /**
+     * 获取配置信息
+     *
+     * @param name
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    <T> T getSysSettingByName(String name, Class<T> clazz);
+
 }
