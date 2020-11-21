@@ -1,14 +1,14 @@
 package com.molicloud.mqr.controller;
 
 import com.molicloud.mqr.common.rest.Res;
+import com.molicloud.mqr.dto.RobotInfoDto;
 import com.molicloud.mqr.enums.SettingEnums;
 import com.molicloud.mqr.service.SysSettingService;
+import com.molicloud.mqr.setting.RobotInfo;
 import com.molicloud.mqr.vo.RobotInfoVo;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 设置相关操作接口
@@ -26,6 +26,11 @@ public class SettingController {
 
     @GetMapping("/robot-info")
     public Res<RobotInfoVo> getRobotInfo() {
-        return Res.success(sysSettingService.getSysSettingByName(SettingEnums.ROBOT_INFO.name(), RobotInfoVo.class));
+        return Res.success(sysSettingService.getSysSettingByName(SettingEnums.ROBOT_INFO, RobotInfoVo.class));
+    }
+
+    @PostMapping("/robot-info")
+    public Res saveRobotInfo(@RequestBody RobotInfoDto dto) {
+        return Res.success(sysSettingService.saveSysSetting(SettingEnums.ROBOT_INFO, dto, RobotInfo.class));
     }
 }
