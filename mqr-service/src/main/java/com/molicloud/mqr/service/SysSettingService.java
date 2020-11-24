@@ -2,7 +2,7 @@ package com.molicloud.mqr.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.molicloud.mqr.entity.SysSetting;
-import com.molicloud.mqr.enums.SettingEnums;
+import com.molicloud.mqr.enums.SettingEnum;
 
 /**
  * <p>
@@ -22,7 +22,7 @@ public interface SysSettingService extends IService<SysSetting> {
      * @param <T>
      * @return
      */
-    <T> T getSysSettingByName(SettingEnums settingEnum, Class<T> clazz);
+    <T> T getSysSettingByName(SettingEnum settingEnum, Class<T> clazz);
 
     /**
      * 保存配置信息
@@ -33,5 +33,5 @@ public interface SysSettingService extends IService<SysSetting> {
      * @param <T>
      * @return
      */
-    <T> boolean saveSysSetting(SettingEnums settingEnum, Object dto, Class<T> clazz);
+    <T> boolean saveSysSetting(SettingEnum settingEnum, Object dto, Class<T> clazz);
 }

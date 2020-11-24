@@ -1,8 +1,11 @@
 package com.molicloud.mqr.controller;
 
 import com.molicloud.mqr.common.rest.Res;
+import com.molicloud.mqr.define.RobotVerify;
 import com.molicloud.mqr.dto.RobotInfoDto;
-import com.molicloud.mqr.enums.SettingEnums;
+import com.molicloud.mqr.enums.RobotStateEnum;
+import com.molicloud.mqr.enums.SettingEnum;
+import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.setting.RobotInfo;
 import com.molicloud.mqr.vo.RobotInfoVo;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2020/11/10 9:58 上午
  */
 @RestController
-@RequestMapping("/sys-setting")
+@RequestMapping("/api/sys-setting")
 @Api(value = "SettingApi", tags = "设置相关操作接口")
 public class SettingController {
 
@@ -26,11 +29,25 @@ public class SettingController {
 
     @GetMapping("/robot-info")
     public Res<RobotInfoVo> getRobotInfo() {
-        return Res.success(sysSettingService.getSysSettingByName(SettingEnums.ROBOT_INFO, RobotInfoVo.class));
+        return Res.success(sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class));
     }
 
     @PostMapping("/robot-info")
     public Res saveRobotInfo(@RequestBody RobotInfoDto dto) {
-        return Res.success(sysSettingService.saveSysSetting(SettingEnums.ROBOT_INFO, dto, RobotInfo.class));
+        RobotInfoVo robotInfoVo = RobotContextHolder.getRobotInfo();
+        if (robotInfoVo != null && !RobotStateEnum.NOT_ENABLED.getValue().equals(robotInfoVo.getState())) {
+            return Res.failed("请先停止机器人运行后再编辑");
+        }
+        return Res.success(sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, dto, RobotInfo.class));
+    }
+
+    @GetMapping("/robot-verify")
+    public Res<RobotVerify> getRobotVerify() {
+        return Res.success(sysSettingService.getSysSettingByName(SettingEnum.ROBOT_LOGIN_VERIFY, RobotVerify.class));
+    }
+
+    @PostMapping("/robot-verify")
+    public Res saveRobotVerify(@RequestParam("code") String code) {
+        return Res.success(sysSettingService.saveSysSetting(SettingEnum.ROBOT_LOGIN_VERIFY_RESULT, code, String.class));
     }
 }

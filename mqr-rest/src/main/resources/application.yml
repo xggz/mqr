@@ -1,14 +1,9 @@
 server:
   port: 8181
 
-# 机器人QQ配置
-robot:
-  qq:
-  password:
-
 web:
   #排除拦截的路由
-  exclude-path-patterns: /favicon.ico, /swagger-resources/**, /swagger-ui/**, /webjars/**, /v3/**, /doc.html, /sys-user/login
+  exclude-path-patterns: /, /admin/**, /favicon.ico, /swagger-resources/**, /swagger-ui/**, /webjars/**, /v3/**, /doc.html, /api/sys-user/login
 
 spring:
   datasource:

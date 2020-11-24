@@ -20,7 +20,7 @@ import javax.validation.Valid;
  * @since 2020/11/10 9:57 上午
  */
 @RestController
-@RequestMapping("/sys-user")
+@RequestMapping("/api/sys-user")
 @Api(value = "UserApi", tags = "用户相关操作接口")
 public class UserController {
 

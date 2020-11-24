@@ -3,6 +3,7 @@ package com.molicloud.mqr.framework.util;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.json.JSONObject;
+import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.framework.common.DeviceInfo;
 import lombok.experimental.UtilityClass;
 
@@ -20,12 +21,11 @@ public class DeviceUtil {
     /**
      * 获取机器人设备信息的JSON字符串
      *
-     * @param qq 机器人QQ号码
      * @return
      */
-    public String getDeviceInfoJson(Long qq) {
+    public String getDeviceInfoJson() {
         // 设备信息文件
-        File file = new File("deviceInfo-".concat(String.valueOf(qq)).concat(".json"));
+        File file = new File("deviceInfo-".concat(RobotContextHolder.getRobotInfo().getQq()).concat(".json"));
         String deviceInfoJson = null;
         if (file.exists()) {
             FileReader fileReader = new FileReader(file);

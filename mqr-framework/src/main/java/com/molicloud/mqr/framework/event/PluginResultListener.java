@@ -4,7 +4,7 @@ import com.molicloud.mqr.common.plugin.PluginParam;
 import com.molicloud.mqr.common.plugin.PluginResult;
 import com.molicloud.mqr.common.plugin.action.Action;
 import com.molicloud.mqr.common.plugin.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.properties.RobotProperties;
+import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.framework.util.ActionUtil;
 import com.molicloud.mqr.framework.util.MessageUtil;
 import com.molicloud.mqr.framework.util.PluginHookUtil;
@@ -29,9 +29,6 @@ import org.springframework.stereotype.Component;
 public class PluginResultListener {
 
     @Autowired
-    private RobotProperties robotProperties;
-
-    @Autowired
     private RobotFriendService robotFriendService;
 
     @Autowired
@@ -41,7 +38,7 @@ public class PluginResultListener {
     @EventListener(PluginResultEvent.class)
     public void handlerResult(PluginResultEvent pluginResultEvent) {
         // 获取机器人实例
-        Bot bot = Bot.getInstance(robotProperties.getQq());
+        Bot bot = Bot.getInstance(Long.parseLong(RobotContextHolder.getRobotInfo().getQq()));
         // 插件入参
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
         // 机器人事件枚举

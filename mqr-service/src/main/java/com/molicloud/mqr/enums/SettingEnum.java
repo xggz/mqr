@@ -6,18 +6,28 @@ package com.molicloud.mqr.enums;
  * @author feitao yyimba@qq.com
  * @since 2020/11/20 5:21 下午
  */
-public enum SettingEnums {
+public enum SettingEnum {
 
     /**
      * 机器人信息
      */
-    ROBOT_INFO("ROBOT_INFO", "机器人配置信息");
+    ROBOT_INFO("ROBOT_INFO", "机器人配置信息"),
+
+    /**
+     * 机器人登录验证信息
+     */
+    ROBOT_LOGIN_VERIFY("ROBOT_LOGIN_VERIFY", "机器人登录验证信息"),
+
+    /**
+     * 机器人登录验证结果
+     */
+    ROBOT_LOGIN_VERIFY_RESULT("ROBOT_LOGIN_VERIFY_RESULT", "机器人登录验证结果");
 
     private String name;
 
     private String remark;
 
-    SettingEnums(String name, String remark) {
+    SettingEnum(String name, String remark) {
         this.name = name;
         this.remark = remark;
     }

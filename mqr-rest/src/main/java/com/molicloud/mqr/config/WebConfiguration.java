@@ -6,13 +6,12 @@ import com.molicloud.mqr.interceptor.AccessInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -43,6 +42,17 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(new AccessInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(StrUtil.splitTrim(excludePathPatterns, ","));
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/admin/");
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("redirect:/admin/index.html");
+        registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 
     /**
