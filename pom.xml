@@ -30,8 +30,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <hutool.version>5.4.4</hutool.version>
         <java-jwt.version>3.11.0</java-jwt.version>
-        <mybatis-plus-boot-starter.version>3.3.2</mybatis-plus-boot-starter.version>
-        <druid-spring-boot-starter.version>1.1.22</druid-spring-boot-starter.version>
+        <mybatis-plus-boot-starter.version>3.4.1</mybatis-plus-boot-starter.version>
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <transmittable-thread-local.version>2.11.5</transmittable-thread-local.version>
     </properties>
@@ -76,12 +75,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus-boot-starter.version}</version>
-            </dependency>
-            <!-- druid -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid-spring-boot-starter.version}</version>
             </dependency>
             <!-- swagger -->
             <dependency>

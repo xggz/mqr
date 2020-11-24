@@ -47,6 +47,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/admin/**").addResourceLocations("classpath:/static/admin/");
+        registry.addResourceHandler("/sqlite/**").addResourceLocations("classpath:/sqlite/");
     }
 
     @Override

@@ -66,11 +66,11 @@ public class RobotController {
     @GetMapping("/stop")
     public Res stop() {
         RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
-        if (RobotStateEnum.TO_VERIFIED.getValue().equals(robotInfoVo.getState())
-                || RobotStateEnum.LOGGING.getValue().equals(robotInfoVo.getState())) {
-            return Res.failed("登录中的机器人无法停止");
-        }
         if (robotInfoVo != null) {
+            if (RobotStateEnum.TO_VERIFIED.getValue().equals(robotInfoVo.getState())
+                    || RobotStateEnum.LOGGING.getValue().equals(robotInfoVo.getState())) {
+                return Res.failed("登录中的机器人无法停止");
+            }
             try {
                 Bot.getBotInstances().stream().forEach(bot -> bot.close(null));
             } catch (Exception e) {
