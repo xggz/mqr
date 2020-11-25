@@ -34,7 +34,7 @@ public class DivinationPluginExecutor implements PluginExecutor {
         String message = String.valueOf(pluginParam.getData());
         PluginResult pluginResult = new PluginResult();
         pluginResult.setProcessed(true);
-        pluginResult.setData(getResult(message));
+        pluginResult.setMessage(getResult(message));
         return pluginResult;
     }
 

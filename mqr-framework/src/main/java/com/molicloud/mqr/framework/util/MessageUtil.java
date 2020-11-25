@@ -39,7 +39,7 @@ public class MessageUtil {
      *
      * 仅处理对话消息类型的data
      *
-     * @see PluginResult#getData()
+     * @see PluginResult#getMessage()
      *
      * @param pluginResultData
      * @return
@@ -77,7 +77,7 @@ public class MessageUtil {
      *
      * 处理群消息
      *
-     * @see PluginResult#getData()
+     * @see PluginResult#getMessage()
      *
      * @param pluginResultData
      * @return

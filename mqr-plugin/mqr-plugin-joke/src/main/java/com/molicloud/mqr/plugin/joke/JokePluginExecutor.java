@@ -33,7 +33,7 @@ public class JokePluginExecutor implements PluginExecutor {
     public PluginResult messageHandler(PluginParam pluginParam) {
         PluginResult pluginResult = new PluginResult();
         pluginResult.setProcessed(true);
-        pluginResult.setData(getJoke());
+        pluginResult.setMessage(getJoke());
         return pluginResult;
     }
 

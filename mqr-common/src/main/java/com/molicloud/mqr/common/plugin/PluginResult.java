@@ -34,7 +34,7 @@ public class PluginResult<T> implements Serializable {
     private Action action;
 
     /**
-     * 处理结果
+     * 回复消息
      */
-    private T data;
+    private T message;
 }

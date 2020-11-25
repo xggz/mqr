@@ -46,7 +46,7 @@ public class PluginResultListener {
         // 插件返回的结果
         PluginResult pluginResult = pluginResultEvent.getPluginResult();
         // 回复的消息
-        Object pluginResultData = pluginResult.getData();
+        Object pluginResultMessage = pluginResult.getMessage();
         // 执行的动作
         Action action = pluginResult.getAction();
 
@@ -55,8 +55,8 @@ public class PluginResultListener {
             switch (robotEventEnum) {
                 case GROUP_MSG:
                     Group group = bot.getGroup(Long.parseLong(pluginParam.getTo()));
-                    if (pluginResultData != null) {
-                        Message groupMessage = MessageUtil.convertGroupMessage(pluginResultData, group);
+                    if (pluginResultMessage != null) {
+                        Message groupMessage = MessageUtil.convertGroupMessage(pluginResultMessage, group);
                         if (groupMessage != null) {
                             group.sendMessage(groupMessage);
                         }
@@ -71,8 +71,8 @@ public class PluginResultListener {
                     break;
                 case FRIEND_MSG:
                     Friend friend = bot.getFriend(Long.parseLong(pluginParam.getFrom()));
-                    if (pluginResultData != null) {
-                        Message friendMessage = MessageUtil.convertFriendMessage(pluginResultData, friend);
+                    if (pluginResultMessage != null) {
+                        Message friendMessage = MessageUtil.convertFriendMessage(pluginResultMessage, friend);
                         if (friendMessage != null) {
                             friend.sendMessage(friendMessage);
                         }

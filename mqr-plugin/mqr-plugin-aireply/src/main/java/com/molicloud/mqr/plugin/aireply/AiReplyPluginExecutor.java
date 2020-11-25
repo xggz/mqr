@@ -34,7 +34,7 @@ public class AiReplyPluginExecutor implements PluginExecutor {
         String reply = aiReply(String.valueOf(pluginParam.getData()));
         PluginResult pluginResult = new PluginResult();
         pluginResult.setProcessed(true);
-        pluginResult.setData(reply);
+        pluginResult.setMessage(reply);
         return pluginResult;
     }
 

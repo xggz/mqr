@@ -42,9 +42,9 @@ public class AdblockPluginExecutor implements PluginExecutor {
                     Ats ats = new Ats();
                     ats.setMids(Arrays.asList(pluginParam.getFrom()));
                     ats.setContent(warnContent);
-                    pluginResult.setData(ats);
+                    pluginResult.setMessage(ats);
                 } else {
-                    pluginResult.setData(warnContent);
+                    pluginResult.setMessage(warnContent);
                 }
             }
         }
