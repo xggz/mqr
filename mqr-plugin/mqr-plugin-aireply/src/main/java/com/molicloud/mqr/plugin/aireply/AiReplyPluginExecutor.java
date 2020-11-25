@@ -1,5 +1,6 @@
 package com.molicloud.mqr.plugin.aireply;
 
+import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.common.plugin.PluginExecutor;
 import com.molicloud.mqr.common.plugin.PluginParam;
 import com.molicloud.mqr.common.plugin.PluginResult;
@@ -31,14 +32,23 @@ public class AiReplyPluginExecutor implements PluginExecutor {
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
-        String reply = aiReply(String.valueOf(pluginParam.getData()));
+        String message = String.valueOf(pluginParam.getData());
         PluginResult pluginResult = new PluginResult();
-        pluginResult.setProcessed(true);
-        pluginResult.setMessage(reply);
+        if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
+                && !StrUtil.startWith(message, "#")) {
+            pluginResult.setProcessed(false);
+        } else {
+            String reply = aiReply(message);
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage(reply);
+        }
         return pluginResult;
     }
 
     private String aiReply(String message) {
+        if (StrUtil.startWith(message, "#")) {
+            message = message.substring(1);
+        }
         String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, apiKey, apiSecret);
         return restTemplate.getForObject(aiUrl, String.class);
     }
