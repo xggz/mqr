@@ -33,6 +33,7 @@
         <mybatis-plus-boot-starter.version>3.4.1</mybatis-plus-boot-starter.version>
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <transmittable-thread-local.version>2.11.5</transmittable-thread-local.version>
+        <javase.version>3.3.0</javase.version>
     </properties>
 
     <dependencyManagement>
@@ -93,6 +94,12 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${transmittable-thread-local.version}</version>
+            </dependency>
+            <!-- Zxing  -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${javase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
