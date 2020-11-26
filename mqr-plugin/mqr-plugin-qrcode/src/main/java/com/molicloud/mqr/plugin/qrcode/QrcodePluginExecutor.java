@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 
 /**
- * 笑话插件
+ * 生成二维码插件
  *
  * @author wispx wisp-x@qq.com
  * @since 2020/11/25 5:08 下午
