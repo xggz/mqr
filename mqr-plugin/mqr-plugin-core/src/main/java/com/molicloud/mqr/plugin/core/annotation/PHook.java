@@ -32,11 +32,40 @@ public @interface PHook {
     boolean listeningAllMessage() default false;
 
     /**
-     * 消息中的触发关键字列表
+     * 「等同」关键字触发列表
+     *
+     * @see com.molicloud.mqr.plugin.core.enums.KeywordTypeEnum#EQUALS
      *
      * @return
      */
-    String[] keywords() default "";
+    String[] equalsKeywords() default {};
+
+    /**
+     * 「前缀」关键字触发列表
+     *
+     * @see com.molicloud.mqr.plugin.core.enums.KeywordTypeEnum#STARTS
+     *
+     * @return
+     */
+    String[] startsKeywords() default {};
+
+    /**
+     * 「后缀」关键字触发列表
+     *
+     * @see com.molicloud.mqr.plugin.core.enums.KeywordTypeEnum#ENDS
+     *
+     * @return
+     */
+    String[] endsKeywords() default {};
+
+    /**
+     * 「包含」关键字触发列表
+     *
+     * @see com.molicloud.mqr.plugin.core.enums.KeywordTypeEnum#CONTAINS
+     *
+     * @return
+     */
+    String[] containsKeywords() default {};
 
     /**
      * 触发事件列表

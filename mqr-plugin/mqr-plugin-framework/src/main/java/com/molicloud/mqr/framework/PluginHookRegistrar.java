@@ -139,7 +139,10 @@ public class PluginHookRegistrar implements ApplicationContextAware, SmartInitia
                 pluginHook.setName(pHook.name());
                 pluginHook.setListeningAllMessage(pHook.listeningAllMessage());
                 pluginHook.setRobotEvents(new HashSet<>(Arrays.asList(pHook.robotEvents())));
-                pluginHook.setKeywords(new HashSet<>(Arrays.asList(pHook.keywords())));
+                pluginHook.setEqualsKeywords(new HashSet<>(Arrays.asList(pHook.equalsKeywords())));
+                pluginHook.setStartsKeywords(new HashSet<>(Arrays.asList(pHook.startsKeywords())));
+                pluginHook.setEndsKeywords(new HashSet<>(Arrays.asList(pHook.endsKeywords())));
+                pluginHook.setContainsKeywords(new HashSet<>(Arrays.asList(pHook.containsKeywords())));
                 pluginHook.setOrder(pHook.order());
                 pluginHook.setPHookMethod(new PHookMethod(bean, method));
                 // 判断是否监听所有消息钩子
@@ -151,7 +154,10 @@ public class PluginHookRegistrar implements ApplicationContextAware, SmartInitia
                     defaultPluginHookList.add(pluginHook);
                 }
                 // 如果关键字列表不为空，则列入常规的插件钩子
-                if (pHook.keywords() != null && pHook.keywords().length > 0) {
+                if (pHook.equalsKeywords().length > 0
+                        || pHook.startsKeywords().length > 0
+                        || pHook.endsKeywords().length > 0
+                        || pHook.containsKeywords().length > 0) {
                     normalPluginHookList.add(pluginHook);
                 }
                 // 把所有插件钩子存入一个列表（不重复）

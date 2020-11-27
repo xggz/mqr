@@ -27,7 +27,7 @@ import java.io.*;
 @Component
 public class QrcodePluginExecutor implements PluginExecutor {
 
-    @PHook(name = "Qrcode", keywords = {
+    @PHook(name = "Qrcode", equalsKeywords = {
             "生成二维码", "二维码生成"
     }, robotEvents = {
             RobotEventEnum.FRIEND_MSG,

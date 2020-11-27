@@ -55,8 +55,23 @@ public class PluginUtil {
             if (CollUtil.isNotEmpty(normalPluginHookList)) {
                 // 过滤关键字
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
-                        .filter(pluginHook -> pluginHook.getKeywords().contains(String.valueOf(pluginParam.getData())))
-                        .collect(Collectors.toList());
+                        .filter(pluginHook -> {
+                            boolean result = false;
+                            String message = String.valueOf(pluginParam.getData());
+                            if (CollUtil.isNotEmpty(pluginHook.getEqualsKeywords())) {
+                                result = pluginHook.getEqualsKeywords().contains(message);
+                            }
+                            if (!result && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
+                                result = pluginHook.getStartsKeywords().stream().anyMatch(keywords -> StrUtil.startWith(message, keywords));
+                            }
+                            if (!result && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
+                                result = pluginHook.getEndsKeywords().stream().anyMatch(keywords -> StrUtil.endWith(message, keywords));
+                            }
+                            if (!result && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
+                                result = pluginHook.getContainsKeywords().stream().anyMatch(keywords -> StrUtil.contains(message, keywords));
+                            }
+                            return result;
+                        }).collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(keywordPluginHookList)) {
                     pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
                     if (executeAllPluginHook(keywordPluginHookList, pluginResultEvent)) {

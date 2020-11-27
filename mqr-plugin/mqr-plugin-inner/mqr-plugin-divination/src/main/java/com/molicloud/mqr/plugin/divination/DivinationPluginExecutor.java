@@ -24,7 +24,7 @@ public class DivinationPluginExecutor implements PluginExecutor {
     @Autowired
     private RestTemplate restTemplate;
 
-    @PHook(name = "Divination", keywords = {
+    @PHook(name = "Divination", equalsKeywords = {
             "观音灵签", "月老灵签", "财神爷灵签"
     }, robotEvents = {
             RobotEventEnum.FRIEND_MSG,

@@ -27,9 +27,24 @@ public class PluginHook {
     private Boolean listeningAllMessage;
 
     /**
-     * 消息中的触发关键字列表
+     * 「等同」关键字触发列表
      */
-    private Set<String> keywords;
+    private Set<String> equalsKeywords;
+
+    /**
+     * 「前缀」关键字触发列表
+     */
+    private Set<String> startsKeywords;
+
+    /**
+     * 「后缀」关键字触发列表
+     */
+    private Set<String> endsKeywords;
+
+    /**
+     * 「包含」关键字触发列表
+     */
+    private Set<String> containsKeywords;
 
     /**
      * 触发事件列表

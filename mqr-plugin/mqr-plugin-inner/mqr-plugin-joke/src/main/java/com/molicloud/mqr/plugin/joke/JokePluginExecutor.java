@@ -24,8 +24,8 @@ public class JokePluginExecutor implements PluginExecutor {
     @Autowired
     private RestTemplate restTemplate;
 
-    @PHook(name = "Joke", keywords = {
-            "笑话", "讲个笑话", "说个笑话"
+    @PHook(name = "Joke", containsKeywords = {
+            "笑话", "搞笑", "段子"
     }, robotEvents = {
             RobotEventEnum.FRIEND_MSG,
             RobotEventEnum.GROUP_MSG,
