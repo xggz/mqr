@@ -26,6 +26,16 @@ public class PluginParam<T> {
     private String to;
 
     /**
+     * 机器人管理员列表
+     */
+    private String[] admins;
+
+    /**
+     * 机器人是否被At「@」
+     */
+    private boolean at;
+
+    /**
      * 发送的消息体
      */
     private T data;

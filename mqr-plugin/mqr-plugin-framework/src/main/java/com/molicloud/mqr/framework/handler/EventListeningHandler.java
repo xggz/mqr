@@ -1,9 +1,13 @@
 package com.molicloud.mqr.framework.handler;
 
+import cn.hutool.core.util.StrUtil;
+import com.molicloud.mqr.common.enums.SettingEnum;
+import com.molicloud.mqr.common.vo.RobotInfoVo;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.event.PluginResultEvent;
 import com.molicloud.mqr.framework.util.PluginUtil;
+import com.molicloud.mqr.service.SysSettingService;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.EventHandler;
@@ -28,6 +32,9 @@ public class EventListeningHandler extends SimpleListenerHost {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Autowired
+    private SysSettingService sysSettingService;
+
     /**
      * 监听群消息
      *
@@ -42,6 +49,8 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setTo(String.valueOf(event.getGroup().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
+        pluginParam.setAt(isAt(event));
+        pluginParam.setAdmins(robotAdmins());
         // 处理消息事件
         handlerMessageEvent(pluginParam);
         // 保持监听
@@ -62,6 +71,8 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setTo(String.valueOf(event.getBot().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
+        pluginParam.setAt(false);
+        pluginParam.setAdmins(robotAdmins());
         // 处理消息事件
         handlerMessageEvent(pluginParam);
         // 保持监听
@@ -86,5 +97,34 @@ public class EventListeningHandler extends SimpleListenerHost {
         if (PluginUtil.executePlugin(pluginResultEvent)) {
             eventPublisher.publishEvent(pluginResultEvent);
         }
+    }
+
+    /**
+     * 获取机器人管理员列表
+     *
+     * @return
+     */
+    private String[] robotAdmins() {
+        RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
+        if (robotInfoVo == null) {
+            return new String[]{};
+        }
+        return robotInfoVo.getAdmins();
+    }
+
+    /**
+     * 判断群消息事件中是否At了机器人
+     *
+     * @param event
+     * @return
+     */
+    private boolean isAt(GroupMessageEvent event) {
+        StringBuffer atBuffer = new StringBuffer();
+        atBuffer.append("[mirai:at:");
+        atBuffer.append(event.getBot().getId());
+        atBuffer.append(",@");
+        atBuffer.append(event.getBot().getNick());
+        atBuffer.append("]");
+        return StrUtil.contains(event.getMessage().toString(), atBuffer.toString());
     }
 }
