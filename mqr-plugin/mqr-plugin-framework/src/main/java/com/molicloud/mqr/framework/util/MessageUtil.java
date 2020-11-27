@@ -3,10 +3,12 @@ package com.molicloud.mqr.framework.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.plugin.core.PluginResult;
-import com.molicloud.mqr.plugin.core.message.Ats;
-import com.molicloud.mqr.plugin.core.message.Face;
-import com.molicloud.mqr.plugin.core.message.Img;
-import com.molicloud.mqr.plugin.core.message.Share;
+import com.molicloud.mqr.plugin.core.message.MessageBuild;
+import com.molicloud.mqr.plugin.core.message.make.Ats;
+import com.molicloud.mqr.plugin.core.message.make.Expression;
+import com.molicloud.mqr.plugin.core.message.make.Img;
+import com.molicloud.mqr.plugin.core.message.make.Text;
+import com.molicloud.mqr.plugin.core.message.single.Share;
 import lombok.experimental.UtilityClass;
 import net.mamoe.mirai.contact.ContactList;
 import net.mamoe.mirai.contact.Friend;
@@ -42,10 +44,12 @@ public class MessageUtil {
     public Message convertMessage(Object pluginResultData) {
         if (pluginResultData instanceof String) {
             return new PlainText(String.valueOf(pluginResultData));
+        } else if (pluginResultData instanceof Text) {
+            return new PlainText(((Text)pluginResultData).getContent());
         } else if (pluginResultData instanceof Share) {
             return MessageUtil.buildShareMessage((Share) pluginResultData);
-        } else if (pluginResultData instanceof Face) {
-            return MessageUtil.buildFaceMessage((Face) pluginResultData);
+        } else if (pluginResultData instanceof Expression) {
+            return MessageUtil.buildFaceMessage((Expression) pluginResultData);
         }
         return null;
     }
@@ -64,8 +68,8 @@ public class MessageUtil {
         if (message == null) {
             if (pluginResultData instanceof Img) {
                 return buildImageMessage(friend, ((Img) pluginResultData).getFileResource());
-            } else if (pluginResultData instanceof Face) {
-                return buildFaceMessage((Face) pluginResultData);
+            } else if (pluginResultData instanceof MessageBuild) {
+                return buildFriendSrcMessage((MessageBuild) pluginResultData, friend);
             }
         }
         return message;
@@ -88,11 +92,55 @@ public class MessageUtil {
                 return buildGroupAtMessage(group, (Ats) pluginResultData);
             } else if (pluginResultData instanceof Img) {
                 return buildImageMessage(group, ((Img) pluginResultData).getFileResource());
-            } else if (pluginResultData instanceof Face) {
-                return buildFaceMessage((Face) pluginResultData);
+            } else if (pluginResultData instanceof MessageBuild) {
+                return buildGroupSrcMessage((MessageBuild) pluginResultData, group);
             }
         }
         return message;
+    }
+
+    /**
+     * 构建插件返回的群原生消息
+     *
+     * @param messageBuild
+     * @param group
+     * @return
+     */
+    private MessageChain buildGroupSrcMessage(MessageBuild messageBuild, Group group) {
+        MessageChainBuilder messageChainBuilder = new MessageChainBuilder();
+        messageBuild.getMakes().forEach(make -> {
+            if (make instanceof Text) {
+                messageChainBuilder.append(((Text) make).getContent());
+            } else if (make instanceof Img) {
+                messageChainBuilder.append(buildImageMessage(group, ((Img) make).getFileResource()));
+            } else if (make instanceof Ats) {
+                messageChainBuilder.append(buildGroupAtMessage(group, (Ats) make));
+            } else if (make instanceof Expression) {
+                messageChainBuilder.append(buildFaceMessage((Expression) make));
+            }
+        });
+        return messageChainBuilder.build();
+    }
+
+    /**
+     * 构建插件返回的好友原生消息
+     *
+     * @param messageBuild
+     * @param friend
+     * @return
+     */
+    private MessageChain buildFriendSrcMessage(MessageBuild messageBuild, Friend friend) {
+        MessageChainBuilder messageChainBuilder = new MessageChainBuilder();
+        messageBuild.getMakes().forEach(make -> {
+            if (make instanceof Text) {
+                messageChainBuilder.append(((Text) make).getContent());
+            } else if (make instanceof Img) {
+                messageChainBuilder.append(buildImageMessage(friend, ((Img) make).getFileResource()));
+            } else if (make instanceof Expression) {
+                messageChainBuilder.append(buildFaceMessage((Expression) make));
+            }
+        });
+        return messageChainBuilder.build();
     }
 
     /**
@@ -157,10 +205,10 @@ public class MessageUtil {
     /**
      * 构建表情消息
      *
-     * @param face
+     * @param expression
      * @return
      */
-    private net.mamoe.mirai.message.data.Face buildFaceMessage(Face face) {
-        return new net.mamoe.mirai.message.data.Face(face.getId());
+    private Face buildFaceMessage(Expression expression) {
+        return new Face(expression.getFaceId());
     }
 }

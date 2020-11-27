@@ -11,7 +11,7 @@ import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.plugin.core.message.Img;
+import com.molicloud.mqr.plugin.core.message.make.Img;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

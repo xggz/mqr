@@ -1,5 +1,6 @@
-package com.molicloud.mqr.plugin.core.message;
+package com.molicloud.mqr.plugin.core.message.single;
 
+import com.molicloud.mqr.plugin.core.message.Single;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,7 +12,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Share {
+public class Share extends Single {
 
     /**
      * 跳转的url地址

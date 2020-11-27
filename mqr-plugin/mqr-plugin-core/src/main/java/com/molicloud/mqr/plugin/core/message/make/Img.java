@@ -1,4 +1,6 @@
-package com.molicloud.mqr.plugin.core.message;
+package com.molicloud.mqr.plugin.core.message.make;
+
+import com.molicloud.mqr.plugin.core.message.Make;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,7 +12,7 @@ import java.net.URL;
  * @author feitao yyimba@qq.com
  * @since 2020/11/14 8:00 下午
  */
-public class Img {
+public class Img extends Make {
 
     /**
      * 文件对象

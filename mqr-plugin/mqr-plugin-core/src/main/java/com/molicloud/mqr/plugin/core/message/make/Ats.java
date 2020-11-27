@@ -1,5 +1,6 @@
-package com.molicloud.mqr.plugin.core.message;
+package com.molicloud.mqr.plugin.core.message.make;
 
+import com.molicloud.mqr.plugin.core.message.Make;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,8 +13,8 @@ import java.util.List;
  * @since 2020/11/12 2:11 下午
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class Ats {
+@EqualsAndHashCode(callSuper = true)
+public class Ats extends Make {
 
     /**
      * 被At的群成员ID列表
