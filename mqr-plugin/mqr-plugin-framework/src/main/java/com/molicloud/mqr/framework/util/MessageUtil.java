@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.message.Ats;
+import com.molicloud.mqr.plugin.core.message.Face;
 import com.molicloud.mqr.plugin.core.message.Img;
 import com.molicloud.mqr.plugin.core.message.Share;
 import lombok.experimental.UtilityClass;
@@ -43,6 +44,8 @@ public class MessageUtil {
             return new PlainText(String.valueOf(pluginResultData));
         } else if (pluginResultData instanceof Share) {
             return MessageUtil.buildShareMessage((Share) pluginResultData);
+        } else if (pluginResultData instanceof Face) {
+            return MessageUtil.buildFaceMessage((Face) pluginResultData);
         }
         return null;
     }
@@ -61,6 +64,8 @@ public class MessageUtil {
         if (message == null) {
             if (pluginResultData instanceof Img) {
                 return buildImageMessage(friend, ((Img) pluginResultData).getFileResource());
+            } else if (pluginResultData instanceof Face) {
+                return buildFaceMessage((Face) pluginResultData);
             }
         }
         return message;
@@ -83,6 +88,8 @@ public class MessageUtil {
                 return buildGroupAtMessage(group, (Ats) pluginResultData);
             } else if (pluginResultData instanceof Img) {
                 return buildImageMessage(group, ((Img) pluginResultData).getFileResource());
+            } else if (pluginResultData instanceof Face) {
+                return buildFaceMessage((Face) pluginResultData);
             }
         }
         return message;
@@ -145,5 +152,15 @@ public class MessageUtil {
                     ((Friend) sender).uploadImage((InputStream) image);
         }
         return null;
+    }
+
+    /**
+     * 构建表情消息
+     *
+     * @param face
+     * @return
+     */
+    private net.mamoe.mirai.message.data.Face buildFaceMessage(Face face) {
+        return new net.mamoe.mirai.message.data.Face(face.getId());
     }
 }
