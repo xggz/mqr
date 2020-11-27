@@ -4,8 +4,11 @@ import com.molicloud.mqr.plugin.core.PluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
+import com.molicloud.mqr.plugin.core.define.FaceDef;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.plugin.core.message.Ats;
+import com.molicloud.mqr.plugin.core.message.MessageBuild;
+import com.molicloud.mqr.plugin.core.message.make.Ats;
+import com.molicloud.mqr.plugin.core.message.make.Expression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -39,10 +42,13 @@ public class AdblockPluginExecutor implements PluginExecutor {
             if (Arrays.stream(adKeywords).anyMatch(keyword -> String.valueOf(message).equalsIgnoreCase(keyword))) {
                 pluginResult.setProcessed(true);
                 if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
+                    MessageBuild messageBuild = new MessageBuild();
                     Ats ats = new Ats();
                     ats.setMids(Arrays.asList(pluginParam.getFrom()));
                     ats.setContent(warnContent);
-                    pluginResult.setMessage(ats);
+                    messageBuild.append(ats);
+                    messageBuild.append(new Expression(FaceDef.zuohengheng));
+                    pluginResult.setMessage(messageBuild);
                 } else {
                     pluginResult.setMessage(warnContent);
                 }
