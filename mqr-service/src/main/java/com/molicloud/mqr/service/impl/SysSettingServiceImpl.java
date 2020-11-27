@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.molicloud.mqr.common.rest.ApiCode;
 import com.molicloud.mqr.common.rest.ApiException;
 import com.molicloud.mqr.entity.SysSetting;
-import com.molicloud.mqr.enums.SettingEnum;
+import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.mapper.SysSettingMapper;
 import com.molicloud.mqr.service.SysSettingService;
 import org.springframework.beans.BeanUtils;

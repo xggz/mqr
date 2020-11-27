@@ -13,7 +13,6 @@
 
     <modules>
         <module>mqr-common</module>
-        <module>mqr-framework</module>
         <module>mqr-plugin</module>
         <module>mqr-rest</module>
         <module>mqr-service</module>
@@ -33,7 +32,7 @@
         <mybatis-plus-boot-starter.version>3.4.1</mybatis-plus-boot-starter.version>
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <transmittable-thread-local.version>2.11.5</transmittable-thread-local.version>
-        <javase.version>3.3.0</javase.version>
+        <zxing-javase.version>3.3.0</zxing-javase.version>
     </properties>
 
     <dependencyManagement>
@@ -99,7 +98,7 @@
             <dependency>
                 <groupId>com.google.zxing</groupId>
                 <artifactId>javase</artifactId>
-                <version>${javase.version}</version>
+                <version>${zxing-javase.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

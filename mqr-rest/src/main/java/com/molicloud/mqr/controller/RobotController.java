@@ -2,15 +2,12 @@ package com.molicloud.mqr.controller;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.common.rest.ApiException;
 import com.molicloud.mqr.common.rest.Res;
-import com.molicloud.mqr.enums.RobotStateEnum;
-import com.molicloud.mqr.enums.SettingEnum;
-import com.molicloud.mqr.framework.RobotContextHolder;
+import com.molicloud.mqr.common.enums.RobotStateEnum;
+import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.framework.RobotServerStarter;
 import com.molicloud.mqr.service.SysSettingService;
-import com.molicloud.mqr.setting.RobotInfo;
-import com.molicloud.mqr.vo.RobotInfoVo;
+import com.molicloud.mqr.common.vo.RobotInfoVo;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;

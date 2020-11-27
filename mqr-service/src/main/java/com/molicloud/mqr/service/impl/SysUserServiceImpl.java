@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.molicloud.mqr.common.def.JwtDef;
 import com.molicloud.mqr.common.rest.ApiCode;
 import com.molicloud.mqr.common.rest.ApiException;
-import com.molicloud.mqr.dto.LoginDto;
+import com.molicloud.mqr.common.dto.LoginDto;
 import com.molicloud.mqr.entity.SysUser;
 import com.molicloud.mqr.mapper.SysUserMapper;
 import com.molicloud.mqr.service.SysUserService;

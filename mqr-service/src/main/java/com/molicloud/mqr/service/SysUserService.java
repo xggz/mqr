@@ -1,7 +1,7 @@
 package com.molicloud.mqr.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.molicloud.mqr.dto.LoginDto;
+import com.molicloud.mqr.common.dto.LoginDto;
 import com.molicloud.mqr.entity.SysUser;
 
 /**
