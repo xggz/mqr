@@ -33,6 +33,11 @@ public class RobotInfo implements Serializable {
     private String nickname;
 
     /**
+     * 管理员QQ
+     */
+    private String[] admins = new String[]{};
+
+    /**
      * 状态（1：未启动，2：登录需要验证，3：登录中，4：运行中，9：已离线）
      */
     private Integer state = 1;

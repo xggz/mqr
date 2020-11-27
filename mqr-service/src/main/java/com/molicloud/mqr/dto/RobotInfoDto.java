@@ -28,4 +28,7 @@ public class RobotInfoDto implements Serializable {
 
     @ApiModelProperty(value = "账号昵称")
     private String nickname;
+
+    @ApiModelProperty(value = "管理员QQ")
+    private String[] admins;
 }

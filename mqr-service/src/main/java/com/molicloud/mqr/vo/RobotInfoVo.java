@@ -29,6 +29,9 @@ public class RobotInfoVo implements Serializable {
     @ApiModelProperty(value = "qq密码")
     private String password;
 
+    @ApiModelProperty(value = "管理员QQ")
+    private String[] admins;
+
     @ApiModelProperty(value = "在线状态")
     private Integer state;
 }
