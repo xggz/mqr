@@ -1,14 +1,14 @@
 package com.molicloud.mqr.controller;
 
 import com.molicloud.mqr.common.rest.Res;
-import com.molicloud.mqr.define.RobotVerify;
-import com.molicloud.mqr.dto.RobotInfoDto;
-import com.molicloud.mqr.enums.RobotStateEnum;
-import com.molicloud.mqr.enums.SettingEnum;
+import com.molicloud.mqr.common.define.RobotVerify;
+import com.molicloud.mqr.common.dto.RobotInfoDto;
+import com.molicloud.mqr.common.enums.RobotStateEnum;
+import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.service.SysSettingService;
-import com.molicloud.mqr.setting.RobotInfo;
-import com.molicloud.mqr.vo.RobotInfoVo;
+import com.molicloud.mqr.common.setting.RobotInfo;
+import com.molicloud.mqr.common.vo.RobotInfoVo;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,6 @@
 package com.molicloud.mqr.controller;
 
-import com.molicloud.mqr.dto.LoginDto;
+import com.molicloud.mqr.common.dto.LoginDto;
 import com.molicloud.mqr.common.rest.Res;
 import com.molicloud.mqr.service.SysUserService;
 import io.swagger.annotations.Api;

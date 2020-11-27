@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mqr-plugin</artifactId>
+        <groupId>com.molicloud.mqr</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mqr-plugin-framework</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- springboot 自动装配 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- mirai -->
+        <dependency>
+            <groupId>net.mamoe</groupId>
+            <artifactId>mirai-core-qqandroid</artifactId>
+        </dependency>
+        <!-- kotlin-stdlib -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+        </dependency>
+        <!-- 插件核心依赖 -->
+        <dependency>
+            <groupId>com.molicloud.mqr</groupId>
+            <artifactId>mqr-plugin-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!-- service -->
+        <dependency>
+            <groupId>com.molicloud.mqr</groupId>
+            <artifactId>mqr-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.molicloud.mqr</groupId>-->
+<!--            <artifactId>mqr-plugin-aireply</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
+    </dependencies>
+
+</project>

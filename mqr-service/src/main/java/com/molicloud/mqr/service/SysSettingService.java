@@ -2,7 +2,7 @@ package com.molicloud.mqr.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.molicloud.mqr.entity.SysSetting;
-import com.molicloud.mqr.enums.SettingEnum;
+import com.molicloud.mqr.common.enums.SettingEnum;
 
 /**
  * <p>
