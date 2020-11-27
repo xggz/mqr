@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 /**
  * 「原生表情」消息
  *
- * @author wisp-x wisp-x@qq.com
+ * @author wispx wisp-x@qq.com
  * @since 2020/11/27 2:52 下午
  */
 @Data
