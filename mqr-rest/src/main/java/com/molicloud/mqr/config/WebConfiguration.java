@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.common.def.CommonDef;
 import com.molicloud.mqr.interceptor.AccessInterceptor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -23,6 +24,7 @@ import java.util.List;
  * @since 2020/11/6 7:33 下午
  */
 @EnableAsync
+@EnableCaching
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
