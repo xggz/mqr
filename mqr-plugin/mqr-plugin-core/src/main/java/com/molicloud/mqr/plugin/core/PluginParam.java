@@ -6,8 +6,8 @@ import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 插件通用入参
@@ -42,7 +42,7 @@ public class PluginParam<T> {
     /**
      * 消息中的所有At信息
      */
-    private Set<AtDef> ats = new LinkedHashSet<>();
+    private List<AtDef> ats = new LinkedList<>();
 
     /**
      * 发送的消息体

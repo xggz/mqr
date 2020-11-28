@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -56,10 +56,10 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
         // 获取消息中的At信息
-        Set<AtDef> atDefSet = new LinkedHashSet<>();
-        boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefSet);
+        List<AtDef> atDefs = new LinkedList<>();
+        boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
         pluginParam.setAt(isAt);
-        pluginParam.setAts(atDefSet);
+        pluginParam.setAts(atDefs);
         // 获取机器人管理员账号
         pluginParam.setAdmins(robotAdmins());
         // 处理消息事件
@@ -128,10 +128,10 @@ public class EventListeningHandler extends SimpleListenerHost {
      *
      * @param messageChain
      * @param rid
-     * @param atDefSet
+     * @param atDefs
      * @return
      */
-    private boolean getAtInfo(MessageChain messageChain, String rid, Set<AtDef> atDefSet) {
+    private boolean getAtInfo(MessageChain messageChain, String rid, List<AtDef> atDefs) {
         AtomicBoolean result = new AtomicBoolean(false);
         messageChain.forEach(message -> {
             if (message instanceof At) {
@@ -142,7 +142,7 @@ public class EventListeningHandler extends SimpleListenerHost {
                 AtDef atDef = new AtDef();
                 atDef.setId(String.valueOf(at.getTarget()));
                 atDef.setNick(at.getDisplay());
-                atDefSet.add(atDef);
+                atDefs.add(atDef);
             }
         });
         return result.get();
