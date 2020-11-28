@@ -1,14 +1,22 @@
 package com.molicloud.mqr.plugin.aireply;
 
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
+import com.molicloud.mqr.plugin.core.annotation.PJob;
+import com.molicloud.mqr.plugin.core.define.RobotDef;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
+import com.molicloud.mqr.plugin.core.event.MessageEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 智能回复插件
@@ -16,8 +24,9 @@ import org.springframework.web.client.RestTemplate;
  * @author feitao yyimba@qq.com
  * @since 2020/11/6 3:45 下午
  */
+@Slf4j
 @Component
-public class AiReplyPluginExecutor implements PluginExecutor {
+public class AiReplyPluginExecutor extends AbstractPluginExecutor {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -41,6 +50,18 @@ public class AiReplyPluginExecutor implements PluginExecutor {
             pluginResult.setMessage(reply);
         }
         return pluginResult;
+    }
+
+    @PJob(cron = "0 0 * * * ?")
+    public void handlerTimer() {
+        MessageEvent messageEvent = new MessageEvent();
+        messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
+        // 获取所有群列表
+        List<RobotDef.Member> getGroupList = getGroupList();
+        // 整点报时发给所有群
+        messageEvent.setToIds(getGroupList.stream().map(RobotDef.Member::getId).collect(Collectors.toList()));
+        messageEvent.setMessage("整点报时：" + new Date().toString());
+        pushMessage(messageEvent);
     }
 
     private String aiReply(String message) {
