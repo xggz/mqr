@@ -33,27 +33,27 @@ public class RobotDef {
     /**
      * 群列表
      */
-    private List<Member> groupList;
+    private List<Group> groupList;
 
     /**
      * 好友列表
      */
-    private List<Member> friendList;
+    private List<Friend> friendList;
 
     /**
-     * 群或好友信息
+     * 群信息
      */
     @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class Member {
+    public static class Group {
 
         /**
-         * 群ID或好友ID
+         * 群ID
          */
         private String id;
 
         /**
-         * 群名或好友昵称
+         * 群名
          */
         private String nick;
 
@@ -63,7 +63,36 @@ public class RobotDef {
          * @param id
          * @param nick
          */
-        public Member(String id, String nick) {
+        public Group(String id, String nick) {
+            this.id = id;
+            this.nick = nick;
+        }
+    }
+
+    /**
+     * 好友信息
+     */
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    public static class Friend {
+
+        /**
+         * 好友ID
+         */
+        private String id;
+
+        /**
+         * 好友昵称
+         */
+        private String nick;
+
+        /**
+         * 构造函数
+         *
+         * @param id
+         * @param nick
+         */
+        public Friend(String id, String nick) {
             this.id = id;
             this.nick = nick;
         }

@@ -95,11 +95,11 @@ public class RobotServerStarter {
             // 注册QQ机器人事件监听
             Events.registerEvents(bot, eventListeningHandler);
             // 查找所有的群列表
-            List<RobotDef.Member> groupMemberList = bot.getGroups().stream().map(group -> new RobotDef.Member(String.valueOf(group.getId()), group.getName())).collect(Collectors.toList());
-            robotDef.setGroupList(groupMemberList);
+            List<RobotDef.Group> groupList = bot.getGroups().stream().map(group -> new RobotDef.Group(String.valueOf(group.getId()), group.getName())).collect(Collectors.toList());
+            robotDef.setGroupList(groupList);
             // 插件所有的好友列表
-            List<RobotDef.Member> friendMemberList = bot.getFriends().stream().map(friend -> new RobotDef.Member(String.valueOf(friend.getId()), friend.getNick())).collect(Collectors.toList());
-            robotDef.setFriendList(friendMemberList);
+            List<RobotDef.Friend> friendList = bot.getFriends().stream().map(friend -> new RobotDef.Friend(String.valueOf(friend.getId()), friend.getNick())).collect(Collectors.toList());
+            robotDef.setFriendList(friendList);
             // 保存最新的机器人信息
             RobotContextHolder.setRobot(robotDef);
             // 获取插件计划任务，并添加到任务调度

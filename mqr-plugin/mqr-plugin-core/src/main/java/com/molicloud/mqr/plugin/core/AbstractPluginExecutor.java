@@ -43,7 +43,7 @@ public abstract class AbstractPluginExecutor implements PluginExecutor {
      *
      * @return
      */
-    protected List<RobotDef.Member> getGroupList() {
+    protected List<RobotDef.Group> getGroupList() {
         return RobotContextHolder.getRobot().getGroupList();
     }
 
@@ -52,7 +52,7 @@ public abstract class AbstractPluginExecutor implements PluginExecutor {
      *
      * @return
      */
-    protected List<RobotDef.Member> getFriendList() {
+    protected List<RobotDef.Friend> getFriendList() {
         return RobotContextHolder.getRobot().getFriendList();
     }
 }

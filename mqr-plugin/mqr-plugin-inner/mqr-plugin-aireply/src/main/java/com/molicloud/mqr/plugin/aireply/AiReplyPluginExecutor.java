@@ -57,9 +57,9 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         MessageEvent messageEvent = new MessageEvent();
         messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
         // 获取所有群列表
-        List<RobotDef.Member> getGroupList = getGroupList();
+        List<RobotDef.Group> getGroupList = getGroupList();
         // 整点报时发给所有群
-        messageEvent.setToIds(getGroupList.stream().map(RobotDef.Member::getId).collect(Collectors.toList()));
+        messageEvent.setToIds(getGroupList.stream().map(RobotDef.Group::getId).collect(Collectors.toList()));
         messageEvent.setMessage("整点报时：" + new Date().toString());
         pushMessage(messageEvent);
     }
