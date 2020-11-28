@@ -1,9 +1,13 @@
 package com.molicloud.mqr.plugin.core;
 
+import com.molicloud.mqr.plugin.core.define.AtDef;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 插件通用入参
@@ -33,7 +37,12 @@ public class PluginParam<T> {
     /**
      * 机器人是否被At「@」
      */
-    private boolean at;
+    private boolean at = false;
+
+    /**
+     * 消息中的所有At信息
+     */
+    private Set<AtDef> ats = new LinkedHashSet<>();
 
     /**
      * 发送的消息体
