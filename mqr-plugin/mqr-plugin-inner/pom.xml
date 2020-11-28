@@ -18,6 +18,7 @@
         <module>mqr-plugin-divination</module>
         <module>mqr-plugin-joke</module>
         <module>mqr-plugin-qrcode</module>
+        <module>mqr-plugin-manager</module>
     </modules>
 
 </project>
