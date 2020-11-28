@@ -61,6 +61,10 @@ public class ManagerPluginExecutor implements PluginExecutor {
             String name = message.substring(0, 2); // 指令名称
             List<AtDef> atDefs = pluginParam.getAts();
             ids = atDefs.stream().map(AtDef::getId).distinct().collect(Collectors.toList());
+            if (ids.isEmpty()) {
+                pluginResult.setMessage("未选择操作对象");
+                return pluginResult;
+            }
             switch (name) {
                 case "禁言":
                     return mute(pluginResult, getArgs(pluginParam.getAts(), message));
