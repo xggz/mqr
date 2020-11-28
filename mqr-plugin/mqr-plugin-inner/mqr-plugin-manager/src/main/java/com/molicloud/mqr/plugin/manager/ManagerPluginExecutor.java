@@ -1,6 +1,6 @@
 package com.molicloud.mqr.plugin.manager;
 
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.action.KickAction;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class ManagerPluginExecutor implements PluginExecutor {
+public class ManagerPluginExecutor extends AbstractPluginExecutor {
 
     /**
      * 被操作对象QQ列表
@@ -47,7 +47,7 @@ public class ManagerPluginExecutor implements PluginExecutor {
         pluginResult.setProcessed(true);
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
             // 判断消息发送者是否为管理员
-            if (!Arrays.asList(pluginParam.getAdmins()).contains(pluginParam.getFrom())) {
+            if (!Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
                 MessageBuild messageBuild = new MessageBuild();
                 Ats ats = new Ats();
                 ats.setMids(Arrays.asList(pluginParam.getFrom()));

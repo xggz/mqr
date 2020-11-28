@@ -5,7 +5,6 @@ import com.molicloud.mqr.common.define.RobotVerify;
 import com.molicloud.mqr.common.dto.RobotInfoDto;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
-import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.common.setting.RobotInfo;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
@@ -34,7 +33,7 @@ public class SettingController {
 
     @PostMapping("/robot-info")
     public Res saveRobotInfo(@RequestBody RobotInfoDto dto) {
-        RobotInfoVo robotInfoVo = RobotContextHolder.getRobotInfo();
+        RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
         if (robotInfoVo != null && !RobotStateEnum.NOT_ENABLED.getValue().equals(robotInfoVo.getState())) {
             return Res.failed("请先停止机器人运行后再编辑");
         }

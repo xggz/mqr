@@ -6,9 +6,7 @@ import com.molicloud.mqr.common.define.RobotVerify;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.RobotVerifyEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
-import com.molicloud.mqr.framework.RobotContextHolder;
 import com.molicloud.mqr.service.SysSettingService;
-import com.molicloud.mqr.common.setting.RobotInfo;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
 import kotlin.coroutines.Continuation;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +14,6 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.utils.LoginSolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -71,12 +68,9 @@ public class LoginVerifyHandler extends LoginSolver {
      */
     private String handlerVerify(RobotVerifyEnum robotVerifyEnum, String content) {
         // 修改机器人状态
-        RobotInfoVo robotInfoVo = RobotContextHolder.getRobotInfo();
-        RobotInfo robotInfo = new RobotInfo();
-        BeanUtils.copyProperties(robotInfoVo, robotInfo);
-        robotInfo.setState(RobotStateEnum.TO_VERIFIED.getValue());
-        sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfo, RobotInfo.class);
-        RobotContextHolder.setState(RobotStateEnum.TO_VERIFIED.getValue());
+        RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
+        robotInfoVo.setState(RobotStateEnum.TO_VERIFIED.getValue());
+        sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfoVo, RobotInfoVo.class);
         // 保存机器人的登录验证信息
         RobotVerify robotVerify = new RobotVerify();
         robotVerify.setType(robotVerifyEnum.name());
@@ -105,9 +99,8 @@ public class LoginVerifyHandler extends LoginSolver {
             result = future.get();
             if (StrUtil.isNotBlank(result)) {
                 // 获取登录结果后，修改机器人状态为登录中
-                robotInfo.setState(RobotStateEnum.LOGGING.getValue());
-                sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfo, RobotInfo.class);
-                RobotContextHolder.setState(RobotStateEnum.LOGGING.getValue());
+                robotInfoVo.setState(RobotStateEnum.LOGGING.getValue());
+                sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfoVo, RobotInfoVo.class);
             }
             // 重置登录验证结果
             sysSettingService.saveSysSetting(SettingEnum.ROBOT_LOGIN_VERIFY_RESULT, "", String.class);

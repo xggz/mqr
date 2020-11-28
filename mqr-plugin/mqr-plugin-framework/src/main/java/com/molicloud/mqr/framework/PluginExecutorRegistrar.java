@@ -1,10 +1,13 @@
 package com.molicloud.mqr.framework;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
+import com.molicloud.mqr.framework.common.PluginJob;
 import com.molicloud.mqr.plugin.core.PluginExecutor;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
+import com.molicloud.mqr.plugin.core.annotation.PJob;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.common.PHookMethod;
+import com.molicloud.mqr.framework.common.PluginMethod;
 import com.molicloud.mqr.framework.common.PluginHook;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -21,14 +24,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 插件钩子注册，通过查找所有的插件钩子注解来实现
+ * 注册插件执行器的钩子和计划任务
  *
  * @author feitao yyimba@qq.com
  * @since 2020/11/4 6:43 下午
  */
 @Slf4j
 @Component
-public class PluginHookRegistrar implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
+public class PluginExecutorRegistrar implements ApplicationContextAware, SmartInitializingSingleton, Ordered {
 
     /**
      * ApplicationContext
@@ -44,6 +47,14 @@ public class PluginHookRegistrar implements ApplicationContextAware, SmartInitia
 
     // 插件钩子列表（插件钩子不重复）
     private static List<PluginHook> allPluginHookList = new LinkedList<>();
+
+    /**
+     * 存储所有查找到的插件计划任务注解
+     */
+    private static List<PluginJob> pluginJobRepository = new ArrayList<>();
+    public static List<PluginJob> getPluginJobRepository() {
+        return pluginJobRepository;
+    }
 
     /**
      * 获取所有的插件钩子（插件钩子不重复）
@@ -113,56 +124,75 @@ public class PluginHookRegistrar implements ApplicationContextAware, SmartInitia
         for (String beanDefinitionName : beanDefinitionNames) {
             Object bean = applicationContext.getBean(beanDefinitionName);
 
-            Map<Method, PHook> annotatedMethods = null;
+            Map<Method, PHook> pHookAnnotatedMethods = null;
+            Map<Method, PJob> pJobAnnotatedMethods = null;
             try {
-                annotatedMethods = MethodIntrospector.selectMethods(bean.getClass(),
+                pHookAnnotatedMethods = MethodIntrospector.selectMethods(bean.getClass(),
                         (MethodIntrospector.MetadataLookup<PHook>) method -> AnnotatedElementUtils.findMergedAnnotation(method, PHook.class));
+                pJobAnnotatedMethods = MethodIntrospector.selectMethods(bean.getClass(),
+                        (MethodIntrospector.MetadataLookup<PJob>) method -> AnnotatedElementUtils.findMergedAnnotation(method, PJob.class));
             } catch (Throwable ex) {
-                log.error("PHook：bean[{}]查找注解[@PHook]错误", beanDefinitionName);
+                log.error("PluginExecutor：bean[{}]查找插件执行器错误", beanDefinitionName);
             }
-            if (annotatedMethods == null || annotatedMethods.isEmpty()) {
-                continue;
-            }
-
+            log.debug("------------------------------");
             log.debug("Plugin Bean Name：{}", bean.getClass().getName());
+            if (MapUtil.isNotEmpty(pHookAnnotatedMethods)) {
+                for (Map.Entry<Method, PHook> methodPHookEntry : pHookAnnotatedMethods.entrySet()) {
+                    Method method = methodPHookEntry.getKey();
+                    PHook pHook = methodPHookEntry.getValue();
+                    if (pHook == null) {
+                        continue;
+                    }
+                    method.setAccessible(true);
+                    log.debug("Plugin PHook Method：{}", method.getName());
 
-            for (Map.Entry<Method, PHook> methodPHookEntry : annotatedMethods.entrySet()) {
-                Method method = methodPHookEntry.getKey();
-                PHook pHook = methodPHookEntry.getValue();
-                if (pHook == null) {
-                    continue;
+                    PluginHook pluginHook = new PluginHook();
+                    pluginHook.setName(pHook.name());
+                    pluginHook.setListeningAllMessage(pHook.listeningAllMessage());
+                    pluginHook.setRobotEvents(new HashSet<>(Arrays.asList(pHook.robotEvents())));
+                    pluginHook.setEqualsKeywords(new HashSet<>(Arrays.asList(pHook.equalsKeywords())));
+                    pluginHook.setStartsKeywords(new HashSet<>(Arrays.asList(pHook.startsKeywords())));
+                    pluginHook.setEndsKeywords(new HashSet<>(Arrays.asList(pHook.endsKeywords())));
+                    pluginHook.setContainsKeywords(new HashSet<>(Arrays.asList(pHook.containsKeywords())));
+                    pluginHook.setOrder(pHook.order());
+                    pluginHook.setPluginMethod(new PluginMethod(bean, method));
+                    // 判断是否监听所有消息钩子
+                    if (pHook.listeningAllMessage()) {
+                        listeningAllMessagePluginHookList.add(pluginHook);
+                    }
+                    // 判断是否为默认插件钩子
+                    if (pHook.defaulted()) {
+                        defaultPluginHookList.add(pluginHook);
+                    }
+                    // 如果关键字列表不为空，则列入常规的插件钩子
+                    if (pHook.equalsKeywords().length > 0
+                            || pHook.startsKeywords().length > 0
+                            || pHook.endsKeywords().length > 0
+                            || pHook.containsKeywords().length > 0) {
+                        normalPluginHookList.add(pluginHook);
+                    }
+                    // 把所有插件钩子存入一个列表（不重复）
+                    allPluginHookList.add(pluginHook);
                 }
-                method.setAccessible(true);
-                log.debug("Plugin PHook Method：{}", method.getName());
-
-                PluginHook pluginHook = new PluginHook();
-                pluginHook.setName(pHook.name());
-                pluginHook.setListeningAllMessage(pHook.listeningAllMessage());
-                pluginHook.setRobotEvents(new HashSet<>(Arrays.asList(pHook.robotEvents())));
-                pluginHook.setEqualsKeywords(new HashSet<>(Arrays.asList(pHook.equalsKeywords())));
-                pluginHook.setStartsKeywords(new HashSet<>(Arrays.asList(pHook.startsKeywords())));
-                pluginHook.setEndsKeywords(new HashSet<>(Arrays.asList(pHook.endsKeywords())));
-                pluginHook.setContainsKeywords(new HashSet<>(Arrays.asList(pHook.containsKeywords())));
-                pluginHook.setOrder(pHook.order());
-                pluginHook.setPHookMethod(new PHookMethod(bean, method));
-                // 判断是否监听所有消息钩子
-                if (pHook.listeningAllMessage()) {
-                    listeningAllMessagePluginHookList.add(pluginHook);
-                }
-                // 判断是否为默认插件钩子
-                if (pHook.defaulted()) {
-                    defaultPluginHookList.add(pluginHook);
-                }
-                // 如果关键字列表不为空，则列入常规的插件钩子
-                if (pHook.equalsKeywords().length > 0
-                        || pHook.startsKeywords().length > 0
-                        || pHook.endsKeywords().length > 0
-                        || pHook.containsKeywords().length > 0) {
-                    normalPluginHookList.add(pluginHook);
-                }
-                // 把所有插件钩子存入一个列表（不重复）
-                allPluginHookList.add(pluginHook);
             }
+            if (MapUtil.isNotEmpty(pJobAnnotatedMethods)) {
+                for (Map.Entry<Method, PJob> methodPJobEntry : pJobAnnotatedMethods.entrySet()) {
+                    Method method = methodPJobEntry.getKey();
+                    PJob pJob = methodPJobEntry.getValue();
+                    if (pJob == null) {
+                        continue;
+                    }
+                    method.setAccessible(true);
+                    log.debug("Plugin PJob Method：{}", method.getName());
+
+                    PluginJob pluginJob = new PluginJob();
+                    pluginJob.setName(beanDefinitionName.concat("->").concat(method.getName()));
+                    pluginJob.setCron(pJob.cron());
+                    pluginJob.setPluginMethod(new PluginMethod(bean, method));
+                    pluginJobRepository.add(pluginJob);
+                }
+            }
+            log.debug("------------------------------");
         }
 
         // 按照order字段的值对插件钩子列表进行升序排列

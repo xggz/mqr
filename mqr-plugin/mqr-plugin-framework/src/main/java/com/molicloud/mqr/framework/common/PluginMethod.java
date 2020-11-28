@@ -12,13 +12,13 @@ import java.lang.reflect.Method;
  * @author feitao yyimba@qq.com
  * @since 2020/11/4 7:18 下午
  */
-public class PHookMethod {
+public class PluginMethod {
 
     private final Object bean;
 
     private final Method method;
 
-    public PHookMethod(Object bean, Method method) {
+    public PluginMethod(Object bean, Method method) {
         this.bean = bean;
         this.method = method;
     }
@@ -37,5 +37,15 @@ public class PHookMethod {
             throw new RuntimeException("返回类型错误");
         }
         return (PluginResult) pluginResult;
+    }
+
+    /**
+     * 执行插件计划任务方法
+     *
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public void execute() throws InvocationTargetException, IllegalAccessException {
+        method.invoke(bean);
     }
 }

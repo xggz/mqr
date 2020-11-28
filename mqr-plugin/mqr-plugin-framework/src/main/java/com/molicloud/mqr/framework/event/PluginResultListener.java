@@ -4,7 +4,7 @@ import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.action.Action;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.RobotContextHolder;
+import com.molicloud.mqr.plugin.core.RobotContextHolder;
 import com.molicloud.mqr.framework.util.ActionUtil;
 import com.molicloud.mqr.framework.util.MessageUtil;
 import com.molicloud.mqr.framework.util.PluginHookUtil;
@@ -38,7 +38,7 @@ public class PluginResultListener {
     @EventListener(PluginResultEvent.class)
     public void handlerResult(PluginResultEvent pluginResultEvent) {
         // 获取机器人实例
-        Bot bot = Bot.getInstance(Long.parseLong(RobotContextHolder.getRobotInfo().getQq()));
+        Bot bot = Bot.getInstance(Long.parseLong(RobotContextHolder.getRobot().getQq()));
         // 插件入参
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
         // 机器人事件枚举

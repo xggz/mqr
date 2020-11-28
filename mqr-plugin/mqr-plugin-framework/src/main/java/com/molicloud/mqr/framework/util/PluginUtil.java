@@ -6,7 +6,7 @@ import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.PluginHookRegistrar;
+import com.molicloud.mqr.framework.PluginExecutorRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
 import com.molicloud.mqr.framework.event.PluginResultEvent;
 import lombok.experimental.UtilityClass;
@@ -36,7 +36,7 @@ public class PluginUtil {
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
 
         // 处理监听所有消息的插件钩子
-        List<PluginHook> listeningAllMessagePluginHookList = PluginHookRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
+        List<PluginHook> listeningAllMessagePluginHookList = PluginExecutorRegistrar.getListeningAllMessagePluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(listeningAllMessagePluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.LISTENING_ALL_MESSAGE);
             if (executeAllPluginHook(listeningAllMessagePluginHookList, pluginResultEvent)) {
@@ -51,7 +51,7 @@ public class PluginUtil {
 
         // 如果消息为字符串，则处理常规的插件钩子，通过关键字触发
         if (pluginParam.getData() instanceof String) {
-            List<PluginHook> normalPluginHookList = PluginHookRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
+            List<PluginHook> normalPluginHookList = PluginExecutorRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
             if (CollUtil.isNotEmpty(normalPluginHookList)) {
                 // 过滤关键字
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
@@ -82,7 +82,7 @@ public class PluginUtil {
         }
 
         // 处理默认的插件钩子
-        List<PluginHook> defaultPluginHookList = PluginHookRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
+        List<PluginHook> defaultPluginHookList = PluginExecutorRegistrar.getDefaultPluginHookList(pluginParam.getRobotEventEnum());
         if (CollUtil.isNotEmpty(defaultPluginHookList)) {
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.DEFAULTED);
             if (executeAllPluginHook(defaultPluginHookList, pluginResultEvent)) {
@@ -158,7 +158,7 @@ public class PluginUtil {
     private PluginResult executePluginHook(PluginHook pluginHook, PluginParam pluginParam) {
         PluginResult pluginResult = null;
         try {
-            pluginResult = pluginHook.getPHookMethod().execute(pluginParam);
+            pluginResult = pluginHook.getPluginMethod().execute(pluginParam);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -173,7 +173,7 @@ public class PluginUtil {
      * @return
      */
     private PluginResult executePluginHook(String pluginHookName, PluginParam pluginParam) {
-        PluginHook pluginHook = PluginHookRegistrar.getPluginHookByName(pluginHookName);
+        PluginHook pluginHook = PluginExecutorRegistrar.getPluginHookByName(pluginHookName);
         if (pluginHook == null) {
             return null;
         }

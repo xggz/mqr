@@ -11,6 +11,7 @@ import org.springframework.core.Ordered;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.*;
 
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @EnableAsync
 @EnableCaching
+@EnableScheduling
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 

@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.common.rest.Res;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
+import com.molicloud.mqr.framework.PluginJobHandler;
 import com.molicloud.mqr.framework.RobotServerStarter;
 import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
@@ -33,6 +34,9 @@ public class RobotController {
 
     @Autowired
     private RobotServerStarter robotServerStarter;
+
+    @Autowired
+    private PluginJobHandler pluginJobHandler;
 
     @GetMapping("/start")
     public Res start() {
@@ -69,7 +73,10 @@ public class RobotController {
                 return Res.failed("登录中的机器人无法停止");
             }
             try {
+                // 关闭机器人运行
                 Bot.getBotInstances().stream().forEach(bot -> bot.close(null));
+                // 取消所有计划任务
+                pluginJobHandler.cancelAllTriggerTask();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }

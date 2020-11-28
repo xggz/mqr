@@ -1,7 +1,5 @@
 package com.molicloud.mqr.framework.handler;
 
-import com.molicloud.mqr.common.enums.SettingEnum;
-import com.molicloud.mqr.common.vo.RobotInfoVo;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.define.AtDef;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
@@ -60,8 +58,6 @@ public class EventListeningHandler extends SimpleListenerHost {
         boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
         pluginParam.setAt(isAt);
         pluginParam.setAts(atDefs);
-        // 获取机器人管理员账号
-        pluginParam.setAdmins(robotAdmins());
         // 处理消息事件
         handlerMessageEvent(pluginParam);
         // 保持监听
@@ -82,8 +78,6 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setTo(String.valueOf(event.getBot().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
-        // 获取机器人管理员账号
-        pluginParam.setAdmins(robotAdmins());
         // 处理消息事件
         handlerMessageEvent(pluginParam);
         // 保持监听
@@ -108,19 +102,6 @@ public class EventListeningHandler extends SimpleListenerHost {
         if (PluginUtil.executePlugin(pluginResultEvent)) {
             eventPublisher.publishEvent(pluginResultEvent);
         }
-    }
-
-    /**
-     * 获取机器人管理员列表
-     *
-     * @return
-     */
-    private String[] robotAdmins() {
-        RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
-        if (robotInfoVo == null) {
-            return new String[]{};
-        }
-        return robotInfoVo.getAdmins();
     }
 
     /**

@@ -59,5 +59,5 @@ public class PluginHook {
     /**
      * 插件钩子方法的载体
      */
-    private PHookMethod pHookMethod;
+    private PluginMethod pluginMethod;
 }

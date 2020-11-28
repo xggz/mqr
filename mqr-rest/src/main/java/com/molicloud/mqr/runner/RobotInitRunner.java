@@ -3,9 +3,7 @@ package com.molicloud.mqr.runner;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.service.SysSettingService;
-import com.molicloud.mqr.common.setting.RobotInfo;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -27,10 +25,8 @@ public class RobotInitRunner implements CommandLineRunner {
         RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
         if (robotInfoVo != null) {
             // 每次程序启动时，初始化机器人状态为未登录
-            RobotInfo robotInfo = new RobotInfo();
-            BeanUtils.copyProperties(robotInfoVo, robotInfo);
-            robotInfo.setState(RobotStateEnum.NOT_ENABLED.getValue());
-            sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfo, RobotInfo.class);
+            robotInfoVo.setState(RobotStateEnum.NOT_ENABLED.getValue());
+            sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfoVo, RobotInfoVo.class);
         }
     }
 }
