@@ -117,15 +117,16 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
                 break;
             case "月":
             case "个月":
-                if (val > 1) {
-                    pluginResult.setMessage("禁言最长时间为一个月");
-                    return pluginResult;
-                }
                 seconds = 86400 * 30;
                 break;
             default:
                 pluginResult.setMessage("指令错误");
                 return pluginResult;
+        }
+
+        if (seconds > 2592000) {
+            pluginResult.setMessage("禁言最长时间为 30 天");
+            return pluginResult;
         }
 
         pluginResult.setAction(new MuteAction(ids, seconds));
