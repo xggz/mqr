@@ -9,13 +9,18 @@ import com.molicloud.mqr.plugin.core.PluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
+import com.molicloud.mqr.plugin.core.define.FaceDef;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
+import com.molicloud.mqr.plugin.core.message.MessageBuild;
+import com.molicloud.mqr.plugin.core.message.make.Ats;
+import com.molicloud.mqr.plugin.core.message.make.Expression;
 import com.molicloud.mqr.plugin.core.message.make.Img;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.util.Arrays;
 
 /**
  * 生成二维码插件
@@ -39,7 +44,13 @@ public class QrcodePluginExecutor implements PluginExecutor {
 
         if (ExecuteTriggerEnum.KEYWORD.equals(pluginParam.getExecuteTriggerEnum())) {
             pluginResult.setHold(true);
-            pluginResult.setMessage("请发送二维码文本内容，字符不能过长喔～");
+            MessageBuild messageBuild = new MessageBuild();
+            Ats ats = new Ats();
+            ats.setMids(Arrays.asList(pluginParam.getFrom()));
+            ats.setContent("请发送二维码文本内容，字符不能过长喔～");
+            messageBuild.append(ats);
+            messageBuild.append(new Expression(FaceDef.woshou));
+            pluginResult.setMessage(messageBuild);
         } else if (ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum())) {
             String message = String.valueOf(pluginParam.getData());
             pluginResult.setHold(false);
