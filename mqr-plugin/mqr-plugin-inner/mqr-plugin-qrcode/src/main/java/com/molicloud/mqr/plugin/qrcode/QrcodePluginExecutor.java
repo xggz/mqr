@@ -5,7 +5,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
@@ -30,7 +30,7 @@ import java.util.Arrays;
  */
 @Slf4j
 @Component
-public class QrcodePluginExecutor implements PluginExecutor {
+public class QrcodePluginExecutor extends AbstractPluginExecutor {
 
     @PHook(name = "Qrcode", equalsKeywords = {
             "生成二维码", "二维码生成"

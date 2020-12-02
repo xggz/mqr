@@ -8,5 +8,8 @@ package com.molicloud.mqr.plugin.core;
  */
 public interface PluginExecutor {
 
-
+    /**
+     * 获取插件的脚本
+     */
+    PluginInfo getPluginInfo();
 }

@@ -16,7 +16,7 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:mappers/*.xml
   #实体扫描，多个package用逗号或者分号分隔
-  type-aliases-package: com.molicloud.mqr.entity
+  type-aliases-package: com.molicloud.mqr.entity,com.molicloud.mqr.plugin.*.entity
   global-config:
     # 关闭MP3.x自带的banner
     banner: false

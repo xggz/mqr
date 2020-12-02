@@ -29,6 +29,12 @@ public abstract class AbstractPluginExecutor implements PluginExecutor {
         eventPublisher.publishEvent(messageEvent);
     }
 
+    @Override
+    public PluginInfo getPluginInfo() {
+        // 返回null，默认没有可执行的插件脚本，插件想定义脚本，可重写此方法
+        return null;
+    }
+
     /**
      * 获取管理ID列表
      *

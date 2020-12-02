@@ -1,6 +1,6 @@
 package com.molicloud.mqr.plugin.test;
 
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class TestPluginExecutor implements PluginExecutor {
+public class TestPluginExecutor extends AbstractPluginExecutor {
 
     @PHook(name = "Test", equalsKeywords = {
             "test",

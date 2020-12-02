@@ -1,6 +1,6 @@
 package com.molicloud.mqr.plugin.adblock;
 
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
@@ -24,7 +24,7 @@ import java.util.Arrays;
  */
 @Slf4j
 @Component
-public class AdblockPluginExecutor implements PluginExecutor {
+public class AdblockPluginExecutor extends AbstractPluginExecutor {
 
     public static final String[] adKeywords = new String[]{
             "日赚", "月赚", "招收", "招商"

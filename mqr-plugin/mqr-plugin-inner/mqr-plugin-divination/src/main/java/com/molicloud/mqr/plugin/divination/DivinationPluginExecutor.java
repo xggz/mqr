@@ -1,7 +1,7 @@
 package com.molicloud.mqr.plugin.divination;
 
 import cn.hutool.json.JSONObject;
-import com.molicloud.mqr.plugin.core.PluginExecutor;
+import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Slf4j
 @Component
-public class DivinationPluginExecutor implements PluginExecutor {
+public class DivinationPluginExecutor extends AbstractPluginExecutor {
 
     @Autowired
     private RestTemplate restTemplate;
