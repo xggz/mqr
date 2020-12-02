@@ -240,8 +240,8 @@ public class MessageUtil {
         info.putOpt("appName", "茉莉机器人").putOpt("appType", 4).putOpt("appid", 1109659848).putOpt("iconUrl", card.getIcon());
 
         notification.putOpt("appInfo", info);
-        notification.append("data", card.getData());
-        notification.append("button", card.getButton());
+        notification.putOpt("data", card.getData());
+        notification.putOpt("button", card.getButton());
         notification.putOpt("emphasis_keyword", "").putOpt("title", card.getSubtitle());
 
         meta.putOpt("notification", notification);
