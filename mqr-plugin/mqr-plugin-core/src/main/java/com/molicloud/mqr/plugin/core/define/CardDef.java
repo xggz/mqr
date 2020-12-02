@@ -16,6 +16,7 @@ public class CardDef {
     /**
      * Data
      */
+    @lombok.Data
     @EqualsAndHashCode(callSuper = false)
     public static class Data {
 
@@ -44,6 +45,7 @@ public class CardDef {
     /**
      * Button
      */
+    @lombok.Data
     @EqualsAndHashCode(callSuper = false)
     public static class Button {
 
