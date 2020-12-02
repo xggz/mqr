@@ -39,11 +39,15 @@ public class Card extends Single {
 
     /**
      * 卡片 data 数据
+     *
+     * @see com.molicloud.mqr.plugin.core.define.CardDef.Data
      */
     List<CardDef.Data> data;
 
     /**
      * 卡片 button 数据
+     *
+     * @see com.molicloud.mqr.plugin.core.define.CardDef.Button
      */
     List<CardDef.Button> button;
 }
