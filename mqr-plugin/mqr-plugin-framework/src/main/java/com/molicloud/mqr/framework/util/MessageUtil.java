@@ -237,7 +237,7 @@ public class MessageUtil {
         object.putOpt("ver", "1.0.0.11").putOpt("appID", "").putOpt("prompt", card.getPrompt()).putOpt("sourceName", "");
         object.putOpt("actionData", "").putOpt("actionData_A", "").putOpt("sourceUrl", "");
 
-        info.putOpt("appName", "茉莉机器人").putOpt("appType", 4).putOpt("appid", 1109659848).putOpt("iconUrl", card.getIcon());
+        info.putOpt("appName", card.getTitle()).putOpt("appType", 4).putOpt("appid", 1109659848).putOpt("iconUrl", card.getIcon());
 
         notification.putOpt("appInfo", info);
         notification.putOpt("data", card.getData());
