@@ -5,7 +5,6 @@ import com.molicloud.mqr.plugin.core.define.AtDef;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.event.PluginResultEvent;
 import com.molicloud.mqr.framework.util.PluginUtil;
-import com.molicloud.mqr.service.SysSettingService;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.EventHandler;
@@ -35,9 +34,6 @@ public class EventListeningHandler extends SimpleListenerHost {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    private SysSettingService sysSettingService;
 
     /**
      * 监听群消息

@@ -97,7 +97,7 @@ public class RobotServerStarter {
             // 查找所有的群列表
             List<RobotDef.Group> groupList = bot.getGroups().stream().map(group -> new RobotDef.Group(String.valueOf(group.getId()), group.getName())).collect(Collectors.toList());
             robotDef.setGroupList(groupList);
-            // 插件所有的好友列表
+            // 查找所有的好友列表
             List<RobotDef.Friend> friendList = bot.getFriends().stream().map(friend -> new RobotDef.Friend(String.valueOf(friend.getId()), friend.getNick())).collect(Collectors.toList());
             robotDef.setFriendList(friendList);
             // 保存最新的机器人信息

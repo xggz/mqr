@@ -21,7 +21,6 @@ import net.mamoe.mirai.message.data.*;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +72,6 @@ public class MessageUtil {
         if (message == null) {
             if (pluginResultData instanceof Img) {
                 return buildImageMessage(friend, ((Img) pluginResultData).getFileResource());
-            } else if (pluginResultData instanceof Card) {
-                return buildCardMessage((Card) pluginResultData);
             } else if (pluginResultData instanceof MessageBuild) {
                 return buildFriendSrcMessage((MessageBuild) pluginResultData, friend);
             }
@@ -99,8 +96,6 @@ public class MessageUtil {
                 return buildGroupAtMessage(group, (Ats) pluginResultData);
             } else if (pluginResultData instanceof Img) {
                 return buildImageMessage(group, ((Img) pluginResultData).getFileResource());
-            } else if (pluginResultData instanceof Card) {
-                return buildCardMessage((Card) pluginResultData);
             } else if (pluginResultData instanceof MessageBuild) {
                 return buildGroupSrcMessage((MessageBuild) pluginResultData, group);
             }
