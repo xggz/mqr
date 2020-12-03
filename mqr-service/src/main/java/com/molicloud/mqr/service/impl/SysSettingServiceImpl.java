@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.molicloud.mqr.common.enums.SettingTypeEnum;
 import com.molicloud.mqr.common.rest.ApiCode;
 import com.molicloud.mqr.common.rest.ApiException;
 import com.molicloud.mqr.entity.SysSetting;
@@ -26,10 +27,50 @@ public class SysSettingServiceImpl extends ServiceImpl<SysSettingMapper, SysSett
 
     @Override
     public <T> T getSysSettingByName(SettingEnum settingEnum, Class<T> clazz) {
+        return getSettingByName(settingEnum, clazz, SettingTypeEnum.SYSTEM.getValue());
+    }
+
+    @Override
+    public <T> boolean saveSysSetting(SettingEnum settingEnum, Object dto, Class<T> clazz) {
+        return saveSetting(settingEnum, dto, clazz, SettingTypeEnum.SYSTEM.getValue());
+    }
+
+    @Override
+    public <T> T getPluginSettingByName(SettingEnum settingEnum, Class<T> clazz) {
+        return getSettingByName(settingEnum, clazz, SettingTypeEnum.PLUGIN.getValue());
+    }
+
+    @Override
+    public <T> boolean savePluginSetting(SettingEnum settingEnum, Object dto, Class<T> clazz) {
+        return saveSetting(settingEnum, dto, clazz, SettingTypeEnum.PLUGIN.getValue());
+    }
+
+    /**
+     * 根据配置名和类型获取配置对象
+     *
+     * @param name
+     * @param type
+     * @return
+     */
+    private SysSetting selectMeByNameAndType(String name, Integer type) {
         LambdaQueryWrapper<SysSetting> lambdaQueryWrapper = Wrappers.<SysSetting>lambdaQuery();
-        lambdaQueryWrapper.eq(SysSetting::getName, settingEnum.getName());
+        lambdaQueryWrapper.eq(SysSetting::getName, name);
+        lambdaQueryWrapper.eq(SysSetting::getType, type);
         lambdaQueryWrapper.last(" limit 1");
-        SysSetting sysSetting = baseMapper.selectOne(lambdaQueryWrapper);
+        return baseMapper.selectOne(lambdaQueryWrapper);
+    }
+
+    /**
+     * 获取配置信息
+     *
+     * @param settingEnum
+     * @param clazz
+     * @param type
+     * @param <T>
+     * @return
+     */
+    private <T> T getSettingByName(SettingEnum settingEnum, Class<T> clazz, Integer type) {
+        SysSetting sysSetting = selectMeByNameAndType(settingEnum.getName(), type);
         if (sysSetting == null) {
             return null;
         }
@@ -51,9 +92,18 @@ public class SysSettingServiceImpl extends ServiceImpl<SysSettingMapper, SysSett
         return jsonObject.toBean(clazz);
     }
 
-    @Override
-    public <T> boolean saveSysSetting(SettingEnum settingEnum, Object dto, Class<T> clazz) {
-        SysSetting sysSetting = baseMapper.selectOne(Wrappers.<SysSetting>lambdaQuery().eq(SysSetting::getName, settingEnum.getName()));
+    /**
+     * 保存配置信息
+     *
+     * @param settingEnum
+     * @param dto
+     * @param clazz
+     * @param type
+     * @param <T>
+     * @return
+     */
+    private <T> boolean saveSetting(SettingEnum settingEnum, Object dto, Class<T> clazz, Integer type) {
+        SysSetting sysSetting = selectMeByNameAndType(settingEnum.getName(), type);
         try {
             String settingValue = "";
             T object = clazz.newInstance();
@@ -76,6 +126,7 @@ public class SysSettingServiceImpl extends ServiceImpl<SysSettingMapper, SysSett
             sysSetting.setName(settingEnum.getName());
             sysSetting.setValue(settingValue);
             sysSetting.setRemark(settingEnum.getRemark());
+            sysSetting.setType(type);
             this.saveOrUpdate(sysSetting);
         } catch (Exception e) {
             throw new ApiException(ApiCode.SYSERR);

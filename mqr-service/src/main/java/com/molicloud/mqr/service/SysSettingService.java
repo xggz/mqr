@@ -17,7 +17,7 @@ import org.springframework.cache.annotation.Cacheable;
 public interface SysSettingService extends IService<SysSetting> {
 
     /**
-     * 获取配置信息
+     * 获取系统配置信息
      *
      * @param settingEnum
      * @param clazz
@@ -28,7 +28,7 @@ public interface SysSettingService extends IService<SysSetting> {
     <T> T getSysSettingByName(SettingEnum settingEnum, Class<T> clazz);
 
     /**
-     * 保存配置信息
+     * 保存系统配置信息
      *
      * @param settingEnum
      * @param dto
@@ -38,4 +38,27 @@ public interface SysSettingService extends IService<SysSetting> {
      */
     @CacheEvict(value = "sysSetting", key = "#p0.name")
     <T> boolean saveSysSetting(SettingEnum settingEnum, Object dto, Class<T> clazz);
+
+    /**
+     * 获取插件配置信息
+     *
+     * @param settingEnum
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    @Cacheable(value = "pluginSetting", key = "#p0.name")
+    <T> T getPluginSettingByName(SettingEnum settingEnum, Class<T> clazz);
+
+    /**
+     * 保存插件配置信息
+     *
+     * @param settingEnum
+     * @param dto
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    @CacheEvict(value = "pluginSetting", key = "#p0.name")
+    <T> boolean savePluginSetting(SettingEnum settingEnum, Object dto, Class<T> clazz);
 }

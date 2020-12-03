@@ -2,8 +2,11 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.molicloud.mqr.framework.PluginSettingInitialize;
+import com.molicloud.mqr.plugin.core.PluginContextHolder;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
+import com.molicloud.mqr.plugin.core.define.PluginSettingDef;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginExecutorRegistrar;
@@ -158,9 +161,18 @@ public class PluginUtil {
     private PluginResult executePluginHook(PluginHook pluginHook, PluginParam pluginParam) {
         PluginResult pluginResult = null;
         try {
+            // 线程上下文中存入插件配置信息
+            String settingValue = PluginSettingInitialize.getPluginSettingValue(pluginHook.getName());
+            PluginSettingDef pluginSettingDef = new PluginSettingDef();
+            pluginSettingDef.setName(pluginHook.getName());
+            pluginSettingDef.setSettingValue(settingValue);
+            PluginContextHolder.setSetting(pluginSettingDef);
+            // 执行插件钩子的方法
             pluginResult = pluginHook.getPluginMethod().execute(pluginParam);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+        } finally {
+            PluginContextHolder.clear();
         }
         return pluginResult;
     }

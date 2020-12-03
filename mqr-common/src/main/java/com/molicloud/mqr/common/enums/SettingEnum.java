@@ -21,7 +21,12 @@ public enum SettingEnum {
     /**
      * 机器人登录验证结果
      */
-    ROBOT_LOGIN_VERIFY_RESULT("ROBOT_LOGIN_VERIFY_RESULT", "机器人登录验证结果");
+    ROBOT_LOGIN_VERIFY_RESULT("ROBOT_LOGIN_VERIFY_RESULT", "机器人登录验证结果"),
+
+    /**
+     * 插件钩子配置信息
+     */
+    PLUGIN_HOOK("PLUGIN_HOOK", "插件钩子配置信息");
 
     private String name;
 
@@ -34,6 +39,11 @@ public enum SettingEnum {
 
     public String getName() {
         return name;
+    }
+
+    public SettingEnum setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public String getRemark() {

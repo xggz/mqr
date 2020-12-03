@@ -38,6 +38,9 @@ public class SysSetting implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "配置类型（1：系统，2：插件）")
+    private Integer type;
+
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
@@ -48,5 +51,4 @@ public class SysSetting implements Serializable {
 
     @ApiModelProperty(value = "删除标记（0：正常，1：已删除）")
     private Boolean deleted;
-
 }
