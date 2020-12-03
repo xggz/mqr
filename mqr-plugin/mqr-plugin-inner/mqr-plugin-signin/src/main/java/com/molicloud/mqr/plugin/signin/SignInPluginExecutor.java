@@ -23,9 +23,10 @@ import org.springframework.web.client.RestTemplate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
- * 签到插件 TODO 待完善
+ * 签到插件
  *
  * @author wispx wisp-x@qq.com
  * @since 2020/12/03 2:44 下午
@@ -93,11 +94,18 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
         messageBuild.append(ats);
         messageBuild.append(new Expression(FaceDef.meigui));
 
+        int num = 1; // 连续签到次数
+        // 判断是否是连续签到
         if (isYesterdaySignIn) {
-            // 已经签到次数
-            Integer signInCount = getSignInCount(pluginParam.getTo(), pluginParam.getFrom());
-            // TODO 判断是否是连续签到
-            // messageBuild.append(new Text(String.format("\r\n截止今日，你已经连续签到 %d 天啦！明天还要继续加油鸭～", signInCount + 1)));
+            // 获取最近的一次签到
+            List<RobotPluginSignIn> list = mapper.selectList(
+                    Wrappers.<RobotPluginSignIn>lambdaQuery().orderByDesc(RobotPluginSignIn::getId)
+                            .eq(RobotPluginSignIn::getGroupId, pluginParam.getTo())
+                            .eq(RobotPluginSignIn::getQq, pluginParam.getFrom())
+            );
+            RobotPluginSignIn newestSignIn = list.get(0);
+            num = newestSignIn.getNum() + 1;
+            messageBuild.append(new Text(String.format("\r\n截止今日，你已经连续签到 %d 天啦！明天还要继续加油鸭～", num)));
         }
 
         messageBuild.append(new Text(String.format("\r\n今日份鸡汤「%s」", hitokoto)));
@@ -108,6 +116,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
         signInLog.setGroupId(pluginParam.getTo());
         signInLog.setIsContinuity(true);
         signInLog.setMotto(hitokoto);
+        signInLog.setNum(num);
         mapper.insert(signInLog);
 
         return pluginResult;
@@ -117,7 +126,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
      * 判断昨天有没有签到
      *
      * @param groupId 群号
-     * @param qq 消息来源QQ
+     * @param qq      消息来源QQ
      * @return
      */
     private Boolean isYesterdaySignIn(String groupId, String qq) {
@@ -137,7 +146,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
      * 获取今日签到次数
      *
      * @param groupId 群号
-     * @param qq 消息来源QQ
+     * @param qq      消息来源QQ
      * @return
      */
     private Integer getTodaySignInCount(String groupId, String qq) {
@@ -165,7 +174,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
      * 获取全部签到次数
      *
      * @param groupId 群号
-     * @param qq 消息来源QQ
+     * @param qq      消息来源QQ
      * @return
      */
     private Integer getSignInCount(String groupId, String qq) {
@@ -177,6 +186,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
 
     /**
      * 一言
+     *
      * @return
      */
     private String hitokoto() {
@@ -199,14 +209,15 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
         pluginInfo.setVersion(10001);
         pluginInfo.setInitScript(
                 "CREATE TABLE \"robot_plugin_signin\" (" +
-                "  \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                "  \"group_id\" VARCHAR(50) NOT NULL," +
-                "  \"qq\" VARCHAR(50) NOT NULL," +
-                "  \"is_continuity\" BIT(1) NOT NULL DEFAULT 0," +
-                "  \"motto\" TEXT NOT NULL," +
-                "  \"update_time\" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-                "  \"create_time\" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-                ");");
+                        "  \"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                        "  \"group_id\" VARCHAR(50) NOT NULL," +
+                        "  \"qq\" VARCHAR(50) NOT NULL," +
+                        "  \"is_continuity\" BIT(1) NOT NULL DEFAULT 0," +
+                        "  \"num\" INTEGER NOT NULL DEFAULT 0," +
+                        "  \"motto\" TEXT NOT NULL," +
+                        "  \"update_time\" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                        "  \"create_time\" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                        ");");
         return pluginInfo;
     }
 }

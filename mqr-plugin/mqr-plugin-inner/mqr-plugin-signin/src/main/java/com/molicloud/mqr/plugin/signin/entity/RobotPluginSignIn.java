@@ -48,6 +48,12 @@ public class RobotPluginSignIn implements Serializable {
     private Boolean isContinuity;
 
     /**
+     * 连续签到次数
+     */
+    @TableField(value = "num")
+    private Integer num;
+
+    /**
      * 格言
      */
     @TableField(value = "motto")
