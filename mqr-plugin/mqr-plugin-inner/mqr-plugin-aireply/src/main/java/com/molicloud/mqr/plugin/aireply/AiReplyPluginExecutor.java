@@ -7,6 +7,7 @@ import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
 import com.molicloud.mqr.plugin.core.annotation.PJob;
 import com.molicloud.mqr.plugin.core.define.RobotDef;
+import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.plugin.core.event.MessageEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,16 +38,38 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     private static final String apiSecret = "itpk123456";
 
     @PHook(name = "AiReply",
+            equalsKeywords = { "设置聊天前缀" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
         String message = String.valueOf(pluginParam.getData());
         PluginResult pluginResult = new PluginResult();
+        if (ExecuteTriggerEnum.KEYWORD.equals(pluginParam.getExecuteTriggerEnum())) {
+            if (Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
+                pluginResult.setProcessed(true);
+                pluginResult.setHold(true);
+                pluginResult.setMessage("请在下条消息中告诉我前缀内容");
+            } else {
+                pluginResult.setProcessed(true);
+                pluginResult.setMessage("你没有权限设置聊天前缀");
+            }
+            return pluginResult;
+        } else if (ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum())) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage("聊天前缀已经设置为：".concat(message));
+            // 保存配置
+            saveHookSetting(message);
+            return pluginResult;
+        }
+
+        // 获取聊天前缀
+        String prefix = getHookSetting(String.class);
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
-                && !StrUtil.startWith(message, "#")) {
+                && StrUtil.isNotEmpty(prefix)
+                && !StrUtil.startWith(message, prefix)) {
             pluginResult.setProcessed(false);
         } else {
-            String reply = aiReply(message);
+            String reply = aiReply(message, prefix);
             pluginResult.setProcessed(true);
             pluginResult.setMessage(reply);
         }
@@ -64,9 +88,9 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         pushMessage(messageEvent);
     }
 
-    private String aiReply(String message) {
-        if (StrUtil.startWith(message, "#")) {
-            message = message.substring(1);
+    private String aiReply(String message, String prefix) {
+        if (StrUtil.isNotEmpty(prefix) && StrUtil.startWith(message, prefix)) {
+            message = message.substring(prefix.length());
         }
         String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, apiKey, apiSecret);
         return restTemplate.getForObject(aiUrl, String.class);
