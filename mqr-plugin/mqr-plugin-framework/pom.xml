@@ -74,6 +74,11 @@
         </dependency>
         <dependency>
             <groupId>com.molicloud.mqr</groupId>
+            <artifactId>mqr-plugin-signin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.molicloud.mqr</groupId>
             <artifactId>mqr-plugin-test</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
