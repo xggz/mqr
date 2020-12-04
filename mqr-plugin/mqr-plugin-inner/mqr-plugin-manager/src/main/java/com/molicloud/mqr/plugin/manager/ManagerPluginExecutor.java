@@ -1,5 +1,6 @@
 package com.molicloud.mqr.plugin.manager;
 
+import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
@@ -38,7 +39,14 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
      */
     private List<String> ids = new LinkedList<>();
 
-    @PHook(name = "Manager", startsKeywords = {"禁言", "解禁", "踢人"}, robotEvents = {
+    /**
+     * 指令列表
+     */
+    private String[] commands = {"禁言", "解禁", "踢人"};
+
+    @PHook(name = "Manager", startsKeywords = {
+            "禁言", "解禁", "踢人"
+    }, robotEvents = {
             RobotEventEnum.FRIEND_MSG,
             RobotEventEnum.GROUP_MSG,
     })
@@ -58,16 +66,16 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
                 return pluginResult;
             }
             String message = String.valueOf(pluginParam.getData());
-            String name = message.substring(0, 2); // 指令名称
+            String command = getCommand(message);
             List<AtDef> atDefs = pluginParam.getAts();
             ids = atDefs.stream().map(AtDef::getId).distinct().collect(Collectors.toList());
             if (ids.isEmpty()) {
                 pluginResult.setMessage("未选择操作对象");
                 return pluginResult;
             }
-            switch (name) {
+            switch (command) {
                 case "禁言":
-                    return mute(pluginResult, getArgs(pluginParam.getAts(), message));
+                    return mute(pluginResult, getArgsContent(atDefs, message));
                 case "解禁":
                     pluginResult.setAction(new UnmuteAction(ids));
                     break;
@@ -94,9 +102,12 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
             pluginResult.setMessage("指令错误");
             return pluginResult;
         }
+        log.debug(args);
         Integer seconds;
         String arg = args.replaceAll("[^\\u4e00-\\u9fa5]", "");
         String value = getArgNum(args);
+        log.debug(arg);
+        log.debug(value);
         if (value.isEmpty() || !isInteger(value)) {
             pluginResult.setMessage("禁言时间错误");
             return pluginResult;
@@ -135,16 +146,31 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
     }
 
     /**
-     * 获取消息指令
+     * 获取指令内容
      *
      * @param atDefs
      * @param message
      * @return
      */
-    private String getArgs(List<AtDef> atDefs, String message) {
+    private String getArgsContent(List<AtDef> atDefs, String message) {
         String content = message.substring(2).trim(); // 指令后面的内容
         for (AtDef atDef : atDefs) content = content.replaceAll(atDef.getNick(), "");
-        return content.trim(); // 指令
+        return content.trim();
+    }
+
+    /**
+     * 获取消息指令
+     *
+     * @param message
+     * @return
+     */
+    private String getCommand(String message) {
+        for (String command : commands) {
+            if (command != null && StrUtil.startWith(message, command)) {
+                return command;
+            }
+        }
+        return "";
     }
 
     private static boolean isInteger(String str) {
