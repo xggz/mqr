@@ -114,7 +114,7 @@ public class SignInPluginExecutor extends AbstractPluginExecutor {
         RobotPluginSignIn signInLog = new RobotPluginSignIn();
         signInLog.setQq(pluginParam.getFrom());
         signInLog.setGroupId(pluginParam.getTo());
-        signInLog.setIsContinuity(true);
+        signInLog.setIsContinuity(num > 1);
         signInLog.setMotto(hitokoto);
         signInLog.setNum(num);
         mapper.insert(signInLog);
