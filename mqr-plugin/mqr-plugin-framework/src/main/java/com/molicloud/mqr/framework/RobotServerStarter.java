@@ -81,6 +81,8 @@ public class RobotServerStarter {
             }
         });
         try {
+            // 注册QQ机器人事件监听
+            Events.registerEvents(bot, eventListeningHandler);
             // 登录QQ
             bot.login();
             robotInfoVo.setState(RobotStateEnum.ONLINE.getValue());
@@ -92,8 +94,6 @@ public class RobotServerStarter {
         sysSettingService.saveSysSetting(SettingEnum.ROBOT_INFO, robotInfoVo, RobotInfoVo.class);
         // 如果机器人已在线，则注册事件监听
         if (RobotStateEnum.ONLINE.getValue().equals(robotInfoVo.getState())) {
-            // 注册QQ机器人事件监听
-            Events.registerEvents(bot, eventListeningHandler);
             // 查找所有的群列表
             List<RobotDef.Group> groupList = bot.getGroups().stream().map(group -> new RobotDef.Group(String.valueOf(group.getId()), group.getName())).collect(Collectors.toList());
             robotDef.setGroupList(groupList);
