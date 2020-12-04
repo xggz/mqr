@@ -35,6 +35,11 @@ public class PluginParam<T> {
     private boolean at = false;
 
     /**
+     * 插件被触发关键字/词
+     */
+    private String keyword = "";
+
+    /**
      * 消息中的所有At信息
      */
     private List<AtDef> ats = new LinkedList<>();
