@@ -106,7 +106,7 @@ public class PluginUtil {
     }
 
     /**
-     * 获取插件被触发的关键字
+     * 获取插件被触发的关键字/词
      *
      * @param keywords
      * @param message
