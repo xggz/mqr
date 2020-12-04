@@ -102,12 +102,9 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
             pluginResult.setMessage("指令错误");
             return pluginResult;
         }
-        log.debug(args);
         Integer seconds;
         String arg = args.replaceAll("[^\\u4e00-\\u9fa5]", "");
         String value = getArgNum(args);
-        log.debug(arg);
-        log.debug(value);
         if (value.isEmpty() || !isInteger(value)) {
             pluginResult.setMessage("禁言时间错误");
             return pluginResult;
