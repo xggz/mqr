@@ -42,7 +42,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
     /**
      * 指令列表
      */
-    private String[] commands = {"禁言", "解禁", "踢人"};
+    private final String[] commands = {"禁言", "解禁", "踢人"};
 
     @PHook(name = "Manager", startsKeywords = {
             "禁言", "解禁", "踢人"
@@ -65,6 +65,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
                 pluginResult.setMessage(messageBuild);
                 return pluginResult;
             }
+
             String message = String.valueOf(pluginParam.getData());
             String command = getCommand(message);
             List<AtDef> atDefs = pluginParam.getAts();
@@ -81,7 +82,6 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
                     break;
                 case "踢人":
                     pluginResult.setAction(new KickAction(ids));
-                    break;
             }
             pluginResult.setMessage("操作成功");
         } else {
@@ -150,7 +150,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
      * @return
      */
     private String getArgsContent(List<AtDef> atDefs, String message) {
-        String content = message.substring(2).trim(); // 指令后面的内容
+        String content = message.replace(getCommand(message), "").trim(); // 指令后面的内容
         for (AtDef atDef : atDefs) content = content.replaceAll(atDef.getNick(), "");
         return content.trim();
     }
