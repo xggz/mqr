@@ -61,19 +61,19 @@ public class MessageUtil {
     /**
      * 转换PluginResult的data字段为QQ消息<br/>
      *
-     * 处理好友消息
+     * 处理好友或临时消息
      *
      * @param pluginResultData
-     * @param friend
+     * @param personal
      * @return
      */
-    public Message convertFriendMessage(Object pluginResultData, Friend friend) {
+    public Message convertPersonalMessage(Object pluginResultData, Object personal) {
         Message message = convertMessage(pluginResultData);
         if (message == null) {
             if (pluginResultData instanceof Img) {
-                return buildImageMessage(friend, ((Img) pluginResultData).getFileResource());
+                return buildImageMessage(personal, ((Img) pluginResultData).getFileResource());
             } else if (pluginResultData instanceof MessageBuild) {
-                return buildFriendSrcMessage((MessageBuild) pluginResultData, friend);
+                return buildPersonalSrcMessage((MessageBuild) pluginResultData, personal);
             }
         }
         return message;
@@ -130,16 +130,16 @@ public class MessageUtil {
      * 构建插件返回的好友原生消息
      *
      * @param messageBuild
-     * @param friend
+     * @param personal
      * @return
      */
-    private MessageChain buildFriendSrcMessage(MessageBuild messageBuild, Friend friend) {
+    private MessageChain buildPersonalSrcMessage(MessageBuild messageBuild, Object personal) {
         MessageChainBuilder messageChainBuilder = new MessageChainBuilder();
         messageBuild.getMakes().forEach(make -> {
             if (make instanceof Text) {
                 messageChainBuilder.append(((Text) make).getContent());
             } else if (make instanceof Img) {
-                messageChainBuilder.append(buildImageMessage(friend, ((Img) make).getFileResource()));
+                messageChainBuilder.append(buildImageMessage(personal, ((Img) make).getFileResource()));
             } else if (make instanceof Expression) {
                 messageChainBuilder.append(buildFaceMessage((Expression) make));
             }
@@ -185,7 +185,7 @@ public class MessageUtil {
     /**
      * 构建图片消息
      *
-     * @param sender Group Or Friend 对象
+     * @param sender Group Or Friend Or Member 对象
      * @param image
      * @return
      */
@@ -193,15 +193,21 @@ public class MessageUtil {
         if (image instanceof File) {
             return sender instanceof Group ?
                     ((Group) sender).uploadImage((File) image) :
-                    ((Friend) sender).uploadImage((File) image);
+                    (sender instanceof Member ?
+                            ((Member) sender).uploadImage((File) image) :
+                            ((Friend) sender).uploadImage((File) image));
         } else if (image instanceof URL) {
             return sender instanceof Group ?
                     ((Group) sender).uploadImage((URL) image) :
-                    ((Friend) sender).uploadImage((URL) image);
+                    (sender instanceof Member ?
+                            ((Member) sender).uploadImage((URL) image) :
+                            ((Friend) sender).uploadImage((URL) image));
         } else if (image instanceof InputStream) {
             return sender instanceof Group ?
                     ((Group) sender).uploadImage((InputStream) image) :
-                    ((Friend) sender).uploadImage((InputStream) image);
+                    (sender instanceof Member ?
+                            ((Member) sender).uploadImage((InputStream) image) :
+                            ((Friend) sender).uploadImage((InputStream) image));
         }
         return null;
     }

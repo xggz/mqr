@@ -1,9 +1,9 @@
 package com.molicloud.mqr.framework.handler;
 
+import com.molicloud.mqr.framework.listener.event.PluginResultEvent;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.define.AtDef;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
-import com.molicloud.mqr.framework.event.PluginResultEvent;
 import com.molicloud.mqr.framework.util.PluginUtil;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import net.mamoe.mirai.event.ListeningStatus;
 import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.message.FriendMessageEvent;
 import net.mamoe.mirai.message.GroupMessageEvent;
+import net.mamoe.mirai.message.TempMessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,26 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setTo(String.valueOf(event.getBot().getId()));
         pluginParam.setData(event.getMessage().contentToString());
         pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
+        // 处理消息事件
+        handlerMessageEvent(pluginParam);
+        // 保持监听
+        return ListeningStatus.LISTENING;
+    }
+
+    /**
+     * 监听群成员的临时消息
+     *
+     * @param event
+     * @return
+     */
+    @EventHandler
+    public ListeningStatus onTempMessage(TempMessageEvent event) {
+        // 实例化插件入参对象
+        PluginParam pluginParam = new PluginParam();
+        pluginParam.setFrom(String.valueOf(event.getSender().getId()));
+        pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+        pluginParam.setData(event.getMessage().contentToString());
+        pluginParam.setRobotEventEnum(RobotEventEnum.TEMP_MSG);
         // 处理消息事件
         handlerMessageEvent(pluginParam);
         // 保持监听

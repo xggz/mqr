@@ -2,7 +2,7 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.framework.PluginSettingInitialize;
+import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
 import com.molicloud.mqr.plugin.core.PluginContextHolder;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
@@ -11,7 +11,7 @@ import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginExecutorRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
-import com.molicloud.mqr.framework.event.PluginResultEvent;
+import com.molicloud.mqr.framework.listener.event.PluginResultEvent;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

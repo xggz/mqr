@@ -1,7 +1,7 @@
-package com.molicloud.mqr.framework.event;
+package com.molicloud.mqr.framework.listener;
 
 import com.molicloud.mqr.common.enums.SettingEnum;
-import com.molicloud.mqr.framework.PluginSettingInitialize;
+import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
 import com.molicloud.mqr.plugin.core.event.PluginSettingEvent;
 import com.molicloud.mqr.service.SysSettingService;
 import org.springframework.beans.factory.annotation.Autowired;

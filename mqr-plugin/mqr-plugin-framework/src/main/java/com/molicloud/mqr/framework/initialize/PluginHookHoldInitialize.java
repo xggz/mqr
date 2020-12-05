@@ -1,4 +1,4 @@
-package com.molicloud.mqr.framework;
+package com.molicloud.mqr.framework.initialize;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;

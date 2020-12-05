@@ -28,9 +28,14 @@ public class MessageEvent<T> {
     private Action action;
 
     /**
-     * 消息接收者数组
+     * 消息接收者数组（群或好友ID）
      */
     private List<String> toIds;
+
+    /**
+     * 处理ID（如临时消息的群ID，申请入群事件的群ID）
+     */
+    private String handlerId;
 
     /**
      * 机器人事件

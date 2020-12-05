@@ -60,4 +60,16 @@ public class ActionUtil {
             log.debug("好友消息不支持此动作");
         }
     }
+
+    /**
+     * 处理临时好友动作
+     *
+     * @param member
+     * @param action
+     */
+    public void handlerMemberAction(Member member, Action action) {
+        if (action != null) {
+            log.debug("临时好友消息不支持此动作");
+        }
+    }
 }

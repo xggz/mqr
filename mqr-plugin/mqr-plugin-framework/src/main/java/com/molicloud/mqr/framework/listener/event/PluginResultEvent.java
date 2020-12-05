@@ -1,4 +1,4 @@
-package com.molicloud.mqr.framework.event;
+package com.molicloud.mqr.framework.listener.event;
 
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
