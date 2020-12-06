@@ -121,7 +121,7 @@ public class EventListeningHandler extends SimpleListenerHost {
         pluginParam.setTo(String.valueOf(event.getGroup().getId()));
         pluginParam.setData(event.getMessage());
         pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN_REQUEST);
-        // 处理消息事件
+        // 处理入群申请事件
         handlerMemberJoinRequestEvent(pluginParam, event);
         // 保持监听
         return ListeningStatus.LISTENING;
@@ -152,8 +152,8 @@ public class EventListeningHandler extends SimpleListenerHost {
         }
         pluginParam.setData(memberJoinEnum);
         pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN);
-        // 处理消息事件
-        handlerMessageEvent(pluginParam);
+        // 处理已经加群事件
+        handlerMemberJoinEvent(pluginParam);
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -202,6 +202,19 @@ public class EventListeningHandler extends SimpleListenerHost {
                 }
             }
         }
+    }
+
+    /**
+     * 处理已经加群事件
+     *
+     * @param pluginParam
+     */
+    private void handlerMemberJoinEvent(PluginParam pluginParam) {
+        // 封装插件结果处理事件
+        PluginResultEvent pluginResultEvent = new PluginResultEvent();
+        pluginResultEvent.setPluginParam(pluginParam);
+        // 执行插件
+        PluginUtil.executePlugin(pluginResultEvent);
     }
 
     /**
