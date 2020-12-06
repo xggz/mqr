@@ -37,4 +37,42 @@ public class PluginResult<T> implements Serializable {
      * 回复消息
      */
     private T message;
+
+    /**
+     * 处理消息并回复消息和处理动作
+     *
+     * @param message
+     * @param action
+     * @param <T>
+     * @return
+     */
+    public static <T> PluginResult reply(T message, Action action) {
+        PluginResult pluginResult = new PluginResult();
+        pluginResult.setProcessed(true);
+        pluginResult.setAction(action);
+        pluginResult.setMessage(message);
+        return pluginResult;
+    }
+
+    /**
+     * 处理消息并回复消息，不处理动作
+     *
+     * @param message
+     * @param <T>
+     * @return
+     */
+    public static <T> PluginResult reply(T message) {
+        return reply(message, null);
+    }
+
+    /**
+     * 不处理消息
+     *
+     * @return
+     */
+    public static PluginResult noReply() {
+        PluginResult pluginResult = new PluginResult();
+        pluginResult.setProcessed(false);
+        return pluginResult;
+    }
 }
