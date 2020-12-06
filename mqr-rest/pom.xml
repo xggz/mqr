@@ -48,16 +48,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
-                <configuration>
-                    <mainClass>com.molicloud.mqr.RobotApplication</mainClass>
-                    <layout>ZIP</layout>
-                    <includes>
-                        <include>
-                            <groupId>nothing</groupId>
-                            <artifactId>nothing</artifactId>
-                        </include>
-                    </includes>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <mainClass>com.molicloud.mqr.RobotApplication</mainClass>-->
+<!--                    <layout>ZIP</layout>-->
+<!--                    <includes>-->
+<!--                        <include>-->
+<!--                            <groupId>nothing</groupId>-->
+<!--                            <artifactId>nothing</artifactId>-->
+<!--                        </include>-->
+<!--                    </includes>-->
+<!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
