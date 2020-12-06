@@ -10,7 +10,10 @@ import com.molicloud.mqr.plugin.core.action.UnmuteAction;
 import com.molicloud.mqr.plugin.core.annotation.PHook;
 import com.molicloud.mqr.plugin.core.define.AtDef;
 import com.molicloud.mqr.plugin.core.define.FaceDef;
+import com.molicloud.mqr.plugin.core.enums.ChoiceEnum;
+import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
+import com.molicloud.mqr.plugin.core.event.MessageEvent;
 import com.molicloud.mqr.plugin.core.message.MessageBuild;
 import com.molicloud.mqr.plugin.core.message.make.Ats;
 import com.molicloud.mqr.plugin.core.message.make.Expression;
@@ -44,50 +47,168 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
      */
     private final String[] commands = {"禁言", "解禁", "踢人"};
 
-    @PHook(name = "Manager", startsKeywords = {
-            "禁言", "解禁", "踢人"
-    }, robotEvents = {
-            RobotEventEnum.FRIEND_MSG,
-            RobotEventEnum.GROUP_MSG,
-    })
+    @PHook(name = "Manager",
+            listeningAllMessage = true,
+            startsKeywords = { "禁言", "解禁", "踢人" },
+            equalsKeywords = { "开启自动入群", "关闭自动入群", "开启入群欢迎", "关闭入群欢迎", "设置入群欢迎语" },
+            robotEvents = { RobotEventEnum.GROUP_MSG, RobotEventEnum.MEMBER_JOIN, RobotEventEnum.MEMBER_JOIN_REQUEST })
     public PluginResult messageHandler(PluginParam pluginParam) {
-        PluginResult pluginResult = new PluginResult();
-        pluginResult.setProcessed(true);
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
-            // 判断消息发送者是否为管理员
-            if (!Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
-                MessageBuild messageBuild = new MessageBuild();
-                Ats ats = new Ats();
-                ats.setMids(Arrays.asList(pluginParam.getFrom()));
-                ats.setContent("您没有权限执行该操作");
-                messageBuild.append(ats);
-                messageBuild.append(new Expression(FaceDef.zuohengheng));
-                pluginResult.setMessage(messageBuild);
-                return pluginResult;
-            }
+            return handlerYihao(pluginParam);
+        } else if (RobotEventEnum.MEMBER_JOIN.equals(pluginParam.getRobotEventEnum())) {
+            return handlerMemberJoinEvent(pluginParam);
+        } else if (RobotEventEnum.MEMBER_JOIN_REQUEST.equals(pluginParam.getRobotEventEnum())) {
+            return handlerMemberJoinRequestEvent(pluginParam);
+        }
+        return PluginResult.noReply();
+    }
 
-            String message = String.valueOf(pluginParam.getData());
-            String command = getCommand(message);
-            List<AtDef> atDefs = pluginParam.getAts();
-            ids = atDefs.stream().map(AtDef::getId).distinct().collect(Collectors.toList());
-            if (ids.isEmpty()) {
-                pluginResult.setMessage("未选择操作对象");
-                return pluginResult;
-            }
-            switch (command) {
-                case "禁言":
-                    return mute(pluginResult, getArgsContent(atDefs, message));
-                case "解禁":
-                    pluginResult.setAction(new UnmuteAction(ids));
-                    break;
-                case "踢人":
-                    pluginResult.setAction(new KickAction(ids));
-            }
-            pluginResult.setMessage("操作成功");
-        } else {
+    /**
+     * 禁言/解禁/踢人操作
+     *
+     * @return
+     */
+    private PluginResult handlerYihao(PluginParam pluginParam) {
+        if (!ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum()) &&
+                !ExecuteTriggerEnum.KEYWORD.equals(pluginParam.getExecuteTriggerEnum())) {
+            return PluginResult.noReply();
         }
 
+        // 实例化插件回复结果
+        PluginResult pluginResult = new PluginResult();
+        pluginResult.setProcessed(true);
+        // 判断消息发送者是否为管理员
+        if (!Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
+            MessageBuild messageBuild = new MessageBuild();
+            Ats ats = new Ats();
+            ats.setMids(Arrays.asList(pluginParam.getFrom()));
+            ats.setContent("您没有权限执行该操作");
+            messageBuild.append(ats);
+            messageBuild.append(new Expression(FaceDef.zuohengheng));
+            pluginResult.setMessage(messageBuild);
+            return pluginResult;
+        }
+
+        String message = String.valueOf(pluginParam.getData());
+        ManagerSetting managerSetting = getHookSetting(ManagerSetting.class);
+        if (managerSetting == null) {
+            managerSetting = new ManagerSetting();
+        }
+
+        // 判断是否通过主动持有进入
+        if (ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum())) {
+            managerSetting.setWelcomeMessage(pluginParam.getData().toString());
+            saveHookSetting(managerSetting);
+            pluginResult.setMessage("入群欢迎语设置成功");
+            return pluginResult;
+        }
+
+        switch (message) {
+            case "开启自动入群":
+                managerSetting.setAutoJoin(true);
+                saveHookSetting(managerSetting);
+                pluginResult.setMessage("自动同意加群已开启");
+                return pluginResult;
+            case "关闭自动入群":
+                managerSetting.setAutoJoin(false);
+                saveHookSetting(managerSetting);
+                pluginResult.setMessage("自动同意加群已关闭");
+                return pluginResult;
+            case "开启入群欢迎":
+                managerSetting.setAutoWelcomeMessage(true);
+                saveHookSetting(managerSetting);
+                pluginResult.setMessage("入群欢迎消息已开启");
+                return pluginResult;
+            case "关闭入群欢迎":
+                managerSetting.setAutoWelcomeMessage(false);
+                saveHookSetting(managerSetting);
+                pluginResult.setMessage("入群欢迎消息已关闭");
+                return pluginResult;
+            case "设置入群欢迎语":
+                Ats ats = new Ats();
+                ats.setMids(Arrays.asList(pluginParam.getFrom()));
+                ats.setContent("请在下条消息告诉我入群欢迎语");
+                pluginResult.setHold(true);
+                pluginResult.setMessage(ats);
+                return pluginResult;
+        }
+
+        String command = getCommand(message);
+        List<AtDef> atDefs = pluginParam.getAts();
+        ids = atDefs.stream().map(AtDef::getId).distinct().collect(Collectors.toList());
+        if (ids.isEmpty()) {
+            pluginResult.setMessage("未选择操作对象");
+            return pluginResult;
+        }
+        switch (command) {
+            case "禁言":
+                return mute(pluginResult, getArgsContent(atDefs, message));
+            case "解禁":
+                pluginResult.setAction(new UnmuteAction(ids));
+                break;
+            case "踢人":
+                pluginResult.setAction(new KickAction(ids));
+        }
+        pluginResult.setMessage("操作成功");
+
         return pluginResult;
+    }
+
+    /**
+     * 处理申请入群事件
+     *
+     * @param pluginParam
+     * @return
+     */
+    private PluginResult handlerMemberJoinRequestEvent(PluginParam pluginParam) {
+        // 获取管理配置
+        ManagerSetting managerSetting = getHookSetting(ManagerSetting.class);
+        // 如果配置不为空，且没有开启自动加群，则忽略此申请
+        if (managerSetting == null || !managerSetting.getAutoJoin()) {
+            return PluginResult.reply(ChoiceEnum.IGNORE);
+        }
+        // 判断是否开启了自动欢迎信息
+        if (managerSetting.getAutoWelcomeMessage()) {
+            // 推送欢迎进入的消息
+            pushWelcomeJoinMessage(pluginParam);
+        }
+        // 同意入群申请
+        return PluginResult.reply(ChoiceEnum.ACCEPT);
+    }
+
+    /**
+     * 处理成员已经加群事件
+     *
+     * @param pluginParam
+     * @return
+     */
+    private PluginResult handlerMemberJoinEvent(PluginParam pluginParam) {
+        // 获取管理配置
+        ManagerSetting managerSetting = getHookSetting(ManagerSetting.class);
+        if (managerSetting != null && managerSetting.getAutoWelcomeMessage()) {
+            // 推送欢迎进入的消息
+            pushWelcomeJoinMessage(pluginParam);
+        }
+        return PluginResult.reply(null);
+    }
+
+    /**
+     * 推送欢迎进入的消息
+     *
+     * @param pluginParam
+     */
+    private void pushWelcomeJoinMessage(PluginParam pluginParam) {
+        // 发送At消息
+        Ats ats = new Ats();
+        ats.setMids(Arrays.asList(pluginParam.getFrom()));
+        ats.setContent("欢迎入群！");
+
+        MessageEvent messageEvent = new MessageEvent();
+        messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
+        messageEvent.setToIds(Arrays.asList(pluginParam.getTo()));
+        messageEvent.setMessage(ats);
+        // 异步推送群消息
+        pushMessage(messageEvent);
     }
 
     /**
