@@ -26,7 +26,12 @@ public enum SettingEnum {
     /**
      * 插件钩子配置信息
      */
-    PLUGIN_HOOK("PLUGIN_HOOK", "插件钩子配置信息");
+    PLUGIN_HOOK("PLUGIN_HOOK", "插件钩子配置信息"),
+
+    /**
+     * 机器人允许名单配置
+     */
+    ROBOT_ALLOW_LIST("ROBOT_ALLOW_LIST", "机器人允许名单配置");
 
     private String name;
 

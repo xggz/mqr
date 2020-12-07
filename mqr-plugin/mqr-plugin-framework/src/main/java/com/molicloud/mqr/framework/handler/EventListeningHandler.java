@@ -1,5 +1,8 @@
 package com.molicloud.mqr.framework.handler;
 
+import cn.hutool.core.collection.CollUtil;
+import com.molicloud.mqr.common.define.RobotAllowList;
+import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.framework.listener.event.PluginResultEvent;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.define.AtDef;
@@ -7,6 +10,7 @@ import com.molicloud.mqr.plugin.core.enums.ChoiceEnum;
 import com.molicloud.mqr.plugin.core.enums.MemberJoinEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.util.PluginUtil;
+import com.molicloud.mqr.service.SysSettingService;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.EventHandler;
@@ -40,6 +44,9 @@ public class EventListeningHandler extends SimpleListenerHost {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
+    @Autowired
+    private SysSettingService sysSettingService;
+
     /**
      * 监听群消息
      *
@@ -48,19 +55,22 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onGroupMessage(GroupMessageEvent event) {
-        // 实例化插件入参对象
-        PluginParam pluginParam = new PluginParam();
-        pluginParam.setFrom(String.valueOf(event.getSender().getId()));
-        pluginParam.setTo(String.valueOf(event.getGroup().getId()));
-        pluginParam.setData(event.getMessage().contentToString());
-        pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
-        // 获取消息中的At信息
-        List<AtDef> atDefs = new LinkedList<>();
-        boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
-        pluginParam.setAt(isAt);
-        pluginParam.setAts(atDefs);
-        // 处理消息事件
-        handlerMessageEvent(pluginParam);
+        // 群白名单过滤
+        if (groupAllowListFilter(String.valueOf(event.getGroup().getId()))) {
+            // 实例化插件入参对象
+            PluginParam pluginParam = new PluginParam();
+            pluginParam.setFrom(String.valueOf(event.getSender().getId()));
+            pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+            pluginParam.setData(event.getMessage().contentToString());
+            pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
+            // 获取消息中的At信息
+            List<AtDef> atDefs = new LinkedList<>();
+            boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
+            pluginParam.setAt(isAt);
+            pluginParam.setAts(atDefs);
+            // 处理消息事件
+            handlerMessageEvent(pluginParam);
+        }
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -73,14 +83,17 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onFriendsMessage(FriendMessageEvent event) {
-        // 实例化插件入参对象
-        PluginParam pluginParam = new PluginParam();
-        pluginParam.setFrom(String.valueOf(event.getFriend().getId()));
-        pluginParam.setTo(String.valueOf(event.getBot().getId()));
-        pluginParam.setData(event.getMessage().contentToString());
-        pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
-        // 处理消息事件
-        handlerMessageEvent(pluginParam);
+        // 好友白名单过滤
+        if (friendAllowListFilter(String.valueOf(event.getFriend().getId()))) {
+            // 实例化插件入参对象
+            PluginParam pluginParam = new PluginParam();
+            pluginParam.setFrom(String.valueOf(event.getFriend().getId()));
+            pluginParam.setTo(String.valueOf(event.getBot().getId()));
+            pluginParam.setData(event.getMessage().contentToString());
+            pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
+            // 处理消息事件
+            handlerMessageEvent(pluginParam);
+        }
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -93,14 +106,17 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onTempMessage(TempMessageEvent event) {
-        // 实例化插件入参对象
-        PluginParam pluginParam = new PluginParam();
-        pluginParam.setFrom(String.valueOf(event.getSender().getId()));
-        pluginParam.setTo(String.valueOf(event.getGroup().getId()));
-        pluginParam.setData(event.getMessage().contentToString());
-        pluginParam.setRobotEventEnum(RobotEventEnum.TEMP_MSG);
-        // 处理消息事件
-        handlerMessageEvent(pluginParam);
+        // 好友白名单过滤
+        if (friendAllowListFilter(String.valueOf(event.getSender().getId()))) {
+            // 实例化插件入参对象
+            PluginParam pluginParam = new PluginParam();
+            pluginParam.setFrom(String.valueOf(event.getSender().getId()));
+            pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+            pluginParam.setData(event.getMessage().contentToString());
+            pluginParam.setRobotEventEnum(RobotEventEnum.TEMP_MSG);
+            // 处理消息事件
+            handlerMessageEvent(pluginParam);
+        }
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -115,14 +131,17 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onMemberJoinRequest(MemberJoinRequestEvent event) {
-        // 实例化插件入参对象
-        PluginParam pluginParam = new PluginParam();
-        pluginParam.setFrom(String.valueOf(event.getFromId()));
-        pluginParam.setTo(String.valueOf(event.getGroup().getId()));
-        pluginParam.setData(event.getMessage());
-        pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN_REQUEST);
-        // 处理入群申请事件
-        handlerMemberJoinRequestEvent(pluginParam, event);
+        // 群白名单过滤
+        if (groupAllowListFilter(String.valueOf(event.getGroup().getId()))) {
+            // 实例化插件入参对象
+            PluginParam pluginParam = new PluginParam();
+            pluginParam.setFrom(String.valueOf(event.getFromId()));
+            pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+            pluginParam.setData(event.getMessage());
+            pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN_REQUEST);
+            // 处理入群申请事件
+            handlerMemberJoinRequestEvent(pluginParam, event);
+        }
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -137,23 +156,26 @@ public class EventListeningHandler extends SimpleListenerHost {
      */
     @EventHandler
     public ListeningStatus onMemberJoin(MemberJoinEvent event) {
-        // 实例化插件入参对象
-        PluginParam pluginParam = new PluginParam();
-        pluginParam.setFrom(String.valueOf(event.getMember().getId()));
-        pluginParam.setTo(String.valueOf(event.getGroup().getId()));
-        // 入群方式
-        MemberJoinEnum memberJoinEnum = null;
-        if (event instanceof MemberJoinEvent.Invite) {
-            memberJoinEnum = MemberJoinEnum.INVITE;
-        } else if (event instanceof MemberJoinEvent.Active) {
-            memberJoinEnum = MemberJoinEnum.ACTIVE;
-        } else if (event instanceof MemberJoinEvent.Retrieve) {
-            memberJoinEnum = MemberJoinEnum.RETRIEVE;
+        // 群白名单过滤
+        if (groupAllowListFilter(String.valueOf(event.getGroup().getId()))) {
+            // 实例化插件入参对象
+            PluginParam pluginParam = new PluginParam();
+            pluginParam.setFrom(String.valueOf(event.getMember().getId()));
+            pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+            // 入群方式
+            MemberJoinEnum memberJoinEnum = null;
+            if (event instanceof MemberJoinEvent.Invite) {
+                memberJoinEnum = MemberJoinEnum.INVITE;
+            } else if (event instanceof MemberJoinEvent.Active) {
+                memberJoinEnum = MemberJoinEnum.ACTIVE;
+            } else if (event instanceof MemberJoinEvent.Retrieve) {
+                memberJoinEnum = MemberJoinEnum.RETRIEVE;
+            }
+            pluginParam.setData(memberJoinEnum);
+            pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN);
+            // 处理已经加群事件
+            handlerMemberJoinEvent(pluginParam);
         }
-        pluginParam.setData(memberJoinEnum);
-        pluginParam.setRobotEventEnum(RobotEventEnum.MEMBER_JOIN);
-        // 处理已经加群事件
-        handlerMemberJoinEvent(pluginParam);
         // 保持监听
         return ListeningStatus.LISTENING;
     }
@@ -240,5 +262,33 @@ public class EventListeningHandler extends SimpleListenerHost {
             }
         });
         return result.get();
+    }
+
+    /**
+     * 群白名单过滤
+     *
+     * @param groupId
+     * @return
+     */
+    private boolean groupAllowListFilter(String groupId) {
+        RobotAllowList robotAllowList = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_ALLOW_LIST, RobotAllowList.class);
+        if (robotAllowList != null && robotAllowList.getGroupAllowListSwitch()) {
+            return CollUtil.isNotEmpty(robotAllowList.getGroupAllowList()) && robotAllowList.getGroupAllowList().contains(groupId);
+        }
+        return true;
+    }
+
+    /**
+     * 好友白名单过滤
+     *
+     * @param friendId
+     * @return
+     */
+    private boolean friendAllowListFilter(String friendId) {
+        RobotAllowList robotAllowList = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_ALLOW_LIST, RobotAllowList.class);
+        if (robotAllowList != null && robotAllowList.getFriendAllowListSwitch()) {
+            return CollUtil.isNotEmpty(robotAllowList.getFriendAllowList()) && robotAllowList.getFriendAllowList().contains(friendId);
+        }
+        return true;
     }
 }

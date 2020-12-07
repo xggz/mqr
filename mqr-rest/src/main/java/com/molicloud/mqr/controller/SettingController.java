@@ -1,5 +1,6 @@
 package com.molicloud.mqr.controller;
 
+import com.molicloud.mqr.common.define.RobotAllowList;
 import com.molicloud.mqr.common.rest.Res;
 import com.molicloud.mqr.common.define.RobotVerify;
 import com.molicloud.mqr.common.dto.RobotInfoDto;
@@ -48,5 +49,15 @@ public class SettingController {
     @PostMapping("/robot-verify")
     public Res saveRobotVerify(@RequestParam("code") String code) {
         return Res.success(sysSettingService.saveSysSetting(SettingEnum.ROBOT_LOGIN_VERIFY_RESULT, code, String.class));
+    }
+
+    @GetMapping("/robot-allow-list")
+    public Res<RobotAllowList> getRobotAllowList() {
+        return Res.success(sysSettingService.getSysSettingByName(SettingEnum.ROBOT_ALLOW_LIST, RobotAllowList.class));
+    }
+
+    @PostMapping("/robot-allow-list")
+    public Res saveRobotAllowList(@RequestBody RobotAllowList robotAllowList) {
+        return Res.success(sysSettingService.saveSysSetting(SettingEnum.ROBOT_ALLOW_LIST, robotAllowList, RobotAllowList.class));
     }
 }
