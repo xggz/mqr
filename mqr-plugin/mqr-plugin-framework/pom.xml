@@ -82,6 +82,11 @@
             <artifactId>mqr-plugin-test</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.molicloud.mqr</groupId>
+            <artifactId>mqr-plugin-votekick</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- ================内部插件引用结束================ -->
     </dependencies>
 

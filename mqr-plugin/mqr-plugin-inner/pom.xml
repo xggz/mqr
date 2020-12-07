@@ -21,6 +21,7 @@
         <module>mqr-plugin-manager</module>
         <module>mqr-plugin-signin</module>
         <module>mqr-plugin-test</module>
+        <module>mqr-plugin-votekick</module>
     </modules>
 
 </project>
