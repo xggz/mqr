@@ -186,7 +186,8 @@ public class PluginExecutorRegistrar implements ApplicationContextAware, SmartIn
                     log.debug("Plugin PJob Method：{}", method.getName());
 
                     PluginJob pluginJob = new PluginJob();
-                    pluginJob.setName(beanDefinitionName.concat("->").concat(method.getName()));
+                    pluginJob.setId(beanDefinitionName.concat("->").concat(method.getName()));
+                    pluginJob.setHookName(pJob.hookName());
                     pluginJob.setCron(pJob.cron());
                     pluginJob.setPluginMethod(new PluginMethod(bean, method));
                     pluginJobRepository.add(pluginJob);

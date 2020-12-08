@@ -22,4 +22,13 @@ public @interface PJob {
      * @return
      */
     String cron();
+
+    /**
+     * 定义钩子名<br/>
+     *
+     * 定义钩子名后，执行任务时，可以在线程上下文中获取对应钩子的配置信息
+     *
+     * @return
+     */
+    String hookName() default "";
 }

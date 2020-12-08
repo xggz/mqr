@@ -14,9 +14,14 @@ import lombok.EqualsAndHashCode;
 public class PluginJob {
 
     /**
-     * 钩子名
+     * 任务ID
      */
-    private String name;
+    private String id;
+
+    /**
+     * 关联的钩子名
+     */
+    private String hookName;
 
     /**
      * cron表达式

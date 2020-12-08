@@ -1,12 +1,16 @@
 package com.molicloud.mqr.framework;
 
+import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.framework.common.PluginJob;
 import com.molicloud.mqr.framework.handler.EventListeningHandler;
 import com.molicloud.mqr.framework.handler.LoginVerifyHandler;
+import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
 import com.molicloud.mqr.framework.util.DeviceUtil;
+import com.molicloud.mqr.plugin.core.PluginContextHolder;
 import com.molicloud.mqr.plugin.core.RobotContextHolder;
+import com.molicloud.mqr.plugin.core.define.PluginSettingDef;
 import com.molicloud.mqr.plugin.core.define.RobotDef;
 import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
@@ -105,8 +109,16 @@ public class RobotServerStarter {
             // 获取插件计划任务，并添加到任务调度
             List<PluginJob> pluginJobRepository = PluginExecutorRegistrar.getPluginJobRepository();
             pluginJobRepository.stream().forEach(pluginJob -> {
-                pluginJobHandler.addTriggerTask(pluginJob.getName(), new TriggerTask(() -> {
+                pluginJobHandler.addTriggerTask(pluginJob.getId(), new TriggerTask(() -> {
                     try {
+                        // 在线程上下文中设置关联钩子的配置信息
+                        if (StrUtil.isNotBlank(pluginJob.getHookName())) {
+                            String settingValue = PluginSettingInitialize.getPluginSettingValue(pluginJob.getHookName());
+                            PluginSettingDef pluginSettingDef = new PluginSettingDef();
+                            pluginSettingDef.setName(pluginJob.getHookName());
+                            pluginSettingDef.setSettingValue(settingValue);
+                            PluginContextHolder.setSetting(pluginSettingDef);
+                        }
                         pluginJob.getPluginMethod().execute();
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
