@@ -1,5 +1,6 @@
 package com.molicloud.mqr.framework.util;
 
+import com.molicloud.mqr.plugin.core.HoldInfo;
 import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,31 +15,31 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PluginHookUtil {
 
     /**
-     * 机器人好友持有的插件钩子
+     * 机器人好友的持有信息
      */
-    private static final ConcurrentHashMap<String, String> friendHoldPluginHook = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, HoldInfo> friendHoldInfo = new ConcurrentHashMap<>();
 
     /**
-     * 群成员持有的插件钩子
+     * 群成员的持有信息
      */
-    private static final ConcurrentHashMap<String, String> groupMemberHoldPluginHook = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, HoldInfo> groupMemberHoldInfo = new ConcurrentHashMap<>();
 
     /**
-     * 获取所有机器人好友持有的插件钩子
+     * 获取所有机器人好友的持有信息
      *
      * @return
      */
-    public ConcurrentHashMap<String, String> getAllFriendHoldPluginHook() {
-        return friendHoldPluginHook;
+    public ConcurrentHashMap<String, HoldInfo> getAllFriendHoldInfo() {
+        return friendHoldInfo;
     }
 
     /**
-     * 根据好友ID获取插件钩子名
+     * 根据好友ID获取插件持有信息
      *
      * @return
      */
-    public String getFriendHoldPluginHookName(String fid) {
-        return friendHoldPluginHook.get(fid);
+    public HoldInfo getFriendHoldInfo(String fid) {
+        return friendHoldInfo.get(fid);
     }
 
     /**
@@ -46,12 +47,13 @@ public class PluginHookUtil {
      *
      * @param fid
      * @param name
+     * @param message
      * @param action
      * @return
      */
-    public boolean actionFriendPluginHook(String fid, String name, boolean action) {
-        boolean hasKey = friendHoldPluginHook.containsKey(fid);
-        return handlerAction(friendHoldPluginHook, name, fid, hasKey, action);
+    public boolean actionFriendPluginHook(String fid, String name, String message, boolean action) {
+        boolean hasKey = friendHoldInfo.containsKey(fid);
+        return handlerAction(friendHoldInfo, name, message, fid, hasKey, action);
     }
 
     /**
@@ -61,25 +63,25 @@ public class PluginHookUtil {
      * @return
      */
     public boolean friendHasPluginHook(String fid) {
-        return friendHoldPluginHook.containsKey(fid);
+        return friendHoldInfo.containsKey(fid);
     }
 
     /**
-     * 获取所有群成员持有的插件钩子
+     * 获取所有群成员的持有信息
      *
      * @return
      */
-    public static ConcurrentHashMap<String, String> getAllGroupMemberHoldPluginHook() {
-        return groupMemberHoldPluginHook;
+    public static ConcurrentHashMap<String, HoldInfo> getAllGroupMemberHoldInfo() {
+        return groupMemberHoldInfo;
     }
 
     /**
-     * 根据群成员ID获取插件钩子名
+     * 根据群成员ID获取插件持有信息
      *
      * @return
      */
-    public static String getGroupMemberHoldPluginHookName(String gid, String mid) {
-        return groupMemberHoldPluginHook.get(makeGroupMemberKey(gid, mid));
+    public static HoldInfo getGroupMemberHoldInfo(String gid, String mid) {
+        return groupMemberHoldInfo.get(makeGroupMemberKey(gid, mid));
     }
 
     /**
@@ -88,13 +90,14 @@ public class PluginHookUtil {
      * @param gid
      * @param mid
      * @param name
+     * @param message
      * @param action
      * @return
      */
-    public boolean actionGroupMemberPluginHook(String gid, String mid, String name, boolean action) {
+    public boolean actionGroupMemberPluginHook(String gid, String mid, String name, String message, boolean action) {
         String key = makeGroupMemberKey(gid, mid);
-        boolean hasKey = groupMemberHoldPluginHook.containsKey(key);
-        return handlerAction(groupMemberHoldPluginHook, name, key, hasKey, action);
+        boolean hasKey = groupMemberHoldInfo.containsKey(key);
+        return handlerAction(groupMemberHoldInfo, name, message, key, hasKey, action);
     }
 
     /**
@@ -105,7 +108,7 @@ public class PluginHookUtil {
      * @return
      */
     public boolean groupMemberHasPluginHook(String gid, String mid) {
-        return groupMemberHoldPluginHook.containsKey(makeGroupMemberKey(gid, mid));
+        return groupMemberHoldInfo.containsKey(makeGroupMemberKey(gid, mid));
     }
 
     /**
@@ -113,14 +116,18 @@ public class PluginHookUtil {
      *
      * @param pluginHookMap
      * @param name
+     * @param message
      * @param key
      * @param hasKey
      * @param action
      * @return
      */
-    private boolean handlerAction(ConcurrentHashMap<String, String> pluginHookMap, String name, String key, boolean hasKey, boolean action) {
-        if (action && (!hasKey || (hasKey && !name.equalsIgnoreCase(pluginHookMap.get(key))))) {
-            pluginHookMap.put(key, name);
+    private boolean handlerAction(ConcurrentHashMap<String, HoldInfo> pluginHookMap, String name, String message, String key, boolean hasKey, boolean action) {
+        if (action && (!hasKey || (hasKey && !name.equalsIgnoreCase(pluginHookMap.get(key).getHookName())))) {
+            HoldInfo holdInfo = new HoldInfo();
+            holdInfo.setHookName(name);
+            holdInfo.setMessage(message);
+            pluginHookMap.put(key, holdInfo);
             return true;
         } else if (!action && hasKey) {
             pluginHookMap.remove(key);

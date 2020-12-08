@@ -19,13 +19,15 @@ import org.springframework.stereotype.Service;
 public class RobotFriendServiceImpl extends ServiceImpl<RobotFriendMapper, RobotFriend> implements RobotFriendService {
 
     @Override
-    public void handlerHoldAction(String fid, boolean action, String pluginHookName) {
+    public void handlerHoldAction(String fid, boolean action, String pluginHookName, String message) {
         RobotFriend robotFriend = new RobotFriend();
         robotFriend.setFid(fid);
         if (action) {
             robotFriend.setHoldPluginHook(pluginHookName);
+            robotFriend.setHoldMessage(message);
         } else {
             robotFriend.setHoldPluginHook("");
+            robotFriend.setHoldMessage("");
         }
         this.saveOrUpdate(robotFriend, Wrappers.<RobotFriend>lambdaUpdate().eq(RobotFriend::getFid, fid));
     }

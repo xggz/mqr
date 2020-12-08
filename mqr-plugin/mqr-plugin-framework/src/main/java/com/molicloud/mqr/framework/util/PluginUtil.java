@@ -3,6 +3,7 @@ package com.molicloud.mqr.framework.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
+import com.molicloud.mqr.plugin.core.HoldInfo;
 import com.molicloud.mqr.plugin.core.PluginContextHolder;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
@@ -128,25 +129,26 @@ public class PluginUtil {
      * @return
      */
     private boolean executeHoldPluginHook(PluginResultEvent pluginResultEvent) {
-        // 插件钩子名
-        String name = null;
+        // 插件持有信息
+        HoldInfo holdInfo = null;
         // 插件入参
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
         // 判断群消息和好友消息的人是否持有对应的插件钩子
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
                 && PluginHookUtil.groupMemberHasPluginHook(pluginParam.getTo(), pluginParam.getFrom())) {
-            name = PluginHookUtil.getGroupMemberHoldPluginHookName(pluginParam.getTo(), pluginParam.getFrom());
+            holdInfo = PluginHookUtil.getGroupMemberHoldInfo(pluginParam.getTo(), pluginParam.getFrom());
         } else if (RobotEventEnum.FRIEND_MSG.equals(pluginParam.getRobotEventEnum())
                 && PluginHookUtil.friendHasPluginHook(pluginParam.getFrom())) {
-            name = PluginHookUtil.getFriendHoldPluginHookName(pluginParam.getFrom());
+            holdInfo = PluginHookUtil.getFriendHoldInfo(pluginParam.getFrom());
         }
 
-        if (StrUtil.isNotBlank(name)) {
+        if (holdInfo != null) {
             // 通过持有的插件钩子来执行
             pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.HOLD);
-            PluginResult pluginResult = executePluginHook(name, pluginParam);
+            pluginParam.setHoldMessage(holdInfo.getMessage());
+            PluginResult pluginResult = executePluginHook(holdInfo.getHookName(), pluginParam);
             if (pluginResult != null && pluginResult.getProcessed()) {
-                pluginResultEvent.setPluginHookName(name);
+                pluginResultEvent.setPluginHookName(holdInfo.getHookName());
                 pluginResultEvent.setPluginResult(pluginResult);
                 return true;
             }

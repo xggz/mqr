@@ -35,18 +35,18 @@ public class PluginHookHoldInitialize implements CommandLineRunner, Ordered {
     public void run(String... args) throws Exception {
         // 获取所有好友持有的插件钩子
         List<RobotFriend> robotFriendList = robotFriendService.list(Wrappers.<RobotFriend>lambdaQuery()
-                .isNull(RobotFriend::getHoldPluginHook)
-                .or().eq(RobotFriend::getHoldPluginHook, ""));
+                .isNotNull(RobotFriend::getHoldPluginHook)
+                .ne(RobotFriend::getHoldPluginHook, ""));
         if (CollUtil.isNotEmpty(robotFriendList)) {
-            robotFriendList.stream().forEach(robotFriend -> PluginHookUtil.actionFriendPluginHook(robotFriend.getFid(), robotFriend.getHoldPluginHook(), true));
+            robotFriendList.stream().forEach(robotFriend -> PluginHookUtil.actionFriendPluginHook(robotFriend.getFid(), robotFriend.getHoldPluginHook(), robotFriend.getHoldMessage(), true));
         }
 
         // 获取所有群成员持有的插件钩子
         List<RobotGroupMember> robotGroupMemberList = robotGroupMemberService.list(Wrappers.<RobotGroupMember>lambdaQuery()
-                .isNull(RobotGroupMember::getHoldPluginHook)
-                .or().eq(RobotGroupMember::getHoldPluginHook, ""));
+                .isNotNull(RobotGroupMember::getHoldPluginHook)
+                .ne(RobotGroupMember::getHoldPluginHook, ""));
         if (CollUtil.isNotEmpty(robotGroupMemberList)) {
-            robotGroupMemberList.stream().forEach(robotGroupMember -> PluginHookUtil.actionGroupMemberPluginHook(robotGroupMember.getGid(), robotGroupMember.getMid(), robotGroupMember.getHoldPluginHook(), true));
+            robotGroupMemberList.stream().forEach(robotGroupMember -> PluginHookUtil.actionGroupMemberPluginHook(robotGroupMember.getGid(), robotGroupMember.getMid(), robotGroupMember.getHoldPluginHook(), robotGroupMember.getHoldMessage(), true));
         }
     }
 

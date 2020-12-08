@@ -19,7 +19,8 @@ public interface RobotFriendService extends IService<RobotFriend> {
      * @param fid
      * @param action
      * @param pluginHookName
+     * @param message
      */
-    void handlerHoldAction(String fid, boolean action, String pluginHookName);
+    void handlerHoldAction(String fid, boolean action, String pluginHookName, String message);
 
 }

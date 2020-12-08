@@ -19,14 +19,16 @@ import org.springframework.stereotype.Service;
 public class RobotGroupMemberServiceImpl extends ServiceImpl<RobotGroupMemberMapper, RobotGroupMember> implements RobotGroupMemberService {
 
     @Override
-    public void handlerHoldAction(String gid, String mid, boolean action, String pluginHookName) {
+    public void handlerHoldAction(String gid, String mid, boolean action, String pluginHookName, String message) {
         RobotGroupMember robotGroupMember = new RobotGroupMember();
         robotGroupMember.setGid(gid);
         robotGroupMember.setMid(mid);
         if (action) {
             robotGroupMember.setHoldPluginHook(pluginHookName);
+            robotGroupMember.setHoldMessage(message);
         } else {
             robotGroupMember.setHoldPluginHook("");
+            robotGroupMember.setHoldMessage("");
         }
         this.saveOrUpdate(robotGroupMember, Wrappers.<RobotGroupMember>lambdaUpdate().eq(RobotGroupMember::getGid, gid).eq(RobotGroupMember::getMid, mid));
     }

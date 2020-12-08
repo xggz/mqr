@@ -84,8 +84,8 @@ public class PluginResultListener {
             ActionUtil.handlerGroupAction(group, pluginResult.getAction());
         }
         // 持有/释放插件钩子
-        if (PluginHookUtil.actionGroupMemberPluginHook(pluginParam.getTo(), pluginParam.getFrom(), hookName, pluginResult.getHold())) {
-            robotGroupMemberService.handlerHoldAction(pluginParam.getTo(), pluginParam.getFrom(), pluginResult.getHold(), hookName);
+        if (PluginHookUtil.actionGroupMemberPluginHook(pluginParam.getTo(), pluginParam.getFrom(), hookName, pluginParam.getData().toString(), pluginResult.getHold())) {
+            robotGroupMemberService.handlerHoldAction(pluginParam.getTo(), pluginParam.getFrom(), pluginResult.getHold(), hookName, pluginParam.getData().toString());
         }
     }
 
@@ -109,8 +109,8 @@ public class PluginResultListener {
             ActionUtil.handlerFriendAction(friend, pluginResult.getAction());
         }
         // 持有/释放插件钩子
-        if (PluginHookUtil.actionFriendPluginHook(pluginParam.getFrom(), hookName, pluginResult.getHold())) {
-            robotFriendService.handlerHoldAction(pluginParam.getFrom(), pluginResult.getHold(), hookName);
+        if (PluginHookUtil.actionFriendPluginHook(pluginParam.getFrom(), hookName, pluginParam.getData().toString(), pluginResult.getHold())) {
+            robotFriendService.handlerHoldAction(pluginParam.getFrom(), pluginResult.getHold(), hookName, pluginParam.getData().toString());
         }
     }
 
@@ -134,8 +134,8 @@ public class PluginResultListener {
             ActionUtil.handlerMemberAction(member, pluginResult.getAction());
         }
         // 持有/释放插件钩子
-        if (PluginHookUtil.actionFriendPluginHook(pluginParam.getFrom(), hookName, pluginResult.getHold())) {
-            robotFriendService.handlerHoldAction(pluginParam.getFrom(), pluginResult.getHold(), hookName);
+        if (PluginHookUtil.actionFriendPluginHook(pluginParam.getFrom(), hookName, pluginParam.getData().toString(), pluginResult.getHold())) {
+            robotFriendService.handlerHoldAction(pluginParam.getFrom(), pluginResult.getHold(), hookName, pluginParam.getData().toString());
         }
     }
 }

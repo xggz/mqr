@@ -50,6 +50,11 @@ public class PluginParam<T> {
     private T data;
 
     /**
+     * 持有的消息
+     */
+    private String holdMessage;
+
+    /**
      * 插件执行的触发类型枚举
      */
     private ExecuteTriggerEnum executeTriggerEnum;

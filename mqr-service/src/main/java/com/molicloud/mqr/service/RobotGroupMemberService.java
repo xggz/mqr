@@ -20,7 +20,7 @@ public interface RobotGroupMemberService extends IService<RobotGroupMember> {
      * @param mid
      * @param action
      * @param pluginHookName
+     * @param message
      */
-    void handlerHoldAction(String gid, String mid, boolean action, String pluginHookName);
-
+    void handlerHoldAction(String gid, String mid, boolean action, String pluginHookName, String message);
 }

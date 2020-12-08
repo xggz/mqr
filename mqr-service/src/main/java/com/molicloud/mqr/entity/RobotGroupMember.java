@@ -42,6 +42,9 @@ public class RobotGroupMember implements Serializable {
     @ApiModelProperty(value = "持有的插件钩子")
     private String holdPluginHook;
 
+    @ApiModelProperty(value = "持有的消息")
+    private String holdMessage;
+
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
