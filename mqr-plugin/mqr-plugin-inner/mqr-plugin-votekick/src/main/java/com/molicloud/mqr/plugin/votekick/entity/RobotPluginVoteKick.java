@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * <p>
@@ -58,4 +59,13 @@ public class RobotPluginVoteKick implements Serializable {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    public static class Setting {
+        /**
+         * 群配置
+         */
+        private Map<String, Map<String, String>> groups;
+    }
 }

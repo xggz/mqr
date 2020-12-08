@@ -22,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * 投票踢人插件
@@ -40,18 +43,24 @@ public class VoteKickPluginExecutor extends AbstractPluginExecutor {
     private MessageEvent messageEvent = new MessageEvent();
 
     /**
-     * 最大票决次数, TODO 按群设置
+     * 最大票决次数
      */
-    private final Integer maxNum = 10;
+    private Integer maxNum = 20;
 
     @PHook(name = "VoteKick",
             startsKeywords = {
             "投票踢人", "清空投票", "清空投票次数", "查询投票次数", "查看投票次数", "投票次数", "清空全部投票",
-            "清空所有投票",
+            "清空所有投票", "设置踢人票数上限"
     }, robotEvents = {
             RobotEventEnum.GROUP_MSG,
     })
     public PluginResult messageHandler(PluginParam pluginParam) {
+
+        RobotPluginVoteKick.Setting config = getHookSetting(RobotPluginVoteKick.Setting.class);
+
+        if (config != null && config.getGroups().get(pluginParam.getTo()) != null) {
+            maxNum = Integer.valueOf(config.getGroups().get(pluginParam.getTo()).get("max_num"));
+        }
 
         PluginResult pluginResult = new PluginResult();
         MessageBuild messageBuild = new MessageBuild();
@@ -69,7 +78,10 @@ public class VoteKickPluginExecutor extends AbstractPluginExecutor {
             }
 
             List<AtDef> atDefs = pluginParam.getAts();
-            if (!pluginParam.getKeyword().equals("清空全部投票") && atDefs.size() == 0) {
+            if (!pluginParam.getKeyword().equals("清空全部投票") &&
+                    !pluginParam.getKeyword().equals("设置踢人票数上限") &&
+                    atDefs.size() == 0
+            ) {
                 throw new Exception("请选择「@」群成员");
             }
             switch (pluginParam.getKeyword()) {
@@ -98,9 +110,8 @@ public class VoteKickPluginExecutor extends AbstractPluginExecutor {
                     if (num >= maxNum) {
                         Ats ats = new Ats();
                         ats.setMids(Arrays.asList(to.getId()));
-                        ats.setContent("票数已达上限，10 秒后你将会被移出本群");
                         messageBuild.append(ats);
-                        messageEvent.setMessage(messageBuild);
+                        messageBuild.append(new Text("票数已达上限，10 秒后你将会被移出本群"));
                         Thread thread = new Thread(() -> {
                             try {
                                 Thread.sleep(10000);
@@ -142,6 +153,21 @@ public class VoteKickPluginExecutor extends AbstractPluginExecutor {
                     mapper.delete(Wrappers.<RobotPluginVoteKick>lambdaQuery()
                             .eq(RobotPluginVoteKick::getGroupId, pluginParam.getTo()));
                     messageBuild.append(new Text("清空成功"));
+                    break;
+                case "设置踢人票数上限":
+                    if (!Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
+                        throw new Exception("您没有权限执行该操作");
+                    }
+                    String content = String.valueOf(pluginParam.getData()).replace(pluginParam.getKeyword(), "").trim();
+                    if (content.equals("") || !isInteger(content)) {
+                        throw new Exception("设置失败");
+                    }
+                    Map<String, String> map = new HashMap<>();
+                    assert config != null;
+                    map.put("max_num", content);
+                    config.getGroups().put(pluginParam.getTo(), map);
+                    saveHookSetting(config);
+                    messageBuild.append(new Text("设置成功"));
                     break;
                 default:
                     throw new Exception("错误指令");
@@ -209,6 +235,11 @@ public class VoteKickPluginExecutor extends AbstractPluginExecutor {
         pushMessage(messageEvent);
 
         return voteNum + 1;
+    }
+
+    private static boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
     }
 
     @Override
