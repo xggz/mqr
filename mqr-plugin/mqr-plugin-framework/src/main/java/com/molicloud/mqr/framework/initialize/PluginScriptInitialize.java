@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 插件脚本初始化
@@ -69,9 +70,9 @@ public class PluginScriptInitialize implements CommandLineRunner, Ordered {
                     robotPlugin.setUpdateTime(new Date());
                     updateList.add(robotPlugin);
                     if (pluginInfo.getUpdateScriptList() != null) {
-                        pluginInfo.getUpdateScriptList().forEach((ver, sql) -> {
-                            if (version > ver && StrUtil.isNotBlank(sql)) {
-                                sqlList.add(sql);
+                        pluginInfo.getUpdateScriptList().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEachOrdered(e -> {
+                            if (e.getKey() >= version && StrUtil.isNotBlank(e.getValue())) {
+                                sqlList.add(e.getValue());
                             }
                         });
                     }
