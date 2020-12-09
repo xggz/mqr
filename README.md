@@ -4,7 +4,7 @@
 采用mirai的Android协议实现的QQ机器人服务，可以通过[web页面](https://github.com/xggz/mqr-web)控制机器人的运行。
 
 ### 软件架构
-`MQR` 使用Java语言开发（jdk 8），技术栈：`Spring Boot` + `JWT` + `Mybatis Plus` + `Sqlite`，查看和运行源码的 IDE 需安装 lombok 插件。
+`MQR` 使用Java语言开发（jdk 8），技术栈：`Spring Boot` + `JWT` + `Mybatis Plus` + `Sqlite`，查看和运行源码的 IDE 需安装 `lombok` 插件。
 
 ### 运行程序和启动机器人
 本仓库代码默认已经集成了最新的web页面，程序（主程序在`mqr-rest`模块）运行成功之后，
@@ -13,6 +13,16 @@
 默认登录账号：`admin`，密码：`123456`
 
 登录成功之后设置机器人账号和密码，然后启动机器人运行，之后机器人会自动运行。
+
+### Docker运行
+#### 官方容器镜像服务：
+```
+docker pull xggz/mqr:latest
+```
+#### 阿里云容器镜像服务：
+```
+docker pull registry.cn-shenzhen.aliyuncs.com/xggz/mqr:latest
+```
 
 ### 声明
 #### 一切开发旨在学习，请勿用于非法用途
