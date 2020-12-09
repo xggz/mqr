@@ -10,5 +10,6 @@ target
 *.iws
 *.iml
 *.ipr
+
+### project ###
 deviceInfo-*.json
-*.png
