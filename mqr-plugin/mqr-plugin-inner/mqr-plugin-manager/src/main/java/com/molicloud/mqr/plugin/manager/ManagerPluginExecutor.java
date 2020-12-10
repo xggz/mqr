@@ -165,7 +165,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
         ManagerSetting managerSetting = getHookSetting(ManagerSetting.class);
         // 如果配置不为空，且没有开启自动加群，则忽略此申请
         if (managerSetting == null || !managerSetting.getAutoJoin()) {
-            return PluginResult.reply(ChoiceEnum.IGNORE);
+            return PluginResult.noReply();
         }
         // 判断是否开启了自动欢迎信息
         if (managerSetting.getAutoWelcomeMessage()) {
