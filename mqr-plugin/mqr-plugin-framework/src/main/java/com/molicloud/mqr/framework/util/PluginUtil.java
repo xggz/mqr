@@ -64,29 +64,25 @@ public class PluginUtil {
                 // 过滤关键字
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
                         .filter(pluginHook -> {
-                            boolean result = false;
                             String keyword = "";
                             String message = String.valueOf(pluginParam.getData());
                             if (CollUtil.isNotEmpty(pluginHook.getEqualsKeywords())) {
-                                result = pluginHook.getEqualsKeywords().contains(message);
                                 keyword = getKeyword(pluginHook.getEqualsKeywords(), message, KeywordTypeEnum.EQUALS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
-                                result = pluginHook.getStartsKeywords().stream().anyMatch(keywords -> StrUtil.startWith(message, keywords));
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
                                 keyword = getKeyword(pluginHook.getStartsKeywords(), message, KeywordTypeEnum.STARTS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
-                                result = pluginHook.getEndsKeywords().stream().anyMatch(keywords -> StrUtil.endWith(message, keywords));
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
                                 keyword = getKeyword(pluginHook.getEndsKeywords(), message, KeywordTypeEnum.ENDS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
-                                result = pluginHook.getContainsKeywords().stream().anyMatch(keywords -> StrUtil.contains(message, keywords));
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
                                 keyword = getKeyword(pluginHook.getContainsKeywords(), message, KeywordTypeEnum.CONTAINS);
                             }
-                            if (result) {
+                            if (StrUtil.isNotEmpty(keyword)) {
                                 hookKeywordMap.put(pluginHook.getName(), keyword);
+                                return true;
                             }
-                            return result;
+                            return false;
                         }).collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(keywordPluginHookList)) {
                     pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
