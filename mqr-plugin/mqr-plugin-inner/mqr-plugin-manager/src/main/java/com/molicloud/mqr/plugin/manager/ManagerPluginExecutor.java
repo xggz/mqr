@@ -170,7 +170,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
         // 判断是否开启了自动欢迎信息
         if (managerSetting.getAutoWelcomeMessage()) {
             // 推送欢迎进入的消息
-            pushWelcomeJoinMessage(pluginParam);
+            pushWelcomeJoinMessage(pluginParam, managerSetting.getWelcomeMessage());
         }
         // 同意入群申请
         return PluginResult.reply(ChoiceEnum.ACCEPT);
@@ -187,7 +187,7 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
         ManagerSetting managerSetting = getHookSetting(ManagerSetting.class);
         if (managerSetting != null && managerSetting.getAutoWelcomeMessage()) {
             // 推送欢迎进入的消息
-            pushWelcomeJoinMessage(pluginParam);
+            pushWelcomeJoinMessage(pluginParam, managerSetting.getWelcomeMessage());
         }
         return PluginResult.reply(null);
     }
@@ -196,12 +196,13 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
      * 推送欢迎进入的消息
      *
      * @param pluginParam
+     * @param welcomeMessage
      */
-    private void pushWelcomeJoinMessage(PluginParam pluginParam) {
+    private void pushWelcomeJoinMessage(PluginParam pluginParam, String welcomeMessage) {
         // 发送At消息
         Ats ats = new Ats();
         ats.setMids(Arrays.asList(pluginParam.getFrom()));
-        ats.setContent("欢迎入群！");
+        ats.setContent(welcomeMessage);
 
         MessageEvent messageEvent = new MessageEvent();
         messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
