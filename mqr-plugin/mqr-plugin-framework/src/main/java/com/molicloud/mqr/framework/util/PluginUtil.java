@@ -1,6 +1,7 @@
 package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
 import com.molicloud.mqr.plugin.core.HoldInfo;
@@ -9,6 +10,7 @@ import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.define.PluginSettingDef;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
+import com.molicloud.mqr.plugin.core.enums.KeywordTypeEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginExecutorRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
@@ -16,8 +18,7 @@ import com.molicloud.mqr.framework.listener.event.PluginResultEvent;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -58,36 +59,34 @@ public class PluginUtil {
         if (pluginParam.getData() instanceof String) {
             List<PluginHook> normalPluginHookList = PluginExecutorRegistrar.getNormalPluginHookList(pluginParam.getRobotEventEnum());
             if (CollUtil.isNotEmpty(normalPluginHookList)) {
+                // 记录钩子关键字
+                Map<String, String> hookKeywordMap = new HashMap<>();
                 // 过滤关键字
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
                         .filter(pluginHook -> {
-                            boolean result = false;
                             String keyword = "";
                             String message = String.valueOf(pluginParam.getData());
                             if (CollUtil.isNotEmpty(pluginHook.getEqualsKeywords())) {
-                                result = pluginHook.getEqualsKeywords().contains(message);
-                                keyword = getKeyword(pluginHook.getEqualsKeywords(), message);
+                                keyword = getKeyword(pluginHook.getEqualsKeywords(), message, KeywordTypeEnum.EQUALS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
-                                result = pluginHook.getStartsKeywords().stream().anyMatch(keywords -> StrUtil.startWith(message, keywords));
-                                keyword = getKeyword(pluginHook.getStartsKeywords(), message);
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
+                                keyword = getKeyword(pluginHook.getStartsKeywords(), message, KeywordTypeEnum.STARTS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
-                                result = pluginHook.getEndsKeywords().stream().anyMatch(keywords -> StrUtil.endWith(message, keywords));
-                                keyword = getKeyword(pluginHook.getEndsKeywords(), message);
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
+                                keyword = getKeyword(pluginHook.getEndsKeywords(), message, KeywordTypeEnum.ENDS);
                             }
-                            if (!result && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
-                                result = pluginHook.getContainsKeywords().stream().anyMatch(keywords -> StrUtil.contains(message, keywords));
-                                keyword = getKeyword(pluginHook.getContainsKeywords(), message);
+                            if (StrUtil.isEmpty(keyword) && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
+                                keyword = getKeyword(pluginHook.getContainsKeywords(), message, KeywordTypeEnum.CONTAINS);
                             }
-                            if (result) {
-                                pluginParam.setKeyword(keyword);
+                            if (StrUtil.isNotEmpty(keyword)) {
+                                hookKeywordMap.put(pluginHook.getName(), keyword);
+                                return true;
                             }
-                            return result;
+                            return false;
                         }).collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(keywordPluginHookList)) {
                     pluginParam.setExecuteTriggerEnum(ExecuteTriggerEnum.KEYWORD);
-                    if (executeAllPluginHook(keywordPluginHookList, pluginResultEvent)) {
+                    if (executeAllPluginHook(keywordPluginHookList, pluginResultEvent, hookKeywordMap)) {
                         return true;
                     }
                 }
@@ -113,13 +112,28 @@ public class PluginUtil {
      * @param message
      * @return
      */
-    private String getKeyword(Set<String> keywords, String message) {
-        for (String str : keywords) {
-            if (StrUtil.contains(message, str)) {
-                return str;
+    private String getKeyword(Set<String> keywords, String message, KeywordTypeEnum keywordTypeEnum) {
+        Optional<String> keywordOption = keywords.stream().filter(keyword -> {
+            boolean result = false;
+            switch (keywordTypeEnum) {
+                case EQUALS:
+                    result = keyword.equals(message);
+                    break;
+                case STARTS:
+                    result = StrUtil.startWith(message, keyword);
+                    break;
+                case ENDS:
+                    result = StrUtil.endWith(message, keyword);
+                    break;
+                case CONTAINS:
+                    result = StrUtil.contains(message, keyword);
+                    break;
+                default:
+                    break;
             }
-        }
-        return "";
+            return result;
+        }).findAny();
+        return keywordOption.orElse("");
     }
 
     /**
@@ -163,10 +177,24 @@ public class PluginUtil {
      * @return
      */
     private boolean executeAllPluginHook(List<PluginHook> pluginHookList, PluginResultEvent pluginResultEvent) {
+        return executeAllPluginHook(pluginHookList, pluginResultEvent, null);
+    }
+
+    /**
+     * 按照优先级执行所有插件
+     *
+     * @param pluginResultEvent
+     * @return
+     */
+    private boolean executeAllPluginHook(List<PluginHook> pluginHookList, PluginResultEvent pluginResultEvent, Map<String, String> hookKeywordMap) {
         // 插件入参
         PluginParam pluginParam = pluginResultEvent.getPluginParam();
         for (PluginHook pluginHook : pluginHookList) {
             if (pluginHook.getRobotEvents().contains(pluginParam.getRobotEventEnum())) {
+                // 如果钩子关键字不为空，放到插件入参中
+                if (MapUtil.isNotEmpty(hookKeywordMap) && StrUtil.isNotBlank(hookKeywordMap.get(pluginHook.getName()))) {
+                    pluginParam.setKeyword(hookKeywordMap.get(pluginHook.getName()));
+                }
                 PluginResult pluginResult = executePluginHook(pluginHook, pluginParam);
                 if (pluginResult != null && pluginResult.getProcessed()) {
                     pluginResultEvent.setPluginHookName(pluginHook.getName());
