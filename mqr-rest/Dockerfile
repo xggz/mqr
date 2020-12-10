@@ -4,13 +4,16 @@ MAINTAINER xggz "yyimba@qq.com"
 
 ENV TZ=Asia/Shanghai
 
+ARG DB_FILE
+ARG JAR_FILE
+
 RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 VOLUME /tmp
 
-ADD https://molicloud.oss-cn-hangzhou.aliyuncs.com/mqr/db/mqr-last.db /db/mqr.db
-COPY ./target/mqr-rest.jar /mqr-rest.jar
+ADD ${DB_FILE} /db/mqr.db
+ADD ${JAR_FILE}  mqr-rest.jar
 
 EXPOSE 8181
 
-ENTRYPOINT ["java", "-jar", "mqr-rest.jar"]
+ENTRYPOINT ["java", "-jar", "/mqr-rest.jar"]

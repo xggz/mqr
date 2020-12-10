@@ -67,14 +67,45 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.spotify</groupId>-->
+<!--                <artifactId>docker-maven-plugin</artifactId>-->
+<!--                <version>1.2.2</version>-->
+<!--                <configuration>-->
+<!--                    <forceTags>true</forceTags>-->
+<!--                    <imageName>xggz/mqr</imageName>-->
+<!--                    <dockerDirectory>${project.basedir}</dockerDirectory>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
             <plugin>
+                <!-- 插件地址 https://github.com/spotify/dockerfile-maven -->
                 <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>1.2.2</version>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <!--如果package时不想用docker打包,就注释掉这个goal-->
+                            <!-- <goal>build</goal>
+                             <goal>push</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <forceTags>true</forceTags>
-                    <imageName>xggz/mqr</imageName>
-                    <dockerDirectory>${project.basedir}</dockerDirectory>
+                    <!-- 指定 docker 构建空间目录 -->
+                    <contextDirectory>${project.parent.basedir}</contextDirectory>
+                    <!-- 指定 dockerfile 文件 -->
+                    <dockerfile>${project.parent.basedir}/mqr-rest/Dockerfile</dockerfile>
+                    <!-- 指定仓库名称 -->
+                    <repository>registry.cn-shenzhen.aliyuncs.com/xggz/mqr</repository>
+                    <!-- 指定版本号，默认是latest -->
+<!--                    <tag>${project.version}</tag>-->
+                    <buildArgs>
+                        <DB_FILE>db/mqr.db</DB_FILE>
+                        <JAR_FILE>mqr-rest/target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
                 </configuration>
             </plugin>
         </plugins>
