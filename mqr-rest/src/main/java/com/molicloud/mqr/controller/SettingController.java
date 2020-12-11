@@ -58,6 +58,10 @@ public class SettingController {
 
     @PostMapping("/robot-allow-list")
     public Res saveRobotAllowList(@RequestBody RobotAllowList robotAllowList) {
+        RobotInfoVo robotInfoVo = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_INFO, RobotInfoVo.class);
+        if (robotInfoVo != null && !RobotStateEnum.NOT_ENABLED.getValue().equals(robotInfoVo.getState())) {
+            return Res.failed("请先停止机器人运行后再编辑");
+        }
         return Res.success(sysSettingService.saveSysSetting(SettingEnum.ROBOT_ALLOW_LIST, robotAllowList, RobotAllowList.class));
     }
 }

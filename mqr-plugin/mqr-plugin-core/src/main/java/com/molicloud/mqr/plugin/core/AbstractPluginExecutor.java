@@ -109,11 +109,29 @@ public abstract class AbstractPluginExecutor implements PluginExecutor {
     }
 
     /**
+     * 获取群ID白名单
+     *
+     * @return
+     */
+    protected List<String> getGroupIdAllowList() {
+        return RobotContextHolder.getRobot().getGroupIdAllowList();
+    }
+
+    /**
      * 获取好友列表
      *
      * @return
      */
     protected List<RobotDef.Friend> getFriendList() {
         return RobotContextHolder.getRobot().getFriendList();
+    }
+
+    /**
+     * 获取好友ID白名单
+     *
+     * @return
+     */
+    protected List<String> getFriendIdAllowList() {
+        return RobotContextHolder.getRobot().getFriendIdAllowList();
     }
 }

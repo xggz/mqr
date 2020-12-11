@@ -36,9 +36,19 @@ public class RobotDef {
     private List<Group> groupList;
 
     /**
+     * 群ID列表
+     */
+    private List<String> groupIdAllowList;
+
+    /**
      * 好友列表
      */
     private List<Friend> friendList;
+
+    /**
+     * 好友ID列表
+     */
+    private List<String> friendIdAllowList;
 
     /**
      * 群信息

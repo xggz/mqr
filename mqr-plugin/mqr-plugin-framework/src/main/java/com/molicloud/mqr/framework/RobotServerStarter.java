@@ -1,6 +1,7 @@
 package com.molicloud.mqr.framework;
 
 import cn.hutool.core.util.StrUtil;
+import com.molicloud.mqr.common.define.RobotAllowList;
 import com.molicloud.mqr.common.enums.RobotStateEnum;
 import com.molicloud.mqr.common.enums.SettingEnum;
 import com.molicloud.mqr.framework.common.PluginJob;
@@ -104,6 +105,16 @@ public class RobotServerStarter {
             // 查找所有的好友列表
             List<RobotDef.Friend> friendList = bot.getFriends().stream().map(friend -> new RobotDef.Friend(String.valueOf(friend.getId()), friend.getNick())).collect(Collectors.toList());
             robotDef.setFriendList(friendList);
+            // 查询白名单
+            RobotAllowList robotAllowList = sysSettingService.getSysSettingByName(SettingEnum.ROBOT_ALLOW_LIST, RobotAllowList.class);
+            if (robotAllowList != null) {
+                if (robotAllowList.getGroupAllowListSwitch()) {
+                    robotDef.setGroupIdAllowList(robotAllowList.getGroupAllowList());
+                }
+                if (robotAllowList.getFriendAllowListSwitch()) {
+                    robotDef.setFriendIdAllowList(robotAllowList.getFriendAllowList());
+                }
+            }
             // 保存最新的机器人信息
             RobotContextHolder.setRobot(robotDef);
             // 获取插件计划任务，并添加到任务调度
