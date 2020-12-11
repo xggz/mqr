@@ -1,5 +1,6 @@
 package com.molicloud.mqr.plugin.aireply;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
@@ -15,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,32 +39,65 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     private static final String apiSecret = "itpk123456";
 
     @PHook(name = "AiReply",
-            equalsKeywords = { "设置聊天前缀" },
+            equalsKeywords = { "设置聊天前缀", "设置报时类型", "设置报时者名字" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
+        // 接收消息
         String message = String.valueOf(pluginParam.getData());
+        // 获取配置
+        AiRepltSetting aiRepltSetting = getHookSetting(AiRepltSetting.class);
+        if (aiRepltSetting == null) {
+            aiRepltSetting = new AiRepltSetting();
+        }
+        // 实例化回复对象
         PluginResult pluginResult = new PluginResult();
         if (ExecuteTriggerEnum.KEYWORD.equals(pluginParam.getExecuteTriggerEnum())) {
             if (Arrays.asList(getAdmins()).contains(pluginParam.getFrom())) {
-                pluginResult.setProcessed(true);
-                pluginResult.setHold(true);
-                pluginResult.setMessage("请在下条消息中告诉我前缀内容");
+                if ("设置聊天前缀".equals(pluginParam.getKeyword())) {
+                    pluginResult.setProcessed(true);
+                    pluginResult.setHold(true);
+                    pluginResult.setMessage("请在下条消息中告诉我前缀内容");
+                } else if ("设置报时类型".equals(pluginParam.getKeyword())) {
+                    pluginResult.setProcessed(true);
+                    pluginResult.setHold(true);
+                    pluginResult.setMessage("请回复编号（1：所有群，2：仅白名单内的群）");
+                } else if ("设置报时者名字".equals(pluginParam.getKeyword())) {
+                    pluginResult.setProcessed(true);
+                    pluginResult.setHold(true);
+                    pluginResult.setMessage("请在下条消息中告诉我报时者名字");
+                }
             } else {
                 pluginResult.setProcessed(true);
-                pluginResult.setMessage("你没有权限设置聊天前缀");
+                pluginResult.setMessage("你没有权限操作");
             }
             return pluginResult;
         } else if (ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum())) {
             pluginResult.setProcessed(true);
-            pluginResult.setMessage("聊天前缀已经设置为：".concat(message));
+            if ("设置聊天前缀".equals(pluginParam.getHoldMessage())) {
+                aiRepltSetting.setPrefix(message);
+                pluginResult.setMessage("聊天前缀已经设置为：".concat(message));
+            } else if ("设置报时类型".equals(pluginParam.getHoldMessage())) {
+                if (message.equals("1")) {
+                    aiRepltSetting.setTimerType(1);
+                    pluginResult.setMessage("已修改为给所有群报时");
+                } else if (message.equals("2")) {
+                    aiRepltSetting.setTimerType(2);
+                    pluginResult.setMessage("已修改为仅给白名单内的群报时");
+                } else {
+                    pluginResult.setMessage("设置无效");
+                }
+            } else if ("设置报时者名字".equals(pluginParam.getHoldMessage())) {
+                aiRepltSetting.setTimerName(message);
+                pluginResult.setMessage("报时者名字已经设置为：".concat(message));
+            }
             // 保存配置
-            saveHookSetting(message);
+            saveHookSetting(aiRepltSetting);
             return pluginResult;
         }
 
         // 获取聊天前缀
-        String prefix = getHookSetting(String.class);
+        String prefix = aiRepltSetting.getPrefix();
         if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
                 && StrUtil.isNotEmpty(prefix)
                 && !StrUtil.startWith(message, prefix)) {
@@ -76,16 +110,31 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         return pluginResult;
     }
 
-    @PJob(cron = "0 0 * * * ?")
+    @PJob(cron = "0 0 * * * ?", hookName = "AiReply")
     public void handlerTimer() {
         MessageEvent messageEvent = new MessageEvent();
         messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
-        // 获取所有群列表
-        List<RobotDef.Group> getGroupList = getGroupList();
-        // 整点报时发给所有群
-        messageEvent.setToIds(getGroupList.stream().map(RobotDef.Group::getId).collect(Collectors.toList()));
-        messageEvent.setMessage("整点报时：" + new Date().toString());
-        pushMessage(messageEvent);
+        // 获取配置
+        AiRepltSetting aiRepltSetting = getHookSetting(AiRepltSetting.class);
+        if (aiRepltSetting == null
+                || aiRepltSetting.getTimerType() == null
+                || aiRepltSetting.getTimerType() == 1) {
+            // 获取所有群列表
+            List<RobotDef.Group> getGroupList = getGroupList();
+            // 整点报时发给所有群
+            messageEvent.setToIds(getGroupList.stream().map(RobotDef.Group::getId).collect(Collectors.toList()));
+        } else {
+            // 获取所有的白名单群ID列表
+            List<String> groupIdList = getGroupIdAllowList();
+            // 整点报时发给所有群
+            messageEvent.setToIds(groupIdList);
+        }
+        if (CollUtil.isNotEmpty(messageEvent.getToIds())) {
+            Integer hour = LocalTime.now().getHour();
+            String name = aiRepltSetting == null || StrUtil.isBlank(aiRepltSetting.getTimerName()) ? "茉莉" : aiRepltSetting.getTimerName();
+            messageEvent.setMessage(getTipByHour(hour, name));
+            pushMessage(messageEvent);
+        }
     }
 
     private String aiReply(String message, String prefix) {
@@ -94,5 +143,93 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         }
         String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, apiKey, apiSecret);
         return restTemplate.getForObject(aiUrl, String.class);
+    }
+
+    /**
+     * 根据当前小时获取提示语
+     *
+     * @param hour
+     * @return
+     */
+    private String getTipByHour(Integer hour, String name) {
+        String tip = "";
+        switch (hour) {
+            case 0:
+                tip = "穿过挪威的森林，让我走进你梦里，夕阳落在我的铠甲，王子不一定骑白马，黑马王子四海为家。\r\n我是" + name + "，现在是凌晨十二点。";
+                break;
+            case 1:
+                tip = "凌晨一点了，你还瞪起眼睛像铜铃，如果实在睡不着，那就来找我聊天试试。";
+                break;
+            case 2:
+                tip = "凌晨两点了你咋个还没睡哦，这个世界上有很多爱你的人，所以你也要好好爱你个人哦。";
+                break;
+            case 3:
+                tip = "所有在梦想面前受的伤都可以忽略不计，如果我做得到，那你也可以，现在凌晨三点钟。";
+                break;
+            case 4:
+                tip = "上帝关上门肯定会为你开窗，记得有我给你们加油打气，我是" + name + "，现在是凌晨四点整。";
+                break;
+            case 5:
+                tip = "你的人生目标找到没，是不是还觉得世界不公平，不要害怕，有一天你也会闪闪发光，现在是清晨5点。";
+                break;
+            case 6:
+                tip = "我们用爱和希望来给世界做点缀，走在沙漠也会像在花丛中一样，现在是早上六点。";
+                break;
+            case 7:
+                tip = "现在是早上7点，" + name + "问候你早安。\r\n早餐是大脑活动的能量之源，请勿空腹开启一天的工作，早餐您吃了吗？";
+                break;
+            case 8:
+                tip = "天生我才那就必定有用，只要你还有梦，总有一天墙角也会盛开花，我是" + name + "，现在是早上八点，开启新的一天，掌声送给还在奋斗中的你。";
+                break;
+            case 9:
+                tip = "永远相信自己不一般，不管他们喜不喜欢，所以坚持你的道路勇往直前，现在是九点整，我是" + name;
+                break;
+            case 10:
+                tip = "我是" + name + "，现在是上午十点，我晓得你在想撒子，遇到困难不要怕，继续加把劲，努力向梦想顶端前进。";
+                break;
+            case 11:
+                tip = "现在是上午11点，工作半天了，" + name + "邀请您从电脑上移开视线，站起来伸个懒腰，看看窗外，快乐工作，快乐生活。";
+                break;
+            case 12:
+                tip = "现在是午间12点，享受午餐，享受放松时光，" + name + "祝你午餐好胃口。";
+                break;
+            case 13:
+                tip = "现在是午后1点，" + name + "提醒您休息片刻，下午的工作更有精神。";
+                break;
+            case 14:
+                tip = "现在是午后2点，开始下午的工作哦，" + name + "与你一起努力。";
+                break;
+            case 15:
+                tip = "青蛙都有机会变成王子，你也可以变得出类拔萃，现在是下午三点。";
+                break;
+            case 16:
+                tip = "不是每个人生来就是白马王子，但是这有啥关系喃，巴巴掌送给正在努力中的你，我是" + name + "，现在是下午四点。";
+                break;
+            case 17:
+                tip = "我们都是乖娃娃，现在是下午五点，你还不饿嗦，搞快去吃晚饭唠。";
+                break;
+            case 18:
+                tip = "现在是下午6点，" + name + "提示正在回家路上的你，注意安全，安全是亲人的期待。";
+                break;
+            case 19:
+                tip = "现在是晚上7点，" + name + "祝您晚餐好胃口，陪伴家人，享受亲情，幸福其实很简单。";
+                break;
+            case 20:
+                tip = "现在是晚上8点，无论是家人在一起，还是朋友在一起，" + name + "倡议放下手机，让我们的情感回归本源。";
+                break;
+            case 21:
+                tip = "现在是晚间9点，灯火璀璨，城市在夜色中绽放，" + name + "与你共享美丽夜色。";
+                break;
+            case 22:
+                tip = "现在是晚间10点，喧嚣退去，城市开始安静的呼吸。\r\n" + name + "提醒你早睡早起，有益身体的健康。";
+                break;
+            case 23:
+                tip = "现在是晚间11点，夜色深沉，繁星点点下的美丽城市，" + name + "与您走向梦的香甜！";
+                break;
+            default:
+                tip = "";
+                break;
+        }
+        return tip;
     }
 }
