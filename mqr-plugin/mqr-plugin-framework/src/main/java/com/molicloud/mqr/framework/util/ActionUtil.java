@@ -7,10 +7,7 @@ import com.molicloud.mqr.plugin.core.action.MuteAction;
 import com.molicloud.mqr.plugin.core.action.UnmuteAction;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import net.mamoe.mirai.contact.ContactList;
-import net.mamoe.mirai.contact.Friend;
-import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.Member;
+import net.mamoe.mirai.contact.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +31,8 @@ public class ActionUtil {
     public void handlerGroupAction(Group group, Action action) {
         if (action != null) {
             List<String> ids = action.getIds();
-            ContactList<Member> memberContactList = group.getMembers();
-            List<Member> memberList = ids.stream().map(mid -> memberContactList.get(Long.parseLong(mid))).collect(Collectors.toList());
+            ContactList<NormalMember> memberContactList = group.getMembers();
+            List<NormalMember> memberList = ids.stream().map(mid -> memberContactList.get(Long.parseLong(mid))).collect(Collectors.toList());
             if (CollUtil.isNotEmpty(memberList)) {
                 if (action instanceof MuteAction) {
                     MuteAction muteAction = (MuteAction) action;
@@ -43,7 +40,7 @@ public class ActionUtil {
                 } else if (action instanceof UnmuteAction) {
                     memberList.stream().forEach(member -> member.unmute());
                 } else if (action instanceof KickAction) {
-                    memberList.stream().forEach(member -> member.kick());
+                    memberList.stream().forEach(member -> member.kick(""));
                 }
             }
         }

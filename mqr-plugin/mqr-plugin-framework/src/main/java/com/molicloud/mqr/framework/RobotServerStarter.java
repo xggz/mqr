@@ -17,7 +17,7 @@ import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
-import net.mamoe.mirai.BotFactoryJvm;
+import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.Events;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.springframework.beans.BeanUtils;
@@ -62,7 +62,7 @@ public class RobotServerStarter {
         BeanUtils.copyProperties(robotInfoVo, robotDef);
         RobotContextHolder.setRobot(robotDef);
         // 初始化机器人对象
-        final Bot bot = BotFactoryJvm.newBot(Long.parseLong(robotInfoVo.getQq()), robotInfoVo.getPassword(), new BotConfiguration(){
+        final Bot bot = BotFactory.INSTANCE.newBot(Long.parseLong(robotInfoVo.getQq()), robotInfoVo.getPassword(), new BotConfiguration(){
             {
                 /**
                  * 加载设备信息
@@ -75,14 +75,19 @@ public class RobotServerStarter {
                 setLoginSolver(loginVerifyHandler);
 
                 /**
+                 * 使用安卓平板协议
+                 */
+                setProtocol(MiraiProtocol.ANDROID_PAD);
+
+                /**
                  * 不输出网络日志
                  */
-                // noNetworkLog();
+//                 noNetworkLog();
 
                 /**
                  * 不输出机器人日志
                  */
-                // noBotLog();
+//                 noBotLog();
             }
         });
         try {

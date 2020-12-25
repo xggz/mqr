@@ -13,14 +13,11 @@ import com.molicloud.mqr.framework.util.PluginUtil;
 import com.molicloud.mqr.service.SysSettingService;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
 import net.mamoe.mirai.event.SimpleListenerHost;
-import net.mamoe.mirai.event.events.MemberJoinEvent;
-import net.mamoe.mirai.event.events.MemberJoinRequestEvent;
-import net.mamoe.mirai.message.FriendMessageEvent;
-import net.mamoe.mirai.message.GroupMessageEvent;
-import net.mamoe.mirai.message.TempMessageEvent;
+import net.mamoe.mirai.event.events.*;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +62,7 @@ public class EventListeningHandler extends SimpleListenerHost {
             pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
             // 获取消息中的At信息
             List<AtDef> atDefs = new LinkedList<>();
-            boolean isAt = getAtInfo(event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
+            boolean isAt = getAtInfo(event.getGroup(), event.getMessage(), String.valueOf(event.getBot().getId()), atDefs);
             pluginParam.setAt(isAt);
             pluginParam.setAts(atDefs);
             // 处理消息事件
@@ -218,9 +215,9 @@ public class EventListeningHandler extends SimpleListenerHost {
                 if (choice.equals(ChoiceEnum.ACCEPT)) {
                     memberJoinRequestEvent.accept();
                 } else if (choice.equals(ChoiceEnum.REJECT)) {
-                    memberJoinRequestEvent.reject();
+                    memberJoinRequestEvent.reject(ChoiceEnum.REJECT.getBlacklist(), ChoiceEnum.REJECT.getMessage());
                 } else if (choice.equals(ChoiceEnum.IGNORE)) {
-                    memberJoinRequestEvent.ignore();
+                    memberJoinRequestEvent.ignore(ChoiceEnum.IGNORE.getBlacklist());
                 }
             }
         }
@@ -242,12 +239,13 @@ public class EventListeningHandler extends SimpleListenerHost {
     /**
      * 获取消息中的所有At信息，并返回机器人是否被At
      *
+     * @param group
      * @param messageChain
      * @param rid
      * @param atDefs
      * @return
      */
-    private boolean getAtInfo(MessageChain messageChain, String rid, List<AtDef> atDefs) {
+    private boolean getAtInfo(Group group, MessageChain messageChain, String rid, List<AtDef> atDefs) {
         AtomicBoolean result = new AtomicBoolean(false);
         messageChain.forEach(message -> {
             if (message instanceof At) {
@@ -257,7 +255,7 @@ public class EventListeningHandler extends SimpleListenerHost {
                 }
                 AtDef atDef = new AtDef();
                 atDef.setId(String.valueOf(at.getTarget()));
-                atDef.setNick(at.getDisplay());
+                atDef.setNick(at.getDisplay(group));
                 atDefs.add(atDef);
             }
         });

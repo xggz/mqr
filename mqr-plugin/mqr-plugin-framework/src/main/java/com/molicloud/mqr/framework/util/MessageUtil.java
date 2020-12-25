@@ -12,15 +12,13 @@ import com.molicloud.mqr.plugin.core.message.make.Text;
 import com.molicloud.mqr.plugin.core.message.single.Card;
 import com.molicloud.mqr.plugin.core.message.single.Share;
 import lombok.experimental.UtilityClass;
-import net.mamoe.mirai.contact.ContactList;
-import net.mamoe.mirai.contact.Friend;
-import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.Member;
+import net.mamoe.mirai.contact.*;
 import net.mamoe.mirai.message.data.*;
+import net.mamoe.mirai.utils.ExternalImage;
+import net.mamoe.mirai.utils.ExternalImageJvmKt;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -154,7 +152,7 @@ public class MessageUtil {
      * @return
      */
     private ServiceMessage buildShareMessage(Share share) {
-        return ServiceMessage.Templates.share(share.getUrl(), share.getTitle(), share.getContent(), share.getCoverUrl());
+        return RichMessage.Key.share(share.getUrl(), share.getTitle(), share.getContent(), share.getCoverUrl());
     }
 
     /**
@@ -167,10 +165,10 @@ public class MessageUtil {
     private MessageChain buildGroupAtMessage(Group group, Ats ats) {
         List<String> mids = ats.getMids();
         if (CollUtil.isNotEmpty(mids)) {
-            ContactList<Member> memberContactList = group.getMembers();
-            List<Member> memberList = mids.stream().map(mid -> memberContactList.get(Long.parseLong(mid))).collect(Collectors.toList());
+            ContactList<NormalMember> memberContactList = group.getMembers();
+            List<NormalMember> memberList = mids.stream().map(mid -> memberContactList.get(Long.parseLong(mid))).collect(Collectors.toList());
             if (CollUtil.isNotEmpty(memberList)) {
-                List<At> atList = memberList.stream().map(member -> new At(member)).collect(Collectors.toList());
+                List<At> atList = memberList.stream().map(member -> new At(member.getId())).collect(Collectors.toList());
                 MessageChainBuilder messageChainBuilder = new MessageChainBuilder();
                 atList.stream().forEach(at -> messageChainBuilder.append(at).append(" "));
                 if (StrUtil.isNotBlank(ats.getContent())) {
@@ -191,23 +189,19 @@ public class MessageUtil {
      */
     private Image buildImageMessage(Object sender, Object image) {
         if (image instanceof File) {
+            ExternalImage externalImage = ExternalImageJvmKt.toExternalImage((File) image);
             return sender instanceof Group ?
-                    ((Group) sender).uploadImage((File) image) :
+                    ((Group) sender).uploadImage(externalImage) :
                     (sender instanceof Member ?
-                            ((Member) sender).uploadImage((File) image) :
-                            ((Friend) sender).uploadImage((File) image));
-        } else if (image instanceof URL) {
-            return sender instanceof Group ?
-                    ((Group) sender).uploadImage((URL) image) :
-                    (sender instanceof Member ?
-                            ((Member) sender).uploadImage((URL) image) :
-                            ((Friend) sender).uploadImage((URL) image));
+                            ((Member) sender).uploadImage(externalImage) :
+                            ((Friend) sender).uploadImage(externalImage));
         } else if (image instanceof InputStream) {
+            ExternalImage externalImage = ExternalImageJvmKt.toExternalImage((InputStream) image);
             return sender instanceof Group ?
-                    ((Group) sender).uploadImage((InputStream) image) :
+                    ((Group) sender).uploadImage(externalImage) :
                     (sender instanceof Member ?
-                            ((Member) sender).uploadImage((InputStream) image) :
-                            ((Friend) sender).uploadImage((InputStream) image));
+                            ((Member) sender).uploadImage(externalImage) :
+                            ((Friend) sender).uploadImage(externalImage));
         }
         return null;
     }

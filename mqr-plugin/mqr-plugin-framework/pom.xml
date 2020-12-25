@@ -22,9 +22,8 @@
         <!-- mirai -->
         <dependency>
             <groupId>net.mamoe</groupId>
-            <artifactId>mirai-core-qqandroid</artifactId>
+            <artifactId>mirai-core-jvm</artifactId>
         </dependency>
-        <!-- kotlin-stdlib -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>

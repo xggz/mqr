@@ -44,17 +44,6 @@ public class Img extends Make {
     }
 
     /**
-     * 构建一个远程图片文件对象<br/>
-     *
-     * 【请注意】如果文件地址是https协议，请在程序运行主机安装ssl证书，否则文件资源无法请求
-     *
-     * @param fileUrl
-     */
-    public Img(URL fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    /**
      * 构建一个图片文件流对象
      *
      * @param fileInputStream
