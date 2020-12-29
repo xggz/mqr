@@ -22,4 +22,14 @@ public class AtDef {
      * 被At的昵称
      */
     private String nick;
+
+    /**
+     * 群名片
+     */
+    private String nameCard;
+
+    /**
+     * 备注
+     */
+    private String remark;
 }

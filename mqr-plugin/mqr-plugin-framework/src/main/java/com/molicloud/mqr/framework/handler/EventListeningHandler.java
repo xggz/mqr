@@ -14,6 +14,7 @@ import com.molicloud.mqr.service.SysSettingService;
 import kotlin.coroutines.CoroutineContext;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
 import net.mamoe.mirai.event.SimpleListenerHost;
@@ -253,9 +254,12 @@ public class EventListeningHandler extends SimpleListenerHost {
                 if (rid.equals(String.valueOf(at.getTarget()))) {
                     result.set(true);
                 }
+                Member member = group.get(at.getTarget());
                 AtDef atDef = new AtDef();
                 atDef.setId(String.valueOf(at.getTarget()));
-                atDef.setNick(at.getDisplay(group));
+                atDef.setNick(member.getNick());
+                atDef.setNameCard(member.getNameCard());
+                atDef.setRemark(member.getRemark());
                 atDefs.add(atDef);
             }
         });

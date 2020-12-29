@@ -12,10 +12,10 @@ import com.molicloud.mqr.plugin.core.message.make.Text;
 import com.molicloud.mqr.plugin.core.message.single.Card;
 import com.molicloud.mqr.plugin.core.message.single.Share;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.*;
 import net.mamoe.mirai.message.data.*;
-import net.mamoe.mirai.utils.ExternalImage;
-import net.mamoe.mirai.utils.ExternalImageJvmKt;
+import net.mamoe.mirai.utils.ExternalResource;
 
 import java.io.File;
 import java.io.InputStream;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  * @author feitao yyimba@qq.com
  * @since 2020/11/12 2:44 下午
  */
+@Slf4j
 @UtilityClass
 public class MessageUtil {
 
@@ -188,20 +189,24 @@ public class MessageUtil {
      * @return
      */
     private Image buildImageMessage(Object sender, Object image) {
-        if (image instanceof File) {
-            ExternalImage externalImage = ExternalImageJvmKt.toExternalImage((File) image);
-            return sender instanceof Group ?
-                    ((Group) sender).uploadImage(externalImage) :
-                    (sender instanceof Member ?
-                            ((Member) sender).uploadImage(externalImage) :
-                            ((Friend) sender).uploadImage(externalImage));
-        } else if (image instanceof InputStream) {
-            ExternalImage externalImage = ExternalImageJvmKt.toExternalImage((InputStream) image);
-            return sender instanceof Group ?
-                    ((Group) sender).uploadImage(externalImage) :
-                    (sender instanceof Member ?
-                            ((Member) sender).uploadImage(externalImage) :
-                            ((Friend) sender).uploadImage(externalImage));
+        try {
+            if (image instanceof File) {
+                ExternalResource externalImage = ExternalResource.create((File) image);
+                return sender instanceof Group ?
+                        ((Group) sender).uploadImage(externalImage) :
+                        (sender instanceof Member ?
+                                ((Member) sender).uploadImage(externalImage) :
+                                ((Friend) sender).uploadImage(externalImage));
+            } else if (image instanceof InputStream) {
+                ExternalResource externalImage = ExternalResource.create((InputStream) image);
+                return sender instanceof Group ?
+                        ((Group) sender).uploadImage(externalImage) :
+                        (sender instanceof Member ?
+                                ((Member) sender).uploadImage(externalImage) :
+                                ((Friend) sender).uploadImage(externalImage));
+            }
+        } catch (Exception e) {
+            log.error("文件消息转换失败", e);
         }
         return null;
     }

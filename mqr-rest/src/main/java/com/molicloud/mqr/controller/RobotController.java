@@ -74,7 +74,7 @@ public class RobotController {
             }
             try {
                 // 关闭机器人运行
-                Bot.getBotInstances().stream().forEach(bot -> bot.close(null));
+                Bot.getInstances().stream().forEach(bot -> bot.close(null));
                 // 取消所有计划任务
                 pluginJobHandler.cancelAllTriggerTask();
             } catch (Exception e) {
