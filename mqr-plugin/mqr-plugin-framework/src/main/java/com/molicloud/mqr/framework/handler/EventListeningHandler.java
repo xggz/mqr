@@ -103,7 +103,7 @@ public class EventListeningHandler extends SimpleListenerHost {
      * @return
      */
     @EventHandler
-    public ListeningStatus onTempMessage(TempMessageEvent event) {
+    public ListeningStatus onTempMessage(GroupTempMessageEvent event) {
         // 好友白名单过滤
         if (friendAllowListFilter(String.valueOf(event.getSender().getId()))) {
             // 实例化插件入参对象

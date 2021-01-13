@@ -18,7 +18,6 @@ import com.molicloud.mqr.common.vo.RobotInfoVo;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
-import net.mamoe.mirai.event.Events;
 import net.mamoe.mirai.utils.BotConfiguration;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +91,7 @@ public class RobotServerStarter {
         });
         try {
             // 注册QQ机器人事件监听
-            Events.registerEvents(bot, eventListeningHandler);
+            bot.getEventChannel().registerListenerHost(eventListeningHandler);
             // 登录QQ
             bot.login();
             robotInfoVo.setState(RobotStateEnum.ONLINE.getValue());
