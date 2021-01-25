@@ -32,7 +32,7 @@ public class DeviceInfo implements Serializable {
 
     private byte[] model = "MQR".getBytes();
 
-    private byte[] bootloader = "Moli".getBytes();
+    private byte[] bootloader = "unknown".getBytes();
 
     private byte[] fingerprint = "molicloud/Moli/Moli:10/MOLI.200122.001/".concat(RandomUtil.randomNumbers(7)).concat(":user/release-keys").getBytes();;
 
