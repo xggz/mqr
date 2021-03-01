@@ -36,10 +36,3 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     cache-enabled: false
     call-setters-on-nulls: true
-
-# 日志级别
-logging:
-  level:
-    com:
-      molicloud:
-        mqr: debug

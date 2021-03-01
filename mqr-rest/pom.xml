@@ -17,6 +17,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions><!-- 去掉springboot默认配置 -->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency> <!-- 引入log4j2依赖 -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
         <!-- jackson-datatype-jsr310 -->
         <dependency>
@@ -49,16 +59,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
-<!--                <configuration>-->
-<!--                    <mainClass>com.molicloud.mqr.RobotApplication</mainClass>-->
-<!--                    <layout>ZIP</layout>-->
-<!--                    <includes>-->
-<!--                        <include>-->
-<!--                            <groupId>nothing</groupId>-->
-<!--                            <artifactId>nothing</artifactId>-->
-<!--                        </include>-->
-<!--                    </includes>-->
-<!--                </configuration>-->
+                <!--                <configuration>-->
+                <!--                    <mainClass>com.molicloud.mqr.RobotApplication</mainClass>-->
+                <!--                    <layout>ZIP</layout>-->
+                <!--                    <includes>-->
+                <!--                        <include>-->
+                <!--                            <groupId>nothing</groupId>-->
+                <!--                            <artifactId>nothing</artifactId>-->
+                <!--                        </include>-->
+                <!--                    </includes>-->
+                <!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
@@ -67,16 +77,16 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>com.spotify</groupId>-->
-<!--                <artifactId>docker-maven-plugin</artifactId>-->
-<!--                <version>1.2.2</version>-->
-<!--                <configuration>-->
-<!--                    <forceTags>true</forceTags>-->
-<!--                    <imageName>xggz/mqr</imageName>-->
-<!--                    <dockerDirectory>${project.basedir}</dockerDirectory>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>com.spotify</groupId>-->
+            <!--                <artifactId>docker-maven-plugin</artifactId>-->
+            <!--                <version>1.2.2</version>-->
+            <!--                <configuration>-->
+            <!--                    <forceTags>true</forceTags>-->
+            <!--                    <imageName>xggz/mqr</imageName>-->
+            <!--                    <dockerDirectory>${project.basedir}</dockerDirectory>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
 
             <plugin>
                 <!-- 插件地址 https://github.com/spotify/dockerfile-maven -->
@@ -101,7 +111,7 @@
                     <!-- 指定仓库名称 -->
                     <repository>registry.cn-shenzhen.aliyuncs.com/xggz/mqr</repository>
                     <!-- 指定版本号，默认是latest -->
-<!--                    <tag>${project.version}</tag>-->
+                    <!--                    <tag>${project.version}</tag>-->
                     <buildArgs>
                         <DB_FILE>db/mqr.db</DB_FILE>
                         <JAR_FILE>mqr-rest/target/${project.build.finalName}.jar</JAR_FILE>

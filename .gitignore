@@ -1,5 +1,6 @@
 */target/
 target
+logs
 .gradle
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
