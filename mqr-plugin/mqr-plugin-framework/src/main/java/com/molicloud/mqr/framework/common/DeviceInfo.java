@@ -30,7 +30,7 @@ public class DeviceInfo implements Serializable {
 
     private byte[] brand = "molicloud".getBytes();
 
-    private byte[] model = "MQR".getBytes();
+    private byte[] model = "Moli".getBytes();
 
     private byte[] bootloader = "unknown".getBytes();
 

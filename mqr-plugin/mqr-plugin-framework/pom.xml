@@ -22,7 +22,7 @@
         <!-- mirai -->
         <dependency>
             <groupId>net.mamoe</groupId>
-            <artifactId>mirai-core</artifactId>
+            <artifactId>mirai-core-jvm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

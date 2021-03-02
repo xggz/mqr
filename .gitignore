@@ -1,5 +1,6 @@
 */target/
 target
+cache
 .gradle
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
