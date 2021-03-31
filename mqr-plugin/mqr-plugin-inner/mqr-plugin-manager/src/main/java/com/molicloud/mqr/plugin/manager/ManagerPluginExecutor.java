@@ -298,6 +298,9 @@ public class ManagerPluginExecutor extends AbstractPluginExecutor {
     }
 
     private static String getArgNum(String str) {
+        if (str.indexOf(" ") >= 0) {
+            str = str.split(" ")[1];
+        }
         String regEx="[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(str);
