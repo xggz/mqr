@@ -28,6 +28,10 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-core</artifactId>
+        </dependency>
         <!-- 插件核心依赖 -->
         <dependency>
             <groupId>com.molicloud.mqr</groupId>

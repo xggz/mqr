@@ -20,12 +20,13 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.4.21</kotlin.version>
+        <kotlin.version>1.4.31</kotlin.version>
+        <ktor.version>1.5.2</ktor.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
         <lombok.version>1.18.12</lombok.version>
-        <mamoe.version>2.4.1</mamoe.version>
+        <mamoe.version>2.5.1</mamoe.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <hutool.version>5.4.4</hutool.version>
         <java-jwt.version>3.11.0</java-jwt.version>
@@ -61,7 +62,11 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib</artifactId>
                 <version>${kotlin.version}</version>
-                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-client-core</artifactId>
+                <version>${ktor.version}</version>
             </dependency>
             <!-- hutool -->
             <dependency>
