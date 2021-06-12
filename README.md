@@ -24,6 +24,20 @@ docker pull xggz/mqr:latest
 docker pull registry.cn-shenzhen.aliyuncs.com/xggz/mqr:latest
 ```
 
+### 演示页面截图
+![demo1](demo/img.png)
+![demo2](demo/img_1.png)
+![demo3](demo/img_2.png)
+![demo4](demo/img_3.png)
+![demo5](demo/img_4.png)
+
+
+### 聊天对话API
+智能对话使用的是茉莉机器人`内测版`接口，请访问[http://aichat.itpk.cn](http://aichat.itpk.cn)获取智能聊天对话的`ApiKey`和`ApiSecret`。
+
+获取到机器人`ApiKey`和`ApiSecret`后，私聊机器人：
+![demo6](demo/img_5.png)
+
 ### 声明
 #### 一切开发旨在学习，请勿用于非法用途
 - mqr 是完全免费且开放源代码的软件，仅供学习和娱乐用途使用；

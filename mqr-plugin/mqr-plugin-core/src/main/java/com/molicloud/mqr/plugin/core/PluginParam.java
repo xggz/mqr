@@ -20,14 +20,24 @@ import java.util.List;
 public class PluginParam<T> {
 
     /**
-     * 消息发送者
+     * 消息发送者标识
      */
     private String from;
 
     /**
-     * 消息接收者
+     * 消息发送者昵称
+     */
+    private String fromName;
+
+    /**
+     * 消息接收者标识
      */
     private String to;
+
+    /**
+     * 消息接收者昵称
+     */
+    private String toName;
 
     /**
      * 机器人是否被At「@」

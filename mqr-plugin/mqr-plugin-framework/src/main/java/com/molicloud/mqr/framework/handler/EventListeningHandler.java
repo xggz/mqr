@@ -58,7 +58,9 @@ public class EventListeningHandler extends SimpleListenerHost {
             // 实例化插件入参对象
             PluginParam pluginParam = new PluginParam();
             pluginParam.setFrom(String.valueOf(event.getSender().getId()));
+            pluginParam.setFromName(event.getSender().getNick());
             pluginParam.setTo(String.valueOf(event.getGroup().getId()));
+            pluginParam.setToName(event.getGroup().getName());
             pluginParam.setData(event.getMessage().contentToString());
             pluginParam.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
             // 获取消息中的At信息
@@ -86,7 +88,9 @@ public class EventListeningHandler extends SimpleListenerHost {
             // 实例化插件入参对象
             PluginParam pluginParam = new PluginParam();
             pluginParam.setFrom(String.valueOf(event.getFriend().getId()));
+            pluginParam.setFromName(event.getFriend().getNick());
             pluginParam.setTo(String.valueOf(event.getBot().getId()));
+            pluginParam.setToName(event.getBot().getNick());
             pluginParam.setData(event.getMessage().contentToString());
             pluginParam.setRobotEventEnum(RobotEventEnum.FRIEND_MSG);
             // 处理消息事件

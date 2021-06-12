@@ -2,6 +2,8 @@ package com.molicloud.mqr.plugin.aireply;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
@@ -13,6 +15,9 @@ import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.plugin.core.event.MessageEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,12 +39,8 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     @Autowired
     private RestTemplate restTemplate;
 
-    // 茉莉机器人API，以下api仅供测试，如需自定义词库和机器人名字等，请前往官网获取，获取地址 http://www.itpk.cn
-    private static final String apiKey = "2efdd0243d746921c565225ca4fdf07b";
-    private static final String apiSecret = "itpk123456";
-
     @PHook(name = "AiReply",
-            equalsKeywords = { "设置聊天前缀", "设置报时类型", "设置报时者名字" },
+            equalsKeywords = { "设置聊天前缀", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
@@ -61,11 +62,15 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                 } else if ("设置报时类型".equals(pluginParam.getKeyword())) {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
-                    pluginResult.setMessage("请回复编号（1：所有群，2：仅白名单内的群）");
+                    pluginResult.setMessage("请回复编号（1：所有群，2：仅白名单内的群，3：关闭报时）");
                 } else if ("设置报时者名字".equals(pluginParam.getKeyword())) {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
                     pluginResult.setMessage("请在下条消息中告诉我报时者名字");
+                } else if ("设置聊天Api".equalsIgnoreCase(pluginParam.getKeyword())) {
+                    pluginResult.setProcessed(true);
+                    pluginResult.setHold(true);
+                    pluginResult.setMessage("请在下条消息中告诉我API信息！\r\n示例（前面ApiKey，后面ApiSecret，中间一个逗号）：\r\nc448e40247027896,ttttt888");
                 }
             } else {
                 pluginResult.setProcessed(true);
@@ -90,9 +95,30 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
             } else if ("设置报时者名字".equals(pluginParam.getHoldMessage())) {
                 aiRepltSetting.setTimerName(message);
                 pluginResult.setMessage("报时者名字已经设置为：".concat(message));
+            } else if ("设置聊天Api".equalsIgnoreCase(pluginParam.getHoldMessage())) {
+                if ("退出".equals(message)) {
+                    pluginResult.setMessage("已退出聊天API设置");
+                    return pluginResult;
+                }
+                String[] apiInfo = getApiInfo(message);
+                if (apiInfo == null || apiInfo.length != 2) {
+                    pluginResult.setHold(true);
+                    pluginResult.setMessage("聊天API信息格式不正确！\n继续设置示例（前面ApiKey，后面ApiSecret，中间一个逗号）：\r\nc448e40247027896,ttttt888\r\n退出设置请回复：退出");
+                    return pluginResult;
+                }
+                aiRepltSetting.setApiKey(apiInfo[0]);
+                aiRepltSetting.setApiSecret(apiInfo[1]);
+                pluginResult.setMessage("聊天API设置成功！");
             }
             // 保存配置
             saveHookSetting(aiRepltSetting);
+            return pluginResult;
+        }
+
+        // 判断聊天Api是否已设置
+        if (StrUtil.isBlank(aiRepltSetting.getApiKey()) || StrUtil.isBlank(aiRepltSetting.getApiSecret())) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage("请管理员设置聊天Api来开启闲聊功能（私聊机器人以下指令）：\r\n设置聊天Api");
             return pluginResult;
         }
 
@@ -103,7 +129,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                 && !StrUtil.startWith(message, prefix)) {
             pluginResult.setProcessed(false);
         } else {
-            String reply = aiReply(message, prefix);
+            String reply = aiReply(pluginParam, aiRepltSetting);
             pluginResult.setProcessed(true);
             pluginResult.setMessage(reply);
         }
@@ -112,10 +138,15 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
 
     @PJob(cron = "0 0 * * * ?", hookName = "AiReply")
     public void handlerTimer() {
-        MessageEvent messageEvent = new MessageEvent();
-        messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
         // 获取配置
         AiRepltSetting aiRepltSetting = getHookSetting(AiRepltSetting.class);
+        if (aiRepltSetting == null
+                || aiRepltSetting.getTimerType() == null
+                || aiRepltSetting.getTimerType() == 3) {
+            return;
+        }
+        MessageEvent messageEvent = new MessageEvent();
+        messageEvent.setRobotEventEnum(RobotEventEnum.GROUP_MSG);
         if (aiRepltSetting == null
                 || aiRepltSetting.getTimerType() == null
                 || aiRepltSetting.getTimerType() == 1) {
@@ -137,12 +168,65 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         }
     }
 
-    private String aiReply(String message, String prefix) {
+    private String aiReply(PluginParam pluginParam, AiRepltSetting aiRepltSetting) {
+        String prefix = aiRepltSetting.getPrefix();
+        String message = String.valueOf(pluginParam.getData());
         if (StrUtil.isNotEmpty(prefix) && StrUtil.startWith(message, prefix)) {
             message = message.substring(prefix.length());
         }
-        String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, apiKey, apiSecret);
-        return restTemplate.getForObject(aiUrl, String.class);
+
+        String aichatReply = aichat(message, aiRepltSetting, pluginParam);
+
+//        String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, aiRepltSetting.getApiKey(), aiRepltSetting.getApiSecret());
+//        restTemplate.getForObject(aiUrl, String.class);
+        return aichatReply;
+    }
+
+    private String aichat(String message, AiRepltSetting aiRepltSetting, PluginParam pluginParam) {
+        int type = pluginParam.getRobotEventEnum().equals(RobotEventEnum.GROUP_MSG) ? 2 : 1;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Api-Key", aiRepltSetting.getApiKey());
+        headers.add("Api-Secret", aiRepltSetting.getApiSecret());
+
+        JSONObject body = new JSONObject();
+        body.set("content", message);
+        body.set("type", type);
+        body.set("from", pluginParam.getFrom());
+        body.set("fromName", pluginParam.getFromName());
+        body.set("to", pluginParam.getTo());
+        body.set("toName", pluginParam.getToName());
+
+        HttpEntity<String> formEntity = new HttpEntity<String>(body.toString(), headers);
+        JSONObject json = restTemplate.postForEntity("http://openapi.itpk.cn/reply", formEntity, JSONObject.class).getBody();
+
+        if (!"00000".equals(json.getStr("code"))) {
+            return json.getStr("message").concat("请重新设置聊天API或联系管理员");
+        }
+        JSONArray dataArray = json.getJSONArray("data");
+        JSONObject data = (JSONObject) dataArray.get(0);
+        return data.getStr("content");
+    }
+
+    /**
+     * 从消息中获取Api信息
+     *
+     * @param message
+     * @return
+     */
+    private String[] getApiInfo(String message) {
+        if (message.indexOf(",") > 0) {
+            return message.split(",");
+        } else if (message.indexOf("，") > 0) {
+            return message.split("，");
+        } else if (message.indexOf(" ") > 0) {
+            return message.split(" ");
+        } else if (message.indexOf("\r\n") > 0) {
+            return message.split("\r\n");
+        } else if (message.indexOf("\n") > 0) {
+            return message.split("\n");
+        }
+        return null;
     }
 
     /**

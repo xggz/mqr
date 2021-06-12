@@ -19,7 +19,17 @@ public class AiRepltSetting {
     private String prefix;
 
     /**
-     * 报时类型（1：所有群，2：仅白名单内的群）
+     * apiKey（从 http://aichat.itpk.cn 获取）
+     */
+    private String apiKey;
+
+    /**
+     * apiSecret（从 http://aichat.itpk.cn 获取）
+     */
+    private String apiSecret;
+
+    /**
+     * 报时类型（1：所有群，2：仅白名单内的群，3：关闭报时）
      */
     private Integer timerType;
 
