@@ -89,6 +89,9 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                 } else if (message.equals("2")) {
                     aiRepltSetting.setTimerType(2);
                     pluginResult.setMessage("已修改为仅给白名单内的群报时");
+                } else if (message.equals("3")) {
+                    aiRepltSetting.setTimerType(3);
+                    pluginResult.setMessage("已关闭群报时功能");
                 } else {
                     pluginResult.setMessage("设置无效");
                 }
