@@ -54,12 +54,13 @@ public abstract class AbstractPluginExecutor implements PluginExecutor {
                     || object instanceof Long
                     || object instanceof Double) {
                 return (T) PluginContextHolder.getSetting().getSettingValue();
+            } else {
+                return new JSONObject(PluginContextHolder.getSetting().getSettingValue()).toBean(clazz);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return null;
         }
-        return new JSONObject(PluginContextHolder.getSetting().getSettingValue()).toBean(clazz);
+        return null;
     }
 
     /**
