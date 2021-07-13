@@ -233,7 +233,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
             return data.getStr("content");
         } else if (OpenApiMessageTyped.IMAGE.getValue().equals(typed)) {
             try {
-                URL url = new URL(data.getStr("content"));
+                URL url = new URL("https://files.molicloud.com/".concat(data.getStr("content")));
                 return new Img(url.openStream());
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
