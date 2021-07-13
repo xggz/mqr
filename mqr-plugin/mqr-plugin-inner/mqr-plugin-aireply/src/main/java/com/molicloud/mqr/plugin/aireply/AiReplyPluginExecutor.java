@@ -13,6 +13,7 @@ import com.molicloud.mqr.plugin.core.define.RobotDef;
 import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.plugin.core.event.MessageEvent;
+import com.molicloud.mqr.plugin.core.message.make.Img;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URL;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -132,9 +134,28 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                 && !StrUtil.startWith(message, prefix)) {
             pluginResult.setProcessed(false);
         } else {
-            String reply = aiReply(pluginParam, aiRepltSetting);
             pluginResult.setProcessed(true);
-            pluginResult.setMessage(reply);
+            JSONObject reply = aiReply(pluginParam, aiRepltSetting);
+            if (!"00000".equals(reply.getStr("code"))) {
+                pluginResult.setMessage(reply.getStr("message").concat(" 请重新设置聊天API或联系管理员"));
+            } else {
+                JSONArray dataArray = reply.getJSONArray("data");
+                for (int i = 0; i < dataArray.size() - 1; i++) {
+                    JSONObject data = (JSONObject) dataArray.get(i);
+                    Object info = convertMessageData(data);
+                    if (info != null) {
+                        MessageEvent messageEvent = new MessageEvent();
+                        messageEvent.setRobotEventEnum(pluginParam.getRobotEventEnum());
+                        messageEvent.setToIds(Arrays.asList(pluginParam.getTo()));
+                        messageEvent.setMessage(info);
+                        pushMessage(messageEvent);
+                    }
+                }
+
+                // 最后一条消息返回发送
+                JSONObject lastData = (JSONObject) dataArray.get(dataArray.size()-1);
+                pluginResult.setMessage(convertMessageData(lastData));
+            }
         }
         return pluginResult;
     }
@@ -171,21 +192,17 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         }
     }
 
-    private String aiReply(PluginParam pluginParam, AiRepltSetting aiRepltSetting) {
+    private JSONObject aiReply(PluginParam pluginParam, AiRepltSetting aiRepltSetting) {
         String prefix = aiRepltSetting.getPrefix();
         String message = String.valueOf(pluginParam.getData());
         if (StrUtil.isNotEmpty(prefix) && StrUtil.startWith(message, prefix)) {
             message = message.substring(prefix.length());
         }
 
-        String aichatReply = aichat(message, aiRepltSetting, pluginParam);
-
-//        String aiUrl = String.format("http://i.itpk.cn/api.php?question=%s&api_key=%s&api_secret=%s", message, aiRepltSetting.getApiKey(), aiRepltSetting.getApiSecret());
-//        restTemplate.getForObject(aiUrl, String.class);
-        return aichatReply;
+        return aichat(message, aiRepltSetting, pluginParam);
     }
 
-    private String aichat(String message, AiRepltSetting aiRepltSetting, PluginParam pluginParam) {
+    private JSONObject aichat(String message, AiRepltSetting aiRepltSetting, PluginParam pluginParam) {
         int type = pluginParam.getRobotEventEnum().equals(RobotEventEnum.GROUP_MSG) ? 2 : 1;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -201,14 +218,30 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         body.set("toName", pluginParam.getToName());
 
         HttpEntity<String> formEntity = new HttpEntity<String>(body.toString(), headers);
-        JSONObject json = restTemplate.postForEntity("http://openapi.itpk.cn/reply", formEntity, JSONObject.class).getBody();
+        return restTemplate.postForEntity("http://openapi.itpk.cn/reply", formEntity, JSONObject.class).getBody();
+    }
 
-        if (!"00000".equals(json.getStr("code"))) {
-            return json.getStr("message").concat("请重新设置聊天API或联系管理员");
+    /**
+     * 转换消息数据
+     *
+     * @param data
+     * @return
+     */
+    private Object convertMessageData(JSONObject data) {
+        Integer typed = data.getInt("typed");
+        if (OpenApiMessageTyped.TEXT.getValue().equals(typed)) {
+            return data.getStr("content");
+        } else if (OpenApiMessageTyped.IMAGE.getValue().equals(typed)) {
+            try {
+                URL url = new URL(data.getStr("content"));
+                return new Img(url.openStream());
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        } else {
+            return data.getStr("remark");
         }
-        JSONArray dataArray = json.getJSONArray("data");
-        JSONObject data = (JSONObject) dataArray.get(0);
-        return data.getStr("content");
+        return null;
     }
 
     /**
