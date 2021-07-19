@@ -117,16 +117,16 @@ public class PluginUtil {
             boolean result = false;
             switch (keywordTypeEnum) {
                 case EQUALS:
-                    result = keyword.equals(message);
+                    result = keyword.equalsIgnoreCase(message);
                     break;
                 case STARTS:
-                    result = StrUtil.startWith(message, keyword);
+                    result = StrUtil.startWith(message, keyword, true);
                     break;
                 case ENDS:
-                    result = StrUtil.endWith(message, keyword);
+                    result = StrUtil.endWith(message, keyword, true);
                     break;
                 case CONTAINS:
-                    result = StrUtil.contains(message, keyword);
+                    result = StrUtil.containsIgnoreCase(message, keyword);
                     break;
                 default:
                     break;
