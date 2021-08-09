@@ -42,7 +42,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     private RestTemplate restTemplate;
 
     @PHook(name = "AiReply",
-            equalsKeywords = { "设置聊天前缀", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
+            equalsKeywords = { "设置聊天前缀", "取消聊天前缀", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
@@ -61,6 +61,12 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
                     pluginResult.setMessage("请在下条消息中告诉我前缀内容");
+                } else if ("取消聊天前缀".equals(pluginParam.getKeyword())) {
+                    // 保存配置
+                    aiRepltSetting.setPrefix("");
+                    saveHookSetting(aiRepltSetting);
+                    pluginResult.setProcessed(true);
+                    pluginResult.setMessage("聊天前缀取消成功");
                 } else if ("设置报时类型".equals(pluginParam.getKeyword())) {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
