@@ -33,7 +33,7 @@ docker pull registry.cn-shenzhen.aliyuncs.com/xggz/mqr:latest
 
 
 ### 聊天对话API
-智能对话使用的是茉莉机器人`内测版`接口，请访问[http://aichat.itpk.cn](http://aichat.itpk.cn)获取智能聊天对话的`ApiKey`和`ApiSecret`。
+智能对话使用的是茉莉机器人`内测版`接口，请访问[https://mly.app](https://mly.app)获取智能聊天对话的`ApiKey`和`ApiSecret`。
 
 获取到机器人`ApiKey`和`ApiSecret`后，私聊机器人：
 ![demo6](demo/img_5.png)
