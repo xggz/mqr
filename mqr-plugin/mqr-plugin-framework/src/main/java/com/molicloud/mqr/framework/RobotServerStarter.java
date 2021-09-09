@@ -76,7 +76,7 @@ public class RobotServerStarter {
                 /**
                  * 使用安卓平板协议
                  */
-                setProtocol(MiraiProtocol.ANDROID_PAD);
+                setProtocol(MiraiProtocol.ANDROID_PHONE);
 
                 /**
                  * 不输出网络日志
