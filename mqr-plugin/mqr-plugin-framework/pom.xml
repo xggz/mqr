@@ -32,6 +32,10 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+        </dependency>
         <!-- 插件核心依赖 -->
         <dependency>
             <groupId>com.molicloud.mqr</groupId>
