@@ -23,6 +23,7 @@
         <module>mqr-plugin-test</module>
         <module>mqr-plugin-votekick</module>
         <module>mqr-plugin-dyurl</module>
+        <module>mqr-plugin-avatar</module>
     </modules>
 
 </project>
