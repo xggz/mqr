@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -28,6 +29,21 @@ import java.net.URL;
 @Slf4j
 @Component
 public class AvatarPluginExecutor extends AbstractPluginExecutor {
+
+    private static BufferedImage pressImage = null;
+
+    static {
+        try {
+            File configFile = FileUtil.file("gq-left2.png");
+            if (!configFile.exists()) {
+                InputStream in = AvatarPluginExecutor.class.getClassLoader().getResourceAsStream("/gq-left2.png");
+                FileUtil.writeFromStream(in, configFile);
+            }
+            pressImage = ImgUtil.read(configFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @PHook(name = "Avatar",
             equalsKeywords = { "我的国旗头像" },
@@ -57,8 +73,6 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         int srcImgWidth = srcImage.getWidth();
         int srcImgHeight = srcImage.getHeight();
 
-        BufferedImage pressImage = ImgUtil.read("gq-left2.png");
-
         int scaleSize = srcImgWidth < srcImgHeight ? srcImgWidth : srcImgHeight;
         int x = (srcImgWidth - scaleSize) / 2;
         int y = (srcImgHeight - scaleSize) / 2;
@@ -67,7 +81,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
 
         Image pressScaleImage = ImgUtil.scale(pressImage, scaleSize, scaleSize);
 
-        File dest = FileUtil.file("dest-"+pluginParam.getFrom()+"-"+System.currentTimeMillis()+".jpg");
+        File dest = FileUtil.file("dest-"+pluginParam.getFrom()+".jpg");
 
         ImgUtil.pressImage(
                 srcImage,
