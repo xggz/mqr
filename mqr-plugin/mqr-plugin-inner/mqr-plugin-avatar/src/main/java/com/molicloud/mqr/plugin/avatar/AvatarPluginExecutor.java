@@ -60,11 +60,13 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         if (pluginParam.getKeyword().equals("生成国旗头像")) {
             String message = (String) pluginParam.getData();
             String[] info = message.split("生成国旗头像");
-            if (!StrUtil.isBlank(info[1]) && !NumberUtil.isNumber(info[1])) {
-                pluginResult.setMessage("qq格式不正确");
-                return pluginResult;
+            if (!StrUtil.isBlank(info[1])) {
+                if (!NumberUtil.isNumber(info[1])) {
+                    pluginResult.setMessage("qq格式不正确");
+                    return pluginResult;
+                }
+                nk = info[1];
             }
-            nk = info[1];
         }
 
         URL url = URLUtil.url("https://q4.qlogo.cn/g?b=qq&nk="+nk+"&s=640");
