@@ -19,6 +19,11 @@ public class AiRepltSetting {
     private String prefix;
 
     /**
+     * 是否@消息才回复
+     */
+    private Boolean atReply;
+
+    /**
      * apiKey（从 http://aichat.itpk.cn 获取）
      */
     private String apiKey;
