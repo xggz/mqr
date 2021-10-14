@@ -42,7 +42,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     private RestTemplate restTemplate;
 
     @PHook(name = "AiReply",
-            equalsKeywords = { "设置聊天前缀", "取消聊天前缀", "开启@回复", "关闭@回复", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
+            equalsKeywords = { "设置聊天前缀", "取消聊天前缀", "开启@回复", "打开@回复", "关闭@回复", "取消@回复", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
@@ -67,18 +67,18 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                     saveHookSetting(aiRepltSetting);
                     pluginResult.setProcessed(true);
                     pluginResult.setMessage("聊天前缀取消成功");
-                } else if ("开启@回复".equals(pluginParam.getKeyword())) {
+                } else if ("开启@回复".equals(pluginParam.getKeyword()) || "打开@回复".equals(pluginParam.getKeyword())) {
                     // 保存配置
                     aiRepltSetting.setAtReply(true);
                     saveHookSetting(aiRepltSetting);
                     pluginResult.setProcessed(true);
-                    pluginResult.setMessage("已开启@回复，当机器人被@时才可能会回复");
-                } else if ("关闭@回复".equals(pluginParam.getKeyword())) {
+                    pluginResult.setMessage("已开启@回复");
+                } else if ("关闭@回复".equals(pluginParam.getKeyword()) || "取消@回复".equals(pluginParam.getKeyword())) {
                     // 保存配置
                     aiRepltSetting.setAtReply(false);
                     saveHookSetting(aiRepltSetting);
                     pluginResult.setProcessed(true);
-                    pluginResult.setMessage("已关闭@回复，机器人没有被@时也可能会回复");
+                    pluginResult.setMessage("已关闭@回复");
                 } else if ("设置报时类型".equals(pluginParam.getKeyword())) {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
@@ -222,6 +222,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
             message = message.substring(prefix.length());
         }
         message = message.replaceAll("(\\[mirai:.+?\\])", "，");
+        message = message.replaceAll("(@[0-9]+?\\s)", "，");
 
         return aichat(message, aiRepltSetting, pluginParam);
     }
