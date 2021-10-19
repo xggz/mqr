@@ -221,8 +221,8 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         if (StrUtil.isNotEmpty(prefix) && StrUtil.startWith(message, prefix)) {
             message = message.substring(prefix.length());
         }
-        message = message.replaceAll("(\\[mirai:.+?\\])", "，");
-        message = message.replaceAll("(@[0-9]+?\\s)", "，");
+        message = message.replaceAll("(\\[mirai:.+?\\])", "");
+        message = message.replaceAll("(@[0-9]+?\\s)", "");
 
         return aichat(message, aiRepltSetting, pluginParam);
     }
