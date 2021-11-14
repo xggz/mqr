@@ -24,6 +24,11 @@ public class AiRepltSetting {
     private Boolean atReply;
 
     /**
+     * 是否万金油回复
+     */
+    private Boolean randomReply;
+
+    /**
      * apiKey（从 http://aichat.itpk.cn 获取）
      */
     private String apiKey;

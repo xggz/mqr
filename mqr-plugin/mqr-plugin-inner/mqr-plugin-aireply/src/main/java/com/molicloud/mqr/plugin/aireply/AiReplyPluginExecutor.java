@@ -42,7 +42,9 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
     private RestTemplate restTemplate;
 
     @PHook(name = "AiReply",
-            equalsKeywords = { "设置聊天前缀", "取消聊天前缀", "开启@回复", "打开@回复", "关闭@回复", "取消@回复", "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
+            equalsKeywords = { "设置聊天前缀", "取消聊天前缀", "开启@回复", "打开@回复", "关闭@回复", "取消@回复",
+                    "开启万金油回复", "关闭万金油回复",
+                    "设置报时类型", "设置报时者名字", "设置聊天api", "设置聊天Api", "设置聊天API" },
             defaulted = true,
             robotEvents = { RobotEventEnum.FRIEND_MSG, RobotEventEnum.GROUP_MSG })
     public PluginResult messageHandler(PluginParam pluginParam) {
@@ -79,6 +81,18 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                     saveHookSetting(aiRepltSetting);
                     pluginResult.setProcessed(true);
                     pluginResult.setMessage("已关闭@回复");
+                } else if ("开启万金油回复".equals(pluginParam.getKeyword()) || "打开@回复".equals(pluginParam.getKeyword())) {
+                    // 保存配置
+                    aiRepltSetting.setRandomReply(true);
+                    saveHookSetting(aiRepltSetting);
+                    pluginResult.setProcessed(true);
+                    pluginResult.setMessage("已开启万金油回复");
+                } else if ("关闭万金油回复".equals(pluginParam.getKeyword()) || "取消@回复".equals(pluginParam.getKeyword())) {
+                    // 保存配置
+                    aiRepltSetting.setRandomReply(false);
+                    saveHookSetting(aiRepltSetting);
+                    pluginResult.setProcessed(true);
+                    pluginResult.setMessage("已关闭万金油回复");
                 } else if ("设置报时类型".equals(pluginParam.getKeyword())) {
                     pluginResult.setProcessed(true);
                     pluginResult.setHold(true);
@@ -157,27 +171,31 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                 && !StrUtil.startWith(message, prefix)) {
             pluginResult.setProcessed(false);
         } else {
-            pluginResult.setProcessed(true);
             JSONObject reply = aiReply(pluginParam, aiRepltSetting);
             if (!"00000".equals(reply.getStr("code"))) {
+                pluginResult.setProcessed(true);
                 pluginResult.setMessage(reply.getStr("message").concat(" 请重新设置聊天API或联系管理员"));
             } else {
-                JSONArray dataArray = reply.getJSONArray("data");
-                for (int i = 0; i < dataArray.size() - 1; i++) {
-                    JSONObject data = (JSONObject) dataArray.get(i);
-                    Object info = convertMessageData(data);
-                    if (info != null) {
-                        MessageEvent messageEvent = new MessageEvent();
-                        messageEvent.setRobotEventEnum(pluginParam.getRobotEventEnum());
-                        messageEvent.setToIds(Arrays.asList(pluginParam.getTo()));
-                        messageEvent.setMessage(info);
-                        pushMessage(messageEvent);
+                Boolean randomReply = aiRepltSetting.getRandomReply();
+                if (randomReply == null || randomReply || (!randomReply && StrUtil.isNotBlank(reply.getStr("plugin")))) {
+                    JSONArray dataArray = reply.getJSONArray("data");
+                    for (int i = 0; i < dataArray.size() - 1; i++) {
+                        JSONObject data = (JSONObject) dataArray.get(i);
+                        Object info = convertMessageData(data);
+                        if (info != null) {
+                            MessageEvent messageEvent = new MessageEvent();
+                            messageEvent.setRobotEventEnum(pluginParam.getRobotEventEnum());
+                            messageEvent.setToIds(Arrays.asList(pluginParam.getTo()));
+                            messageEvent.setMessage(info);
+                            pushMessage(messageEvent);
+                        }
                     }
-                }
 
-                // 最后一条消息返回发送
-                JSONObject lastData = (JSONObject) dataArray.get(dataArray.size()-1);
-                pluginResult.setMessage(convertMessageData(lastData));
+                    // 最后一条消息返回发送
+                    JSONObject lastData = (JSONObject) dataArray.get(dataArray.size()-1);
+                    pluginResult.setProcessed(true);
+                    pluginResult.setMessage(convertMessageData(lastData));
+                }
             }
         }
         return pluginResult;
