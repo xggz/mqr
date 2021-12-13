@@ -46,8 +46,8 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
     }
 
     @PHook(name = "Avatar",
-            equalsKeywords = { "我的国旗头像", "我的灰色头像" },
-            startsKeywords = { "生成国旗头像", "生成灰色头像" },
+            equalsKeywords = { "我的国旗头像", "我的灰色头像", "我的黑白头像" },
+            startsKeywords = { "生成国旗头像", "生成灰色头像", "生成黑白头像" },
             robotEvents = {
             RobotEventEnum.FRIEND_MSG,
             RobotEventEnum.GROUP_MSG,
@@ -72,6 +72,9 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         } else if (AvatarType.GRAY.equals(avatarType)) {
             pluginResult.setProcessed(true);
             pluginResult.setMessage(new Img(grayAvatar(srcImage, fromId)));
+        } else if (AvatarType.BINARY.equals(avatarType)) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage(new Img(binaryAvatar(srcImage, fromId)));
         }
 
         return pluginResult;
@@ -85,6 +88,9 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         } else if (keyword.equalsIgnoreCase("生成灰色头像")
                 || keyword.equalsIgnoreCase("我的灰色头像")) {
             return AvatarType.GRAY;
+        } else if (keyword.equalsIgnoreCase("生成黑白头像")
+                || keyword.equalsIgnoreCase("我的黑白头像")) {
+            return AvatarType.BINARY;
         }
 
         return null;
@@ -92,11 +98,15 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
 
     private String findFromId(PluginParam pluginParam) {
         if (pluginParam.getKeyword().equals("生成国旗头像")
-                || pluginParam.getKeyword().equals("生成灰色头像")) {
+                || pluginParam.getKeyword().equals("生成灰色头像")
+                || pluginParam.getKeyword().equals("生成黑白头像")) {
             String message = (String) pluginParam.getData();
             String[] info = message.split("生成国旗头像");
             if (info.length != 2) {
                 info = message.split("生成灰色头像");
+            }
+            if (info.length != 2) {
+                info = message.split("生成黑白头像");
             }
 
             if (!StrUtil.isBlank(info[1])) {
@@ -123,7 +133,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
 
         Image pressScaleImage = ImgUtil.scale(pressImage, scaleSize, scaleSize);
 
-        File dest = FileUtil.file("dest-"+fromId+"-guoqi.jpg");
+        File dest = FileUtil.file("dest-"+fromId+"-guoqi.png");
 
         ImgUtil.pressImage(
                 srcImage,
@@ -138,8 +148,14 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
     }
 
     private File grayAvatar(BufferedImage srcImage, String fromId) {
-        File dest = FileUtil.file("dest-"+fromId+"-gray.jpg");
+        File dest = FileUtil.file("dest-"+fromId+"-gray.png");
         ImgUtil.gray(srcImage, dest);
+        return dest;
+    }
+
+    private File binaryAvatar(BufferedImage srcImage, String fromId) {
+        File dest = FileUtil.file("dest-"+fromId+"-binary.png");
+        ImgUtil.binary(srcImage, dest);
         return dest;
     }
 }

@@ -16,5 +16,10 @@ public enum AvatarType {
     /**
      * 灰色
      */
-    GRAY;
+    GRAY,
+
+    /**
+     * 黑白反转
+     */
+    BINARY;
 }
