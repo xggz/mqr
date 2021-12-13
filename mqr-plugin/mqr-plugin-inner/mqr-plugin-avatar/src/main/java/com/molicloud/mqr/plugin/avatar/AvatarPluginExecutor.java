@@ -46,32 +46,72 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
     }
 
     @PHook(name = "Avatar",
-            equalsKeywords = { "我的国旗头像" },
-            startsKeywords = { "生成国旗头像" },
+            equalsKeywords = { "我的国旗头像", "我的灰色头像" },
+            startsKeywords = { "生成国旗头像", "生成灰色头像" },
             robotEvents = {
             RobotEventEnum.FRIEND_MSG,
             RobotEventEnum.GROUP_MSG,
     })
     public PluginResult messageHandler(PluginParam pluginParam) {
         PluginResult pluginResult = new PluginResult();
-        pluginResult.setProcessed(true);
 
-        String nk = pluginParam.getFrom();
-        if (pluginParam.getKeyword().equals("生成国旗头像")) {
-            String message = (String) pluginParam.getData();
-            String[] info = message.split("生成国旗头像");
-            if (!StrUtil.isBlank(info[1])) {
-                if (!NumberUtil.isNumber(info[1])) {
-                    pluginResult.setMessage("qq格式不正确");
-                    return pluginResult;
-                }
-                nk = info[1];
-            }
+        String fromId = findFromId(pluginParam);
+        if (StrUtil.isBlank(fromId)) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage("QQ格式不正确");
+            return pluginResult;
         }
 
-        URL url = URLUtil.url("https://q4.qlogo.cn/g?b=qq&nk="+nk+"&s=640");
+        URL url = URLUtil.url("https://q4.qlogo.cn/g?b=qq&nk=" + fromId + "&s=640");
         BufferedImage srcImage = ImgUtil.read(url);
 
+        AvatarType avatarType = findAvatarType(pluginParam);
+        if (AvatarType.FLAG.equals(avatarType)) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage(new Img(guoqiAvatar(srcImage, fromId)));
+        } else if (AvatarType.GRAY.equals(avatarType)) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage(new Img(grayAvatar(srcImage, fromId)));
+        }
+
+        return pluginResult;
+    }
+
+    private AvatarType findAvatarType(PluginParam pluginParam) {
+        String keyword = pluginParam.getKeyword();
+        if (keyword.equalsIgnoreCase("生成国旗头像")
+                || keyword.equalsIgnoreCase("我的国旗头像")) {
+            return AvatarType.FLAG;
+        } else if (keyword.equalsIgnoreCase("生成灰色头像")
+                || keyword.equalsIgnoreCase("我的灰色头像")) {
+            return AvatarType.GRAY;
+        }
+
+        return null;
+    }
+
+    private String findFromId(PluginParam pluginParam) {
+        if (pluginParam.getKeyword().equals("生成国旗头像")
+                || pluginParam.getKeyword().equals("生成灰色头像")) {
+            String message = (String) pluginParam.getData();
+            String[] info = message.split("生成国旗头像");
+            if (info.length != 2) {
+                info = message.split("生成灰色头像");
+            }
+
+            if (!StrUtil.isBlank(info[1])) {
+                if (NumberUtil.isNumber(info[1])) {
+                    return info[1];
+                }
+            }
+
+            return null;
+        }
+
+        return pluginParam.getFrom();
+    }
+
+    private File guoqiAvatar(BufferedImage srcImage, String fromId) {
         int srcImgWidth = srcImage.getWidth();
         int srcImgHeight = srcImage.getHeight();
 
@@ -83,7 +123,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
 
         Image pressScaleImage = ImgUtil.scale(pressImage, scaleSize, scaleSize);
 
-        File dest = FileUtil.file("dest-"+pluginParam.getFrom()+".jpg");
+        File dest = FileUtil.file("dest-"+fromId+"-guoqi.jpg");
 
         ImgUtil.pressImage(
                 srcImage,
@@ -94,7 +134,12 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
                 0.85f
         );
 
-        pluginResult.setMessage(new Img(dest));
-        return pluginResult;
+        return dest;
+    }
+
+    private File grayAvatar(BufferedImage srcImage, String fromId) {
+        File dest = FileUtil.file("dest-"+fromId+"-gray.jpg");
+        ImgUtil.gray(srcImage, dest);
+        return dest;
     }
 }
