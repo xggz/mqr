@@ -18,6 +18,7 @@ import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -189,16 +190,19 @@ public class MessageUtil {
      * @return
      */
     private Image buildImageMessage(Object sender, Object image) {
+        ExternalResource externalImage = null;
         try {
             if (image instanceof File) {
-                ExternalResource externalImage = ExternalResource.create((File) image);
-                return sender instanceof Group ?
+                externalImage = ExternalResource.create((File) image);
+                Image resource = sender instanceof Group ?
                         ((Group) sender).uploadImage(externalImage) :
                         (sender instanceof Member ?
                                 ((Member) sender).uploadImage(externalImage) :
                                 ((Friend) sender).uploadImage(externalImage));
+
+                return resource;
             } else if (image instanceof InputStream) {
-                ExternalResource externalImage = ExternalResource.create((InputStream) image);
+                externalImage = ExternalResource.create((InputStream) image);
                 return sender instanceof Group ?
                         ((Group) sender).uploadImage(externalImage) :
                         (sender instanceof Member ?
@@ -207,6 +211,14 @@ public class MessageUtil {
             }
         } catch (Exception e) {
             log.error("文件消息转换失败", e);
+        } finally {
+            if (externalImage != null) {
+                try {
+                    externalImage.close();
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
         }
         return null;
     }
