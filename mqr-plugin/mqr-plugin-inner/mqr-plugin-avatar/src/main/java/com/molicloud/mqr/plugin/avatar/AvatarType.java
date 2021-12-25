@@ -21,5 +21,10 @@ public enum AvatarType {
     /**
      * 黑白反转
      */
-    BINARY;
+    BINARY,
+
+    /**
+     * 圣诞
+     */
+    CHRISTMAS;
 }
