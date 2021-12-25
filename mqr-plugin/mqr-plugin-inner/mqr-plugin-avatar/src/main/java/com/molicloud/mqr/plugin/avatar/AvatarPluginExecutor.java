@@ -222,8 +222,8 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         Image newImage = ImgUtil.pressImage(
                 restImages(avatarImage),
                 christmasScaleImage,
-                x-20,
-                y-21,
+                x,
+                y-1,
                 1.0f
         );
 
@@ -265,7 +265,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
             graphics.drawImage(avatarImage, 0, 0, size, size, null);
             graphics.dispose();
 
-            int border = 120;
+            int border = 200;
             BufferedImage boxAvatarImage = new BufferedImage(size + border, size + border, BufferedImage.TYPE_INT_RGB);
             Graphics2D box2d = boxAvatarImage.createGraphics();
             // 设置背景色，之后再擦除（这里不加背景色，与模板框结合效果不佳）
