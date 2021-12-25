@@ -1,5 +1,6 @@
 package com.molicloud.mqr.plugin.avatar;
 
+import cn.hutool.core.img.BackgroundRemoval;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -190,6 +191,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         int size = 393;
         int srcImgWidth = srcImage.getWidth();
         int srcImgHeight = srcImage.getHeight();
+        String srcMainColor = BackgroundRemoval.getMainColor(srcImage);
 
         Image fixedImage;
         if (srcImgWidth < srcImgHeight) {
@@ -220,7 +222,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         Image christmasScaleImage = ImgUtil.scale(christmasImage, newSize, newSize);
 
         Image newImage = ImgUtil.pressImage(
-                restImages(avatarImage),
+                restImages(avatarImage, srcMainColor),
                 christmasScaleImage,
                 x,
                 y-1,
@@ -233,15 +235,15 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         create2d.drawImage(newImage, 0, 0, null);
         create2d.dispose();
 
-        for (int y1 = createImage.getMinY(); y1 < createImage.getHeight(); y1++) {
-            for (int x1 = createImage.getMinX(); x1 < createImage.getWidth(); x1++) {
-                // 获取像素的16进制
-                int rgb = createImage.getRGB(x1, y1);
-                if ((rgb & 0xff0000) >> 16 == 250 && (rgb & 0xff00) >> 8 == 251 && (rgb & 0xff) == 252) {
-                    createImage.setRGB(x1, y1, (1 << 24) | (rgb & 0x00ffffff));
-                }
-            }
-        }
+//        for (int y1 = createImage.getMinY(); y1 < createImage.getHeight(); y1++) {
+//            for (int x1 = createImage.getMinX(); x1 < createImage.getWidth(); x1++) {
+//                // 获取像素的16进制
+//                int rgb = createImage.getRGB(x1, y1);
+//                if ((rgb & 0xff0000) >> 16 == 250 && (rgb & 0xff00) >> 8 == 251 && (rgb & 0xff) == 252) {
+//                    createImage.setRGB(x1, y1, (1 << 24) | (rgb & 0x00ffffff));
+//                }
+//            }
+//        }
 
         File dest = FileUtil.file("dest-"+fromId+"-christmas.png");
         ImgUtil.write(createImage, dest);
@@ -254,7 +256,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
      * @param avatarImage
      * @return
      */
-    public BufferedImage restImages(BufferedImage avatarImage) {
+    public BufferedImage restImages(BufferedImage avatarImage, String srcMainColor) {
         try {
             int size = avatarImage.getWidth();
 
@@ -269,7 +271,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
             BufferedImage boxAvatarImage = new BufferedImage(size + border, size + border, BufferedImage.TYPE_INT_RGB);
             Graphics2D box2d = boxAvatarImage.createGraphics();
             // 设置背景色，之后再擦除（这里不加背景色，与模板框结合效果不佳）
-            box2d.setBackground(new Color(250, 251, 252));
+            box2d.setBackground(ImgUtil.hexToColor(srcMainColor));
             box2d.clearRect(0, 0, size + border, size + border);
             box2d.drawImage(formatAvatarImage, border / 2, (border / 2) + 10, size, size, null);
             box2d.dispose();
