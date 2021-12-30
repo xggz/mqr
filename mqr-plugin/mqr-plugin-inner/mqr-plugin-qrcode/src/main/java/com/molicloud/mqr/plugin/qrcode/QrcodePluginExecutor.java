@@ -44,13 +44,17 @@ public class QrcodePluginExecutor extends AbstractPluginExecutor {
 
         if (ExecuteTriggerEnum.KEYWORD.equals(pluginParam.getExecuteTriggerEnum())) {
             pluginResult.setHold(true);
-            MessageBuild messageBuild = new MessageBuild();
-            Ats ats = new Ats();
-            ats.setMids(Arrays.asList(pluginParam.getFrom()));
-            ats.setContent("请发送二维码文本内容，字符不能过长喔～");
-            messageBuild.append(ats);
-            messageBuild.append(new Expression(FaceDef.woshou));
-            pluginResult.setMessage(messageBuild);
+            if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())) {
+                MessageBuild messageBuild = new MessageBuild();
+                Ats ats = new Ats();
+                ats.setMids(Arrays.asList(pluginParam.getFrom()));
+                ats.setContent("请发送二维码文本内容，字符不能过长喔～");
+                messageBuild.append(ats);
+                messageBuild.append(new Expression(FaceDef.woshou));
+                pluginResult.setMessage(messageBuild);
+            } else {
+                pluginResult.setMessage("请发送二维码文本内容，字符不能过长喔～");
+            }
         } else if (ExecuteTriggerEnum.HOLD.equals(pluginParam.getExecuteTriggerEnum())) {
             String message = String.valueOf(pluginParam.getData());
             pluginResult.setHold(false);
