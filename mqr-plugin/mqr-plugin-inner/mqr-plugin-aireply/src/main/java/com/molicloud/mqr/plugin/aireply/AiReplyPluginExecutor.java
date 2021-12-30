@@ -161,14 +161,12 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
 
         // 是否机器人被At才回复
         Boolean atReply = aiRepltSetting.getAtReply();
-        if (atReply != null && atReply && !pluginParam.isAt()) {
-            return pluginResult;
-        }
         // 获取聊天前缀
         String prefix = aiRepltSetting.getPrefix();
-        if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum())
-                && StrUtil.isNotEmpty(prefix)
-                && !StrUtil.startWith(message, prefix)) {
+        if (RobotEventEnum.GROUP_MSG.equals(pluginParam.getRobotEventEnum()) && (
+                (StrUtil.isNotEmpty(prefix) && !StrUtil.startWith(message, prefix))
+                || (atReply != null && atReply && !pluginParam.isAt())
+            )) {
             pluginResult.setProcessed(false);
         } else {
             JSONObject reply = aiReply(pluginParam, aiRepltSetting);
@@ -261,7 +259,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         body.set("toName", pluginParam.getToName());
 
         HttpEntity<String> formEntity = new HttpEntity<String>(body.toString(), headers);
-        return restTemplate.postForEntity("http://openapi.itpk.cn/reply", formEntity, JSONObject.class).getBody();
+        return restTemplate.postForEntity("https://i.mly.app/reply", formEntity, JSONObject.class).getBody();
     }
 
     /**
