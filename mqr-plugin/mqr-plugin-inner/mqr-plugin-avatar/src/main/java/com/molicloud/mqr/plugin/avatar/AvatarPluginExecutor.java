@@ -4,6 +4,7 @@ import cn.hutool.core.img.BackgroundRemoval;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import com.molicloud.mqr.plugin.core.AbstractPluginExecutor;
@@ -23,6 +24,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 头像生成插件
@@ -36,6 +39,7 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
 
     private static BufferedImage pressImage = null;
     private static BufferedImage christmasImage = null;
+    private static List<BufferedImage> tigerFileImageList = new ArrayList<>();
 
     static {
         try {
@@ -52,14 +56,23 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
                 FileUtil.writeFromStream(in, christmasFile);
             }
             christmasImage = ImgUtil.read(christmasFile);
+
+            for (int i = 1; i <= 30; i++) {
+                File tigerFile = FileUtil.file("tiger/" + i + ".png");
+                if (!tigerFile.exists()) {
+                    InputStream in = AvatarPluginExecutor.class.getClassLoader().getResourceAsStream("tiger/" + i + ".png");
+                    FileUtil.writeFromStream(in, tigerFile);
+                }
+                tigerFileImageList.add(ImgUtil.read(tigerFile));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @PHook(name = "Avatar",
-            equalsKeywords = { "我的国旗头像", "我的灰色头像", "我的黑白头像", "我的圣诞头像", "我的圣诞节头像" },
-            startsKeywords = { "生成国旗头像", "生成灰色头像", "生成黑白头像", "生成圣诞头像", "生成圣诞节头像" },
+            equalsKeywords = { "我的国旗头像", "我的灰色头像", "我的黑白头像", "我的圣诞头像", "我的圣诞节头像", "我的虎年头像" },
+            startsKeywords = { "生成国旗头像", "生成灰色头像", "生成黑白头像", "生成圣诞头像", "生成圣诞节头像", "生成虎年头像" },
             robotEvents = {
             RobotEventEnum.FRIEND_MSG,
             RobotEventEnum.GROUP_MSG,
@@ -90,6 +103,9 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
         } else if (AvatarType.CHRISTMAS.equals(avatarType)) {
             pluginResult.setProcessed(true);
             pluginResult.setMessage(new Img(christmasAvatar(srcImage, fromId)));
+        } else if (AvatarType.TIGER.equals(avatarType)) {
+            pluginResult.setProcessed(true);
+            pluginResult.setMessage(new Img(tigerAvatar(srcImage, fromId)));
         }
 
         return pluginResult;
@@ -111,6 +127,9 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
                 || keyword.equalsIgnoreCase("生成圣诞节头像")
                 || keyword.equalsIgnoreCase("我的圣诞节头像")) {
             return AvatarType.CHRISTMAS;
+        } else if (keyword.equalsIgnoreCase("生成虎年头像")
+                || keyword.equalsIgnoreCase("我的虎年头像")) {
+            return AvatarType.TIGER;
         }
 
         return null;
@@ -121,7 +140,8 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
                 || pluginParam.getKeyword().equals("生成灰色头像")
                 || pluginParam.getKeyword().equals("生成黑白头像")
                 || pluginParam.getKeyword().equals("生成圣诞头像")
-                || pluginParam.getKeyword().equals("生成圣诞节头像")) {
+                || pluginParam.getKeyword().equals("生成圣诞节头像")
+                || pluginParam.getKeyword().equals("生成虎年头像")) {
             String message = (String) pluginParam.getData();
             String[] info = message.split("生成国旗头像");
             if (info.length != 2) {
@@ -135,6 +155,9 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
             }
             if (info.length != 2) {
                 info = message.split("生成圣诞节头像");
+            }
+            if (info.length != 2) {
+                info = message.split("生成虎年头像");
             }
 
             if (StrUtil.isNotBlank(info[1])) {
@@ -170,6 +193,33 @@ public class AvatarPluginExecutor extends AbstractPluginExecutor {
                 x,
                 y,
                 0.85f
+        );
+
+        return dest;
+    }
+
+    private File tigerAvatar(BufferedImage srcImage, String fromId) {
+        int srcImgWidth = srcImage.getWidth();
+        int srcImgHeight = srcImage.getHeight();
+
+        int scaleSize = srcImgWidth < srcImgHeight ? srcImgWidth : srcImgHeight;
+        int x = (srcImgWidth - scaleSize) / 2;
+        int y = (srcImgHeight - scaleSize) / 2;
+        x = x > 0 ? -x : 0;
+        y = y > 0 ? -y : 0;
+
+        Integer random = RandomUtil.randomInt(tigerFileImageList.size());
+        Image pressScaleImage = ImgUtil.scale(tigerFileImageList.get(random), scaleSize, scaleSize);
+
+        File dest = FileUtil.file("dest-"+fromId+"-tiger+" + random + ".png");
+
+        ImgUtil.pressImage(
+                srcImage,
+                dest,
+                pressScaleImage,
+                x,
+                y,
+                0.9f
         );
 
         return dest;

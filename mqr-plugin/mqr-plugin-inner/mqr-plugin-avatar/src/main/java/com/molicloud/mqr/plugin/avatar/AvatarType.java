@@ -26,5 +26,10 @@ public enum AvatarType {
     /**
      * 圣诞
      */
-    CHRISTMAS;
+    CHRISTMAS,
+
+    /**
+     * 虎年
+     */
+    TIGER;
 }
