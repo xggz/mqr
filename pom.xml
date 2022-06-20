@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.5.10</kotlin.version>
+        <kotlin.version>1.6.0</kotlin.version>
         <ktor.version>1.5.2</ktor.version>
         <coroutines.version>1.5.2</coroutines.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
