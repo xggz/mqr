@@ -20,14 +20,14 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.5.10</kotlin.version>
-        <ktor.version>1.5.2</ktor.version>
-        <coroutines.version>1.5.2</coroutines.version>
+        <kotlin.version>1.6.21</kotlin.version>
+        <ktor.version>1.6.1</ktor.version>
+        <coroutines.version>1.6.1</coroutines.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
         <lombok.version>1.18.12</lombok.version>
-        <mamoe.version>2.9.0</mamoe.version>
+        <mamoe.version>2.12.1</mamoe.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <hutool.version>5.4.4</hutool.version>
         <java-jwt.version>3.11.0</java-jwt.version>

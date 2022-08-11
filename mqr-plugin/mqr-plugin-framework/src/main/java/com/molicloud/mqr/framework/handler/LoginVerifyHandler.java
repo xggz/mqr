@@ -45,7 +45,7 @@ public class LoginVerifyHandler extends LoginSolver {
     @Nullable
     @Override
     public Object onSolveSliderCaptcha(@NotNull Bot bot, @NotNull String url, @NotNull Continuation<? super String> continuation) {
-        log.info("请用户QQ扫码二维码完成验证，然后在控制台提交验证");
+        log.info("请用机器人QQ扫码二维码完成验证，然后在控制台提交验证");
         log.info(url);
         log.info("完成后请输入任意字符");
         return handlerVerify(RobotVerifyEnum.URL, Base64.encode(QrCodeUtil.generatePng(url, new QrConfig())));
@@ -59,6 +59,12 @@ public class LoginVerifyHandler extends LoginSolver {
         log.info("请用户QQ扫码二维码完成验证，然后在控制台提交验证");
         log.info(url);
         return handlerVerify(RobotVerifyEnum.URL, Base64.encode(QrCodeUtil.generatePng(url, new QrConfig())));
+    }
+
+    @Override
+    public boolean isSliderCaptchaSupported() {
+        // 支持滑块验证登录
+        return true;
     }
 
     /**
