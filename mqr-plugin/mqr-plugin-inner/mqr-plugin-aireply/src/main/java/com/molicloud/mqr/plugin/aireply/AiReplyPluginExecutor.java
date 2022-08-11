@@ -259,7 +259,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
         body.set("toName", pluginParam.getToName());
 
         HttpEntity<String> formEntity = new HttpEntity<String>(body.toString(), headers);
-        return restTemplate.postForEntity("https://i.mly.app/reply", formEntity, JSONObject.class).getBody();
+        return restTemplate.postForEntity("https://api.mlyai.com/reply", formEntity, JSONObject.class).getBody();
     }
 
     /**
