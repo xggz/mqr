@@ -14,6 +14,21 @@ public enum RobotVerifyEnum {
     IMG,
 
     /**
+     * 二维码
+     */
+    QRCODE,
+
+    /**
+     * 短信
+     */
+    SMS,
+
+    /**
+     * 滑块
+     */
+    SLIDER,
+
+    /**
      * URL地址验证
      */
     URL;

@@ -74,9 +74,9 @@ public class RobotServerStarter {
                 setLoginSolver(loginVerifyHandler);
 
                 /**
-                 * 使用安卓手表协议
+                 * 使用MACOS协议
                  */
-                setProtocol(MiraiProtocol.ANDROID_WATCH);
+                setProtocol(MiraiProtocol.MACOS);
 
                 /**
                  * 不输出网络日志
