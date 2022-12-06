@@ -13,24 +13,24 @@ import javax.annotation.Resource
  * @author xggz yyimba@qq.com
  * @date 2022/11/25 10:23
  */
-open abstract class AbstractLoginVerifyHandler : LoginSolver() {
+abstract class AbstractLoginVerifyHandler : LoginSolver() {
 
     @Resource
     lateinit var loginVerfyService: LoginVerfyService
 
     /**
-     * 处理滑块验证
+     * 处理设备验证
      */
     override suspend fun onSolveDeviceVerification(
         bot: Bot,
         requests: DeviceVerificationRequests
     ): DeviceVerificationResult {
-        var smsRequest = requests.sms;
-        var fallbackRequest = requests.fallback;
+        val smsRequest = requests.sms
+        val fallbackRequest = requests.fallback
         if (requests.preferSms || fallbackRequest == null) {
             if (smsRequest != null) {
-                smsRequest.requestSms();
-                val smsCode = loginVerfyService.handlerVerify(RobotVerifyEnum.SMS, smsRequest.countryCode + "-" + smsRequest.phoneNumber);
+                smsRequest.requestSms()
+                val smsCode = loginVerfyService.handlerVerify(RobotVerifyEnum.SMS, smsRequest.countryCode + "-" + smsRequest.phoneNumber)
                 return smsRequest.solved(smsCode)
             }
         } else {
@@ -38,6 +38,6 @@ open abstract class AbstractLoginVerifyHandler : LoginSolver() {
             return fallbackRequest.solved()
         }
         
-        throw UnsupportedOperationException("不支持该验证方式");
+        throw UnsupportedOperationException("不支持该验证方式")
     }
 }
