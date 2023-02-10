@@ -27,7 +27,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
         <lombok.version>1.18.12</lombok.version>
-        <mamoe.version>2.13.2</mamoe.version>
+        <mamoe.version>2.14.0</mamoe.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <hutool.version>5.4.4</hutool.version>
         <java-jwt.version>3.11.0</java-jwt.version>
