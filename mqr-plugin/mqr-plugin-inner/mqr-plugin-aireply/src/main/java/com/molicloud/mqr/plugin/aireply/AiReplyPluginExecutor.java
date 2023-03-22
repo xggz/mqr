@@ -179,7 +179,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                     JSONArray dataArray = reply.getJSONArray("data");
                     for (int i = 0; i < dataArray.size() - 1; i++) {
                         JSONObject data = (JSONObject) dataArray.get(i);
-                        Object info = convertMessageData(data);
+                        Object info = convertMessageData(data, reply.getStr("plugin"));
                         if (info != null) {
                             MessageEvent messageEvent = new MessageEvent();
                             messageEvent.setRobotEventEnum(pluginParam.getRobotEventEnum());
@@ -192,7 +192,7 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
                     // 最后一条消息返回发送
                     JSONObject lastData = (JSONObject) dataArray.get(dataArray.size()-1);
                     pluginResult.setProcessed(true);
-                    pluginResult.setMessage(convertMessageData(lastData));
+                    pluginResult.setMessage(convertMessageData(lastData, reply.getStr("plugin")));
                 }
             }
         }
@@ -266,15 +266,21 @@ public class AiReplyPluginExecutor extends AbstractPluginExecutor {
      * 转换消息数据
      *
      * @param data
+     * @param pluginCode 
      * @return
      */
-    private Object convertMessageData(JSONObject data) {
+    private Object convertMessageData(JSONObject data, String pluginCode) {
         Integer typed = data.getInt("typed");
         if (OpenApiMessageTyped.TEXT.getValue().equals(typed)) {
             return data.getStr("content");
         } else if (OpenApiMessageTyped.IMAGE.getValue().equals(typed)) {
             try {
-                URL url = new URL("https://files.molicloud.com/".concat(data.getStr("content")));
+                URL url;
+                if (StrUtil.equalsIgnoreCase(pluginCode, "Ultra")) {
+                    url = new URL(data.getStr("content"));
+                } else {
+                    url = new URL("https://files.molicloud.com/".concat(data.getStr("content")));
+                }
                 return new Img(url.openStream());
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
