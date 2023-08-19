@@ -76,7 +76,7 @@ public class RobotServerStarter {
                 /**
                  * 使用MACOS协议
                  */
-                setProtocol(MiraiProtocol.MACOS);
+                setProtocol(MiraiProtocol.ANDROID_PHONE);
 
                 /**
                  * 不输出网络日志

@@ -36,6 +36,10 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.mrxiaom</groupId>
+            <artifactId>qsign</artifactId>
+        </dependency>
         <!-- 插件核心依赖 -->
         <dependency>
             <groupId>com.molicloud.mqr</groupId>

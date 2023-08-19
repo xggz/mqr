@@ -20,14 +20,14 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <kotlin.version>1.7.10</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
         <ktor.version>1.6.1</ktor.version>
         <coroutines.version>1.6.1</coroutines.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.3.5.RELEASE</spring-boot.version>
         <lombok.version>1.18.12</lombok.version>
-        <mamoe.version>2.14.0</mamoe.version>
+        <mamoe.version>2.15.0</mamoe.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <hutool.version>5.4.4</hutool.version>
         <java-jwt.version>3.11.0</java-jwt.version>
@@ -35,6 +35,7 @@
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <transmittable-thread-local.version>2.11.5</transmittable-thread-local.version>
         <zxing-javase.version>3.3.0</zxing-javase.version>
+        <qsign.version>1.0.8</qsign.version>
     </properties>
 
     <dependencyManagement>
@@ -83,6 +84,11 @@
                 <groupId>io.ktor</groupId>
                 <artifactId>ktor-client-core</artifactId>
                 <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>top.mrxiaom</groupId>
+                <artifactId>qsign</artifactId>
+                <version>${qsign.version}</version>
             </dependency>
             <!-- hutool -->
             <dependency>
