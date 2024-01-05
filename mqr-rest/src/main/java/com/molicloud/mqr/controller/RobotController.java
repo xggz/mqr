@@ -9,7 +9,6 @@ import com.molicloud.mqr.framework.PluginJobHandler;
 import com.molicloud.mqr.framework.RobotServerStarter;
 import com.molicloud.mqr.service.SysSettingService;
 import com.molicloud.mqr.common.vo.RobotInfoVo;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.Bot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/robot")
-@Api(value = "RobotApi", tags = "机器人相关操作接口")
 public class RobotController {
 
     @Autowired

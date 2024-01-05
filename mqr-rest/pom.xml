@@ -49,7 +49,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
-<!--                <configuration>-->
+                <configuration>
 <!--                    <mainClass>com.molicloud.mqr.RobotApplication</mainClass>-->
 <!--                    <layout>ZIP</layout>-->
 <!--                    <includes>-->
@@ -58,7 +58,8 @@
 <!--                            <artifactId>nothing</artifactId>-->
 <!--                        </include>-->
 <!--                    </includes>-->
-<!--                </configuration>-->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

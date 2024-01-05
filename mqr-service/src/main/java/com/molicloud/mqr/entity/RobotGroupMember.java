@@ -3,8 +3,6 @@ package com.molicloud.mqr.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,7 +20,6 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="RobotGroupMember对象", description="机器人群成员")
 public class RobotGroupMember implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,30 +27,22 @@ public class RobotGroupMember implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "群ID")
     private String gid;
 
-    @ApiModelProperty(value = "成员ID")
     private String mid;
 
-    @ApiModelProperty(value = "金币")
     private BigDecimal gold;
 
-    @ApiModelProperty(value = "持有的插件钩子")
     private String holdPluginHook;
 
-    @ApiModelProperty(value = "持有的消息")
     private String holdMessage;
 
-    @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    @ApiModelProperty(value = "修改时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-    @ApiModelProperty(value = "删除标记（0：正常，1：已删除）")
     private Boolean deleted;
 
 }

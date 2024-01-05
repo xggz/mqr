@@ -39,6 +39,13 @@
         <dependency>
             <groupId>top.mrxiaom</groupId>
             <artifactId>qsign</artifactId>
+            <version>${qsign.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/qsign-1.2.1-beta-dev-52838af.mirai2.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
         </dependency>
         <!-- 插件核心依赖 -->
         <dependency>
@@ -110,7 +117,7 @@
         </dependency>
         <!-- ================内部插件引用结束================ -->
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>

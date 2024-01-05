@@ -3,7 +3,7 @@ server:
 
 web:
   #排除拦截的路由
-  exclude-path-patterns: /, /admin/**, /favicon.ico, /swagger-resources/**, /swagger-ui/**, /webjars/**, /v3/**, /doc.html, /api/sys-user/login
+  exclude-path-patterns: /, /admin/**, /favicon.ico, /api/sys-user/login
 
 spring:
   datasource:
